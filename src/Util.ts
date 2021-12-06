@@ -1,4 +1,4 @@
-import { Konva } from './Global';
+import { Pamela }                     from './Global';
 import { IRect, RGB, RGBA, Vector2d } from './types';
 
 /*
@@ -42,8 +42,8 @@ export class Transform {
   /**
    * Copy Konva.Transform object
    * @method
-   * @name Konva.Transform#copy
-   * @returns {Konva.Transform}
+   * @name Pamela.Transform#copy
+   * @returns {Pamela.Transform}
    * @example
    * const tr = shape.getTransform().copy()
    */
@@ -61,7 +61,7 @@ export class Transform {
   /**
    * Transform point
    * @method
-   * @name Konva.Transform#point
+   * @name Pamela.Transform#point
    * @param {Object} point 2D point(x, y)
    * @returns {Object} 2D point(x, y)
    */
@@ -75,10 +75,10 @@ export class Transform {
   /**
    * Apply translation
    * @method
-   * @name Konva.Transform#translate
+   * @name Pamela.Transform#translate
    * @param {Number} x
    * @param {Number} y
-   * @returns {Konva.Transform}
+   * @returns {Pamela.Transform}
    */
   translate(x: number, y: number) {
     this.m[4] += this.m[0] * x + this.m[2] * y;
@@ -88,10 +88,10 @@ export class Transform {
   /**
    * Apply scale
    * @method
-   * @name Konva.Transform#scale
+   * @name Pamela.Transform#scale
    * @param {Number} sx
    * @param {Number} sy
-   * @returns {Konva.Transform}
+   * @returns {Pamela.Transform}
    */
   scale(sx: number, sy: number) {
     this.m[0] *= sx;
@@ -103,9 +103,9 @@ export class Transform {
   /**
    * Apply rotation
    * @method
-   * @name Konva.Transform#rotate
+   * @name Pamela.Transform#rotate
    * @param {Number} rad  Angle in radians
-   * @returns {Konva.Transform}
+   * @returns {Pamela.Transform}
    */
   rotate(rad: number) {
     var c = Math.cos(rad);
@@ -123,7 +123,7 @@ export class Transform {
   /**
    * Returns the translation
    * @method
-   * @name Konva.Transform#getTranslation
+   * @name Pamela.Transform#getTranslation
    * @returns {Object} 2D point(x, y)
    */
   getTranslation() {
@@ -135,10 +135,10 @@ export class Transform {
   /**
    * Apply skew
    * @method
-   * @name Konva.Transform#skew
+   * @name Pamela.Transform#skew
    * @param {Number} sx
    * @param {Number} sy
-   * @returns {Konva.Transform}
+   * @returns {Pamela.Transform}
    */
   skew(sx: number, sy: number) {
     var m11 = this.m[0] + this.m[2] * sy;
@@ -154,9 +154,9 @@ export class Transform {
   /**
    * Transform multiplication
    * @method
-   * @name Konva.Transform#multiply
-   * @param {Konva.Transform} matrix
-   * @returns {Konva.Transform}
+   * @name Pamela.Transform#multiply
+   * @param {Pamela.Transform} matrix
+   * @returns {Pamela.Transform}
    */
   multiply(matrix: Transform) {
     var m11 = this.m[0] * matrix.m[0] + this.m[2] * matrix.m[1];
@@ -179,8 +179,8 @@ export class Transform {
   /**
    * Invert the matrix
    * @method
-   * @name Konva.Transform#invert
-   * @returns {Konva.Transform}
+   * @name Pamela.Transform#invert
+   * @returns {Pamela.Transform}
    */
   invert() {
     var d = 1 / (this.m[0] * this.m[3] - this.m[1] * this.m[2]);
@@ -201,7 +201,7 @@ export class Transform {
   /**
    * return matrix
    * @method
-   * @name Konva.Transform#getMatrix
+   * @name Pamela.Transform#getMatrix
    */
   getMatrix() {
     return this.m;
@@ -209,8 +209,8 @@ export class Transform {
   /**
    * set to absolute position via translation
    * @method
-   * @name Konva.Transform#setAbsolutePosition
-   * @returns {Konva.Transform}
+   * @name Pamela.Transform#setAbsolutePosition
+   * @returns {Pamela.Transform}
    * @author ericdrowell
    */
   setAbsolutePosition(x: number, y: number) {
@@ -228,8 +228,8 @@ export class Transform {
   /**
    * convert transformation matrix back into node's attributes
    * @method
-   * @name Konva.Transform#decompose
-   * @returns {Konva.Transform}
+   * @name Pamela.Transform#decompose
+   * @returns {Pamela.Transform}
    */
   decompose() {
     var a = this.m[0];
@@ -812,7 +812,7 @@ export const Util = {
     return Util.radToDeg(rad);
   },
   _getRotation(radians) {
-    return Konva.angleDeg ? Util.radToDeg(radians) : radians;
+    return Pamela.angleDeg ? Util.radToDeg(radians) : radians;
   },
   _capitalize(str: string) {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -824,7 +824,7 @@ export const Util = {
     console.error(KONVA_ERROR + str);
   },
   warn(str: string) {
-    if (!Konva.showWarnings) {
+    if (!Pamela.showWarnings) {
       return;
     }
     console.warn(KONVA_WARNING + str);

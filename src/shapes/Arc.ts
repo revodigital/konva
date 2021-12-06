@@ -1,7 +1,7 @@
 import { Factory } from '../Factory';
 import { Shape, ShapeConfig } from '../Shape';
-import { Konva } from '../Global';
-import { GetSet } from '../types';
+import { Pamela }             from '../Global';
+import { GetSet }             from '../types';
 import { getNumberValidator, getBooleanValidator } from '../Validators';
 import { _registerNode } from '../Global';
 import { Transform, Util } from '../Util';
@@ -17,7 +17,7 @@ export interface ArcConfig extends ShapeConfig {
  * Arc constructor
  * @constructor
  * @memberof Konva
- * @augments Konva.Shape
+ * @augments Pamela.Shape
  * @param {Object} config
  * @param {Number} config.angle in degrees
  * @param {Number} config.innerRadius
@@ -39,7 +39,7 @@ export interface ArcConfig extends ShapeConfig {
  */
 export class Arc extends Shape<ArcConfig> {
   _sceneFunc(context) {
-    var angle = Konva.getAngle(this.angle()),
+    var angle = Pamela.getAngle(this.angle()),
       clockwise = this.clockwise();
 
     context.beginPath();
@@ -110,7 +110,7 @@ Factory.addGetterSetter(Arc, 'innerRadius', 0, getNumberValidator());
 
 /**
  * get/set innerRadius
- * @name Konva.Arc#innerRadius
+ * @name Pamela.Arc#innerRadius
  * @method
  * @param {Number} innerRadius
  * @returns {Number}
@@ -126,7 +126,7 @@ Factory.addGetterSetter(Arc, 'outerRadius', 0, getNumberValidator());
 
 /**
  * get/set outerRadius
- * @name Konva.Arc#outerRadius
+ * @name Pamela.Arc#outerRadius
  * @method
  * @param {Number} outerRadius
  * @returns {Number}
@@ -142,7 +142,7 @@ Factory.addGetterSetter(Arc, 'angle', 0, getNumberValidator());
 
 /**
  * get/set angle in degrees
- * @name Konva.Arc#angle
+ * @name Pamela.Arc#angle
  * @method
  * @param {Number} angle
  * @returns {Number}
@@ -158,7 +158,7 @@ Factory.addGetterSetter(Arc, 'clockwise', false, getBooleanValidator());
 
 /**
  * get/set clockwise flag
- * @name Konva.Arc#clockwise
+ * @name Pamela.Arc#clockwise
  * @method
  * @param {Boolean} clockwise
  * @returns {Boolean}

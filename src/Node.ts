@@ -1,8 +1,8 @@
 import { Util, Transform } from './Util';
 import { Factory } from './Factory';
 import { SceneCanvas, HitCanvas, Canvas } from './Canvas';
-import { Konva } from './Global';
-import { Container } from './Container';
+import { Pamela }                         from './Global';
+import { Container }                      from './Container';
 import { GetSet, Vector2d, IRect } from './types';
 import { DD } from './DragAndDrop';
 import {
@@ -237,8 +237,8 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * clear cached canvas
    * @method
-   * @name Konva.Node#clearCache
-   * @returns {Konva.Node}
+   * @name Pamela.Node#clearCache
+   * @returns {Pamela.Node}
    * @example
    * node.clearCache();
    */
@@ -254,7 +254,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
    *  If you need to cache your custom `Konva.Shape` instance you have to pass shape's bounding box
    *  properties. Look at [https://konvajs.org/docs/performance/Shape_Caching.html](https://konvajs.org/docs/performance/Shape_Caching.html) for more information.
    * @method
-   * @name Konva.Node#cache
+   * @name Pamela.Node#cache
    * @param {Object} [config]
    * @param {Number} [config.x]
    * @param {Number} [config.y]
@@ -266,7 +266,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
    * @param {Number} [config.pixelRatio] change quality (or pixel ratio) of cached image. pixelRatio = 2 will produce 2x sized cache.
    * @param {Boolean} [config.imageSmoothingEnabled] control imageSmoothingEnabled property of created canvas for cache
    * @param {Number} [config.hitCanvasPixelRatio] change quality (or pixel ratio) of cached hit canvas.
-   * @returns {Konva.Node}
+   * @returns {Pamela.Node}
    * @example
    * // cache a shape with the x,y position of the bounding box at the center and
    * // the width and height of the bounding box equal to the width and height of
@@ -417,7 +417,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * determine if node is currently cached
    * @method
-   * @name Konva.Node#isCached
+   * @name Pamela.Node#isCached
    * @returns {Boolean}
    */
   isCached() {
@@ -430,7 +430,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
    * Return client rectangle {x, y, width, height} of node. This rectangle also include all styling (strokes, shadows, etc).
    * The purpose of the method is similar to getBoundingClientRect API of the DOM.
    * @method
-   * @name Konva.Node#getClientRect
+   * @name Pamela.Node#getClientRect
    * @param {Object} config
    * @param {Boolean} [config.skipTransform] should we apply transform to node for calculating rect?
    * @param {Boolean} [config.skipShadow] should we apply shadow to the node for calculating bound box?
@@ -607,10 +607,10 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
    *  such as 'mousedown mouseup mousemove'. Include a namespace to bind an
    *  event by name such as 'click.foobar'.
    * @method
-   * @name Konva.Node#on
+   * @name Pamela.Node#on
    * @param {String} evtStr e.g. 'click', 'mousedown touchstart', 'mousedown.foo touchstart.foo'
    * @param {Function} handler The handler function. The first argument of that function is event object. Event object has `target` as main target of the event, `currentTarget` as current node listener and `evt` as native browser event.
-   * @returns {Konva.Node}
+   * @returns {Pamela.Node}
    * @example
    * // add click listener
    * node.on('click', function() {
@@ -709,9 +709,9 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
    *  such as 'click.foobar'. If you only give a name like '.foobar',
    *  all events in that namespace will be removed.
    * @method
-   * @name Konva.Node#off
+   * @name Pamela.Node#off
    * @param {String} evtStr e.g. 'click', 'mousedown touchstart', '.foobar'
-   * @returns {Konva.Node}
+   * @returns {Pamela.Node}
    * @example
    * // remove listener
    * node.off('click');
@@ -794,8 +794,8 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * remove a node from parent, but don't destroy. You can reuse the node later.
    * @method
-   * @name Konva.Node#remove
-   * @returns {Konva.Node}
+   * @name Pamela.Node#remove
+   * @returns {Pamela.Node}
    * @example
    * node.remove();
    */
@@ -834,7 +834,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
    * remove and destroy a node. Kill it and delete forever! You should not reuse node after destroy().
    * If the node is a container (Group, Stage or Layer) it will destroy all children too.
    * @method
-   * @name Konva.Node#destroy
+   * @name Pamela.Node#destroy
    * @example
    * node.destroy();
    */
@@ -845,7 +845,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * get attr
    * @method
-   * @name Konva.Node#getAttr
+   * @name Pamela.Node#getAttr
    * @param {String} attr
    * @returns {Integer|String|Object|Array}
    * @example
@@ -862,7 +862,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * get ancestors
    * @method
-   * @name Konva.Node#getAncestors
+   * @name Pamela.Node#getAncestors
    * @returns {Array}
    * @example
    * shape.getAncestors().forEach(function(node) {
@@ -883,7 +883,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * get attrs object literal
    * @method
-   * @name Konva.Node#getAttrs
+   * @name Pamela.Node#getAttrs
    * @returns {Object}
    */
   getAttrs() {
@@ -892,9 +892,9 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * set multiple attrs at once using an object literal
    * @method
-   * @name Konva.Node#setAttrs
+   * @name Pamela.Node#setAttrs
    * @param {Object} config object containing key value pairs
-   * @returns {Konva.Node}
+   * @returns {Pamela.Node}
    * @example
    * node.setAttrs({
    *   x: 5,
@@ -936,7 +936,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
    * F         | F         | F
    *
    * @method
-   * @name Konva.Node#isListening
+   * @name Pamela.Node#isListening
    * @returns {Boolean}
    */
   isListening() {
@@ -965,7 +965,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
    * F         | T         | F
    * F         | F         | F
    * @method
-   * @name Konva.Node#isVisible
+   * @name Pamela.Node#isVisible
    * @returns {Boolean}
    */
   isVisible() {
@@ -1000,15 +1000,15 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
       }
     });
 
-    var dragSkip = !skipDragCheck && !Konva.hitOnDragEnabled && layerUnderDrag;
+    var dragSkip = !skipDragCheck && !Pamela.hitOnDragEnabled && layerUnderDrag;
     return this.isListening() && this.isVisible() && !dragSkip;
   }
 
   /**
    * show node. set visible = true
    * @method
-   * @name Konva.Node#show
-   * @returns {Konva.Node}
+   * @name Pamela.Node#show
+   * @returns {Pamela.Node}
    */
   show() {
     this.visible(true);
@@ -1017,8 +1017,8 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * hide node.  Hidden nodes are no longer detectable
    * @method
-   * @name Konva.Node#hide
-   * @returns {Konva.Node}
+   * @name Pamela.Node#hide
+   * @returns {Pamela.Node}
    */
   hide() {
     this.visible(false);
@@ -1031,7 +1031,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
    * get absolute z-index which takes into account sibling
    *  and ancestor indices
    * @method
-   * @name Konva.Node#getAbsoluteZIndex
+   * @name Pamela.Node#getAbsoluteZIndex
    * @returns {Integer}
    */
   getAbsoluteZIndex() {
@@ -1074,7 +1074,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
    *  e.g. Stage depth will always be 0.  Layers will always be 1.  Groups and Shapes will always
    *  be >= 2
    * @method
-   * @name Konva.Node#getDepth
+   * @name Pamela.Node#getDepth
    * @returns {Integer}
    */
   getDepth() {
@@ -1119,8 +1119,8 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * get position of first pointer (like mouse or first touch) relative to local coordinates of current node
    * @method
-   * @name Konva.Node#getRelativePointerPosition
-   * @returns {Konva.Node}
+   * @name Pamela.Node#getRelativePointerPosition
+   * @returns {Pamela.Node}
    * @example
    *
    * // let's think we have a rectangle at position x = 10, y = 10
@@ -1146,9 +1146,9 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * get absolute position of a node. That function can be used to calculate absolute position, but relative to any ancestor
    * @method
-   * @name Konva.Node#getAbsolutePosition
+   * @name Pamela.Node#getAbsolutePosition
    * @param {Object} Ancestor optional ancestor node
-   * @returns {Konva.Node}
+   * @returns {Pamela.Node}
    * @example
    *
    * // returns absolute position relative to top-left corner of canvas
@@ -1247,11 +1247,11 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * move node by an amount relative to its current position
    * @method
-   * @name Konva.Node#move
+   * @name Pamela.Node#move
    * @param {Object} change
    * @param {Number} change.x
    * @param {Number} change.y
-   * @returns {Konva.Node}
+   * @returns {Pamela.Node}
    * @example
    * // move node in x direction by 1px and y direction by 2px
    * node.move({
@@ -1305,9 +1305,9 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * rotate node by an amount in degrees relative to its current rotation
    * @method
-   * @name Konva.Node#rotate
+   * @name Pamela.Node#rotate
    * @param {Number} theta
-   * @returns {Konva.Node}
+   * @returns {Pamela.Node}
    */
   rotate(theta: number) {
     this.rotation(this.rotation() + theta);
@@ -1316,7 +1316,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * move node to the top of its siblings
    * @method
-   * @name Konva.Node#moveToTop
+   * @name Pamela.Node#moveToTop
    * @returns {Boolean}
    */
   moveToTop() {
@@ -1333,7 +1333,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * move node up
    * @method
-   * @name Konva.Node#moveUp
+   * @name Pamela.Node#moveUp
    * @returns {Boolean} flag is moved or not
    */
   moveUp() {
@@ -1354,7 +1354,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * move node down
    * @method
-   * @name Konva.Node#moveDown
+   * @name Pamela.Node#moveDown
    * @returns {Boolean}
    */
   moveDown() {
@@ -1374,7 +1374,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * move node to the bottom of its siblings
    * @method
-   * @name Konva.Node#moveToBottom
+   * @name Pamela.Node#moveToBottom
    * @returns {Boolean}
    */
   moveToBottom() {
@@ -1414,7 +1414,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * get absolute opacity
    * @method
-   * @name Konva.Node#getAbsoluteOpacity
+   * @name Pamela.Node#getAbsoluteOpacity
    * @returns {Number}
    */
   getAbsoluteOpacity() {
@@ -1431,9 +1431,9 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * move node to another container
    * @method
-   * @name Konva.Node#moveTo
+   * @name Pamela.Node#moveTo
    * @param {Container} newContainer
-   * @returns {Konva.Node}
+   * @returns {Pamela.Node}
    * @example
    * // move node from current layer into layer2
    * node.moveTo(layer2);
@@ -1449,7 +1449,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * convert Node into an object for serialization.  Returns an object.
    * @method
-   * @name Konva.Node#toObject
+   * @name Pamela.Node#toObject
    * @returns {Object}
    */
   toObject() {
@@ -1489,7 +1489,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * convert Node into a JSON string.  Returns a JSON string.
    * @method
-   * @name Konva.Node#toJSON
+   * @name Pamela.Node#toJSON
    * @returns {String}
    */
   toJSON() {
@@ -1498,8 +1498,8 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * get parent container
    * @method
-   * @name Konva.Node#getParent
-   * @returns {Konva.Node}
+   * @name Pamela.Node#getParent
+   * @returns {Pamela.Node}
    */
   getParent() {
     return this.parent;
@@ -1507,10 +1507,10 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * get all ancestors (parent then parent of the parent, etc) of the node
    * @method
-   * @name Konva.Node#findAncestors
+   * @name Pamela.Node#findAncestors
    * @param {String} selector selector for search
    * @param {Boolean} [includeSelf] show we think that node is ancestro itself?
-   * @param {Konva.Node} [stopNode] optional node where we need to stop searching (one of ancestors)
+   * @param {Pamela.Node} [stopNode] optional node where we need to stop searching (one of ancestors)
    * @returns {Array} [ancestors]
    * @example
    * // get one of the parent group
@@ -1540,11 +1540,11 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * get ancestor (parent or parent of the parent, etc) of the node that match passed selector
    * @method
-   * @name Konva.Node#findAncestor
+   * @name Pamela.Node#findAncestor
    * @param {String} selector selector for search
    * @param {Boolean} [includeSelf] show we think that node is ancestro itself?
-   * @param {Konva.Node} [stopNode] optional node where we need to stop searching (one of ancestors)
-   * @returns {Konva.Node} ancestor
+   * @param {Pamela.Node} [stopNode] optional node where we need to stop searching (one of ancestors)
+   * @returns {Pamela.Node} ancestor
    * @example
    * // get one of the parent group
    * var group = node.findAncestors('.mygroup');
@@ -1597,8 +1597,8 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * get layer ancestor
    * @method
-   * @name Konva.Node#getLayer
-   * @returns {Konva.Layer}
+   * @name Pamela.Node#getLayer
+   * @returns {Pamela.Layer}
    */
   getLayer(): Layer | null {
     var parent = this.getParent();
@@ -1607,8 +1607,8 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * get stage ancestor
    * @method
-   * @name Konva.Node#getStage
-   * @returns {Konva.Stage}
+   * @name Pamela.Node#getStage
+   * @returns {Pamela.Stage}
    */
   getStage(): Stage | null {
     return this._getCache(STAGE, this._getStage);
@@ -1625,12 +1625,12 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * fire event
    * @method
-   * @name Konva.Node#fire
+   * @name Pamela.Node#fire
    * @param {String} eventType event type.  can be a regular event, like click, mouseover, or mouseout, or it can be a custom event, like myCustomEvent
    * @param {Event} [evt] event object
    * @param {Boolean} [bubble] setting the value to false, or leaving it undefined, will result in the event
    *  not bubbling.  Setting the value to true will result in the event bubbling.
-   * @returns {Konva.Node}
+   * @returns {Pamela.Node}
    * @example
    * // manually fire click event
    * node.fire('click');
@@ -1661,8 +1661,8 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
    * get absolute transform of the node which takes into
    *  account its ancestor transforms
    * @method
-   * @name Konva.Node#getAbsoluteTransform
-   * @returns {Konva.Transform}
+   * @name Pamela.Node#getAbsoluteTransform
+   * @returns {Pamela.Transform}
    */
   getAbsoluteTransform(top?: Node) {
     // if using an argument, we can't cache the result.
@@ -1721,7 +1721,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
    * get absolute scale of the node which takes into
    *  account its ancestor scales
    * @method
-   * @name Konva.Node#getAbsoluteScale
+   * @name Pamela.Node#getAbsoluteScale
    * @returns {Object}
    * @example
    * // get absolute scale x
@@ -1751,7 +1751,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
    * get absolute rotation of the node which takes into
    *  account its ancestor rotations
    * @method
-   * @name Konva.Node#getAbsoluteRotation
+   * @name Pamela.Node#getAbsoluteRotation
    * @returns {Number}
    * @example
    * // get absolute rotation
@@ -1771,8 +1771,8 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * get transform of the node
    * @method
-   * @name Konva.Node#getTransform
-   * @returns {Konva.Transform}
+   * @name Pamela.Node#getTransform
+   * @returns {Pamela.Transform}
    */
   getTransform() {
     return this._getCache(TRANSFORM, this._getTransform) as Transform;
@@ -1786,7 +1786,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     // because it overwrite x,y getters
     var x = this.x(),
       y = this.y(),
-      rotation = Konva.getAngle(this.rotation()),
+      rotation = Pamela.getAngle(this.rotation()),
       scaleX = this.attrs.scaleX ?? 1,
       scaleY = this.attrs.scaleY ?? 1,
       skewX = this.attrs.skewX || 0,
@@ -1819,9 +1819,9 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
    *  the node properties with an object literal, enabling you to use an existing node as a template
    *  for another node
    * @method
-   * @name Konva.Node#clone
+   * @name Pamela.Node#clone
    * @param {Object} obj override attrs
-   * @returns {Konva.Node}
+   * @returns {Pamela.Node}
    * @example
    * // simple clone
    * var clone = node.clone();
@@ -1896,7 +1896,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * converts node into an canvas element.
    * @method
-   * @name Konva.Node#toCanvas
+   * @name Pamela.Node#toCanvas
    * @param {Object} config
    * @param {Function} config.callback function executed when the composite has completed
    * @param {Number} [config.x] x position of canvas section
@@ -1918,7 +1918,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
    * specified, then "image/png" will result. For "image/jpeg", specify a quality
    * level as quality (range 0.0 - 1.0)
    * @method
-   * @name Konva.Node#toDataURL
+   * @name Pamela.Node#toDataURL
    * @param {Object} config
    * @param {String} [config.mimeType] can be "image/png" or "image/jpeg".
    *  "image/png" is the default
@@ -1959,7 +1959,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
    *  method is asynchronous, a callback is required.  toImage is most commonly used
    *  to cache complex drawings as an image so that they don't have to constantly be redrawn
    * @method
-   * @name Konva.Node#toImage
+   * @name Pamela.Node#toImage
    * @param {Object} config
    * @param {Function} config.callback function executed when the composite has completed
    * @param {String} [config.mimeType] can be "image/png" or "image/jpeg".
@@ -2015,7 +2015,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * get class name, which may return Stage, Layer, Group, or shape class names like Rect, Circle, Text, etc.
    * @method
-   * @name Konva.Node#getClassName
+   * @name Pamela.Node#getClassName
    * @returns {String}
    */
   getClassName() {
@@ -2024,7 +2024,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * get the node type, which may return Stage, Layer, Group, or Shape
    * @method
-   * @name Konva.Node#getType
+   * @name Pamela.Node#getType
    * @returns {String}
    */
   getType() {
@@ -2037,7 +2037,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     } else if (this.parent) {
       return this.parent.getDragDistance();
     } else {
-      return Konva.dragDistance;
+      return Pamela.dragDistance;
     }
   }
   _off(type, name?, callback?) {
@@ -2077,9 +2077,9 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * add name to node
    * @method
-   * @name Konva.Node#addName
+   * @name Pamela.Node#addName
    * @param {String} name
-   * @returns {Konva.Node}
+   * @returns {Pamela.Node}
    * @example
    * node.name('red');
    * node.addName('selected');
@@ -2096,7 +2096,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * check is node has name
    * @method
-   * @name Konva.Node#hasName
+   * @name Pamela.Node#hasName
    * @param {String} name
    * @returns {Boolean}
    * @example
@@ -2120,9 +2120,9 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * remove name from node
    * @method
-   * @name Konva.Node#removeName
+   * @name Pamela.Node#removeName
    * @param {String} name
-   * @returns {Konva.Node}
+   * @returns {Pamela.Node}
    * @example
    * node.name('red selected');
    * node.removeName('selected');
@@ -2141,10 +2141,10 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * set attr
    * @method
-   * @name Konva.Node#setAttr
+   * @name Pamela.Node#setAttr
    * @param {String} attr
    * @param {*} val
-   * @returns {Konva.Node}
+   * @returns {Pamela.Node}
    * @example
    * node.setAttr('x', 5);
    */
@@ -2160,7 +2160,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     return this;
   }
   _requestDraw() {
-    if (Konva.autoDrawEnabled) {
+    if (Pamela.autoDrawEnabled) {
       const drawNode = this.getLayer() || this.getStage();
       drawNode?.batchDraw();
     }
@@ -2279,8 +2279,8 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * draw both scene and hit graphs.  If the node being drawn is the stage, all of the layers will be cleared and redrawn
    * @method
-   * @name Konva.Node#draw
-   * @returns {Konva.Node}
+   * @name Pamela.Node#draw
+   * @returns {Pamela.Node}
    */
   draw() {
     this.drawScene();
@@ -2312,7 +2312,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * initiate drag and drop.
    * @method
-   * @name Konva.Node#startDrag
+   * @name Pamela.Node#startDrag
    */
   startDrag(evt?: any, bubbleEvent = true) {
     if (!DD._dragElements.has(this._id)) {
@@ -2372,7 +2372,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * stop drag and drop
    * @method
-   * @name Konva.Node#stopDrag
+   * @name Pamela.Node#stopDrag
    */
   stopDrag(evt?) {
     const elem = DD._dragElements.get(this._id);
@@ -2391,7 +2391,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   /**
    * determine if node is currently in drag and drop mode
    * @method
-   * @name Konva.Node#isDragging
+   * @name Pamela.Node#isDragging
    */
   isDragging() {
     const elem = DD._dragElements.get(this._id);
@@ -2404,7 +2404,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     this.on('mousedown.konva touchstart.konva', function (evt) {
       var shouldCheckButton = evt.evt['button'] !== undefined;
       var canDrag =
-        !shouldCheckButton || Konva.dragButtons.indexOf(evt.evt['button']) >= 0;
+        !shouldCheckButton || Pamela.dragButtons.indexOf(evt.evt['button']) >= 0;
       if (!canDrag) {
         return;
       }
@@ -2466,7 +2466,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
    * @param {Number} margin.x
    * @param {Number} margin.y
    * @returns {Boolean}
-   * @name Konva.Node#isClientRectOnScreen
+   * @name Pamela.Node#isClientRectOnScreen
    * @example
    * // get index
    * // default calculations
@@ -2587,7 +2587,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
       obj.attrs.container = container;
     }
 
-    if (!Konva[className]) {
+    if (!Pamela[className]) {
       Util.warn(
         'Can not find a node with class name "' +
           className +
@@ -2596,7 +2596,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
       className = 'Shape';
     }
 
-    const Class = Konva[className];
+    const Class = Pamela[className];
 
     no = new Class(obj.attrs);
     if (children) {
@@ -2646,7 +2646,7 @@ const addGetterSetter = Factory.addGetterSetter;
 /**
  * get/set zIndex relative to the node's siblings who share the same parent.
  * Please remember that zIndex is not absolute (like in CSS). It is relative to parent element only.
- * @name Konva.Node#zIndex
+ * @name Pamela.Node#zIndex
  * @method
  * @param {Number} index
  * @returns {Number}
@@ -2661,7 +2661,7 @@ addGetterSetter(Node, 'zIndex');
 
 /**
  * get/set node absolute position
- * @name Konva.Node#absolutePosition
+ * @name Pamela.Node#absolutePosition
  * @method
  * @param {Object} pos
  * @param {Number} pos.x
@@ -2682,7 +2682,7 @@ addGetterSetter(Node, 'absolutePosition');
 addGetterSetter(Node, 'position');
 /**
  * get/set node position relative to parent
- * @name Konva.Node#position
+ * @name Pamela.Node#position
  * @method
  * @param {Object} pos
  * @param {Number} pos.x
@@ -2703,7 +2703,7 @@ addGetterSetter(Node, 'x', 0, getNumberValidator());
 
 /**
  * get/set x position
- * @name Konva.Node#x
+ * @name Pamela.Node#x
  * @method
  * @param {Number} x
  * @returns {Object}
@@ -2719,7 +2719,7 @@ addGetterSetter(Node, 'y', 0, getNumberValidator());
 
 /**
  * get/set y position
- * @name Konva.Node#y
+ * @name Pamela.Node#y
  * @method
  * @param {Number} y
  * @returns {Integer}
@@ -2740,7 +2740,7 @@ addGetterSetter(
 
 /**
  * get/set globalCompositeOperation of a node. globalCompositeOperation DOESN'T affect hit graph of nodes. So they are still trigger to events as they have default "source-over" globalCompositeOperation.
- * @name Konva.Node#globalCompositeOperation
+ * @name Pamela.Node#globalCompositeOperation
  * @method
  * @param {String} type
  * @returns {String}
@@ -2757,7 +2757,7 @@ addGetterSetter(Node, 'opacity', 1, getNumberValidator());
  * get/set opacity.  Opacity values range from 0 to 1.
  *  A node with an opacity of 0 is fully transparent, and a node
  *  with an opacity of 1 is fully opaque
- * @name Konva.Node#opacity
+ * @name Pamela.Node#opacity
  * @method
  * @param {Object} opacity
  * @returns {Number}
@@ -2773,7 +2773,7 @@ addGetterSetter(Node, 'name', '', getStringValidator());
 
 /**
  * get/set name.
- * @name Konva.Node#name
+ * @name Pamela.Node#name
  * @method
  * @param {String} name
  * @returns {String}
@@ -2792,7 +2792,7 @@ addGetterSetter(Node, 'id', '', getStringValidator());
 
 /**
  * get/set id. Id is global for whole page.
- * @name Konva.Node#id
+ * @name Pamela.Node#id
  * @method
  * @param {String} id
  * @returns {String}
@@ -2808,7 +2808,7 @@ addGetterSetter(Node, 'rotation', 0, getNumberValidator());
 
 /**
  * get/set rotation in degrees
- * @name Konva.Node#rotation
+ * @name Pamela.Node#rotation
  * @method
  * @param {Number} rotation
  * @returns {Number}
@@ -2824,7 +2824,7 @@ Factory.addComponentsGetterSetter(Node, 'scale', ['x', 'y']);
 
 /**
  * get/set scale
- * @name Konva.Node#scale
+ * @name Pamela.Node#scale
  * @param {Object} scale
  * @param {Number} scale.x
  * @param {Number} scale.y
@@ -2845,7 +2845,7 @@ addGetterSetter(Node, 'scaleX', 1, getNumberValidator());
 
 /**
  * get/set scale x
- * @name Konva.Node#scaleX
+ * @name Pamela.Node#scaleX
  * @param {Number} x
  * @method
  * @returns {Number}
@@ -2861,7 +2861,7 @@ addGetterSetter(Node, 'scaleY', 1, getNumberValidator());
 
 /**
  * get/set scale y
- * @name Konva.Node#scaleY
+ * @name Pamela.Node#scaleY
  * @param {Number} y
  * @method
  * @returns {Number}
@@ -2877,7 +2877,7 @@ Factory.addComponentsGetterSetter(Node, 'skew', ['x', 'y']);
 
 /**
  * get/set skew
- * @name Konva.Node#skew
+ * @name Pamela.Node#skew
  * @param {Object} skew
  * @param {Number} skew.x
  * @param {Number} skew.y
@@ -2898,7 +2898,7 @@ addGetterSetter(Node, 'skewX', 0, getNumberValidator());
 
 /**
  * get/set skew x
- * @name Konva.Node#skewX
+ * @name Pamela.Node#skewX
  * @param {Number} x
  * @method
  * @returns {Number}
@@ -2914,7 +2914,7 @@ addGetterSetter(Node, 'skewY', 0, getNumberValidator());
 
 /**
  * get/set skew y
- * @name Konva.Node#skewY
+ * @name Pamela.Node#skewY
  * @param {Number} y
  * @method
  * @returns {Number}
@@ -2950,7 +2950,7 @@ addGetterSetter(Node, 'offsetX', 0, getNumberValidator());
 
 /**
  * get/set offset x
- * @name Konva.Node#offsetX
+ * @name Pamela.Node#offsetX
  * @method
  * @param {Number} x
  * @returns {Number}
@@ -2966,7 +2966,7 @@ addGetterSetter(Node, 'offsetY', 0, getNumberValidator());
 
 /**
  * get/set offset y
- * @name Konva.Node#offsetY
+ * @name Pamela.Node#offsetY
  * @method
  * @param {Number} y
  * @returns {Number}
@@ -2982,7 +2982,7 @@ addGetterSetter(Node, 'dragDistance', null, getNumberValidator());
 
 /**
  * get/set drag distance
- * @name Konva.Node#dragDistance
+ * @name Pamela.Node#dragDistance
  * @method
  * @param {Number} distance
  * @returns {Number}
@@ -3000,7 +3000,7 @@ addGetterSetter(Node, 'dragDistance', null, getNumberValidator());
 addGetterSetter(Node, 'width', 0, getNumberValidator());
 /**
  * get/set width
- * @name Konva.Node#width
+ * @name Pamela.Node#width
  * @method
  * @param {Number} width
  * @returns {Number}
@@ -3015,7 +3015,7 @@ addGetterSetter(Node, 'width', 0, getNumberValidator());
 addGetterSetter(Node, 'height', 0, getNumberValidator());
 /**
  * get/set height
- * @name Konva.Node#height
+ * @name Pamela.Node#height
  * @method
  * @param {Number} height
  * @returns {Number}
@@ -3031,7 +3031,7 @@ addGetterSetter(Node, 'listening', true, getBooleanValidator());
 /**
  * get/set listening attr.  If you need to determine if a node is listening or not
  *   by taking into account its parents, use the isListening() method
- * @name Konva.Node#listening
+ * @name Pamela.Node#listening
  * @method
  * @param {Boolean} listening Can be true, or false.  The default is true.
  * @returns {Boolean}
@@ -3053,7 +3053,7 @@ addGetterSetter(Node, 'listening', true, getBooleanValidator());
  * that will prevent native scrolling when you are trying to drag&drop a node
  * but sometimes you may need to enable default actions
  * in that case you can set the property to false
- * @name Konva.Node#preventDefault
+ * @name Pamela.Node#preventDefault
  * @method
  * @param {Boolean} preventDefault
  * @returns {Boolean}
@@ -3073,7 +3073,7 @@ addGetterSetter(Node, 'filters', null, function (val) {
 });
 /**
  * get/set filters.  Filters are applied to cached canvases
- * @name Konva.Node#filters
+ * @name Pamela.Node#filters
  * @method
  * @param {Array} filters array of filters
  * @returns {Array}
@@ -3099,7 +3099,7 @@ addGetterSetter(Node, 'visible', true, getBooleanValidator());
  * get/set visible attr.  Can be true, or false.  The default is true.
  *   If you need to determine if a node is visible or not
  *   by taking into account its parents, use the isVisible() method
- * @name Konva.Node#visible
+ * @name Pamela.Node#visible
  * @method
  * @param {Boolean} visible
  * @returns {Boolean}
@@ -3120,7 +3120,7 @@ addGetterSetter(Node, 'transformsEnabled', 'all', getStringValidator());
 /**
  * get/set transforms that are enabled.  Can be "all", "none", or "position".  The default
  *  is "all"
- * @name Konva.Node#transformsEnabled
+ * @name Pamela.Node#transformsEnabled
  * @method
  * @param {String} enabled
  * @returns {String}
@@ -3134,7 +3134,7 @@ addGetterSetter(Node, 'transformsEnabled', 'all', getStringValidator());
 
 /**
  * get/set node size
- * @name Konva.Node#size
+ * @name Pamela.Node#size
  * @method
  * @param {Object} size
  * @param {Number} size.width
@@ -3157,7 +3157,7 @@ addGetterSetter(Node, 'size');
 /**
  * get/set drag bound function.  This is used to override the default
  *  drag and drop position.
- * @name Konva.Node#dragBoundFunc
+ * @name Pamela.Node#dragBoundFunc
  * @method
  * @param {Function} dragBoundFunc
  * @returns {Function}
@@ -3179,7 +3179,7 @@ addGetterSetter(Node, 'dragBoundFunc');
 
 /**
  * get/set draggable flag
- * @name Konva.Node#draggable
+ * @name Pamela.Node#draggable
  * @method
  * @param {Boolean} draggable
  * @returns {Boolean}

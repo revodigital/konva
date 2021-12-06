@@ -1,3 +1,3 @@
-import { Konva } from './_FullInternals';
+import { Pamela } from './_FullInternals';
 
-export default Konva;
+export default Pamela;

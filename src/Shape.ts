@@ -1,4 +1,4 @@
-import { Konva } from './Global';
+import { Pamela }          from './Global';
 import { Transform, Util } from './Util';
 import { Factory } from './Factory';
 import { Node, NodeConfig } from './Node';
@@ -149,7 +149,7 @@ function _clearRadialGradientCache() {
  *  circles, text, lines, etc.
  * @constructor
  * @memberof Konva
- * @augments Konva.Node
+ * @augments Pamela.Node
  * @param {Object} config
  * @@shapeParams
  * @@nodeParams
@@ -218,7 +218,7 @@ export class Shape<
   /**
    * returns whether or not a shadow will be rendered
    * @method
-   * @name Konva.Shape#hasShadow
+   * @name Pamela.Shape#hasShadow
    * @returns {Boolean}
    */
   hasShadow() {
@@ -250,7 +250,7 @@ export class Shape<
         const tr = new Transform();
 
         tr.translate(this.fillPatternX(), this.fillPatternY());
-        tr.rotate(Konva.getAngle(this.fillPatternRotation()));
+        tr.rotate(Pamela.getAngle(this.fillPatternRotation()));
         tr.scale(this.fillPatternScaleX(), this.fillPatternScaleY());
         tr.translate(
           -1 * this.fillPatternOffsetX(),
@@ -339,7 +339,7 @@ export class Shape<
   /**
    * returns whether or not the shape will be filled
    * @method
-   * @name Konva.Shape#hasFill
+   * @name Pamela.Shape#hasFill
    * @returns {Boolean}
    */
   hasFill() {
@@ -368,7 +368,7 @@ export class Shape<
   /**
    * returns whether or not the shape will be stroked
    * @method
-   * @name Konva.Shape#hasStroke
+   * @name Pamela.Shape#hasStroke
    * @returns {Boolean}
    */
   hasStroke() {
@@ -411,10 +411,10 @@ export class Shape<
   /**
    * determines if point is in the shape, regardless if other shapes are on top of it.  Note: because
    *  this method clears a temporary canvas and then redraws the shape, it performs very poorly if executed many times
-   *  consecutively.  Please use the {@link Konva.Stage#getIntersection} method if at all possible
+   *  consecutively.  Please use the {@link Pamela.Stage#getIntersection} method if at all possible
    *  because it performs much better
    * @method
-   * @name Konva.Shape#intersects
+   * @name Pamela.Shape#intersects
    * @param {Object} point
    * @param {Number} point.x
    * @param {Number} point.y
@@ -495,7 +495,7 @@ export class Shape<
    * return self rectangle (x, y, width, height) of shape.
    * This method are not taken into account transformation and styles.
    * @method
-   * @name Konva.Shape#getSelfRect
+   * @name Pamela.Shape#getSelfRect
    * @returns {Object} rect with {x, y, width, height} properties
    * @example
    *
@@ -693,11 +693,11 @@ export class Shape<
   /**
    * draw hit graph using the cached scene canvas
    * @method
-   * @name Konva.Shape#drawHitFromCache
+   * @name Pamela.Shape#drawHitFromCache
    * @param {Integer} alphaThreshold alpha channel threshold that determines whether or not
    *  a pixel should be drawn onto the hit graph.  Must be a value between 0 and 255.
    *  The default is 0
-   * @returns {Konva.Shape}
+   * @returns {Pamela.Shape}
    * @example
    * shape.cache();
    * shape.drawHitFromCache();
@@ -874,7 +874,7 @@ Factory.addGetterSetter(
 
 /**
  * get/set stroke color
- * @name Konva.Shape#stroke
+ * @name Pamela.Shape#stroke
  * @method
  * @param {String} color
  * @returns {String}
@@ -899,7 +899,7 @@ Factory.addGetterSetter(Shape, 'strokeWidth', 2, getNumberValidator());
 
 /**
  * get/set stroke width
- * @name Konva.Shape#strokeWidth
+ * @name Pamela.Shape#strokeWidth
  * @method
  * @param {Number} strokeWidth
  * @returns {Number}
@@ -918,7 +918,7 @@ Factory.addGetterSetter(Shape, 'fillAfterStrokeEnabled', false);
  * In rare situations you may want a different behavior. When you have a stroke first then fill on top of it.
  * Especially useful for Text objects.
  * Default is false.
- * @name Konva.Shape#fillAfterStrokeEnabled
+ * @name Pamela.Shape#fillAfterStrokeEnabled
  * @method
  * @param {Boolean} fillAfterStrokeEnabled
  * @returns {Boolean}
@@ -939,7 +939,7 @@ Factory.addGetterSetter(
 
 /**
  * get/set stroke width for hit detection. Default value is "auto", it means it will be equals to strokeWidth
- * @name Konva.Shape#hitStrokeWidth
+ * @name Pamela.Shape#hitStrokeWidth
  * @method
  * @param {Number} hitStrokeWidth
  * @returns {Number}
@@ -961,7 +961,7 @@ Factory.addGetterSetter(Shape, 'strokeHitEnabled', true, getBooleanValidator());
  * of shape will be decreased (by lineWidth / 2). Remember that non closed line with `strokeHitEnabled = false`
  * will be not drawn on hit canvas, that is mean line will no trigger pointer events (like mouseover)
  * Default value is true.
- * @name Konva.Shape#strokeHitEnabled
+ * @name Pamela.Shape#strokeHitEnabled
  * @method
  * @param {Boolean} strokeHitEnabled
  * @returns {Boolean}
@@ -984,7 +984,7 @@ Factory.addGetterSetter(
  * get/set perfectDrawEnabled. If a shape has fill, stroke and opacity you may set `perfectDrawEnabled` to false to improve performance.
  * See http://konvajs.org/docs/performance/Disable_Perfect_Draw.html for more information.
  * Default value is true
- * @name Konva.Shape#perfectDrawEnabled
+ * @name Pamela.Shape#perfectDrawEnabled
  * @method
  * @param {Boolean} perfectDrawEnabled
  * @returns {Boolean}
@@ -1008,7 +1008,7 @@ Factory.addGetterSetter(
  * You may set `shape.shadowForStrokeEnabled(false)`. In this case stroke will no effect shadow.
  * Remember if you set `shadowForStrokeEnabled = false` for non closed line - that line will have no shadow!.
  * Default value is true
- * @name Konva.Shape#shadowForStrokeEnabled
+ * @name Pamela.Shape#shadowForStrokeEnabled
  * @method
  * @param {Boolean} shadowForStrokeEnabled
  * @returns {Boolean}
@@ -1025,7 +1025,7 @@ Factory.addGetterSetter(Shape, 'lineJoin');
 /**
  * get/set line join.  Can be miter, round, or bevel.  The
  *  default is miter
- * @name Konva.Shape#lineJoin
+ * @name Pamela.Shape#lineJoin
  * @method
  * @param {String} lineJoin
  * @returns {String}
@@ -1041,7 +1041,7 @@ Factory.addGetterSetter(Shape, 'lineCap');
 
 /**
  * get/set line cap.  Can be butt, round, or square
- * @name Konva.Shape#lineCap
+ * @name Pamela.Shape#lineCap
  * @method
  * @param {String} lineCap
  * @returns {String}
@@ -1058,7 +1058,7 @@ Factory.addGetterSetter(Shape, 'sceneFunc');
 /**
  * get/set scene draw function. That function is used to draw the shape on a canvas.
  * Also that function will be used to draw hit area of the shape, in case if hitFunc is not defined.
- * @name Konva.Shape#sceneFunc
+ * @name Pamela.Shape#sceneFunc
  * @method
  * @param {Function} drawFunc drawing function
  * @returns {Function}
@@ -1081,7 +1081,7 @@ Factory.addGetterSetter(Shape, 'hitFunc');
 
 /**
  * get/set hit draw function. That function is used to draw custom hit area of a shape.
- * @name Konva.Shape#hitFunc
+ * @name Pamela.Shape#hitFunc
  * @method
  * @param {Function} drawFunc drawing function
  * @returns {Function}
@@ -1103,7 +1103,7 @@ Factory.addGetterSetter(Shape, 'dash');
 
 /**
  * get/set dash array for stroke.
- * @name Konva.Shape#dash
+ * @name Pamela.Shape#dash
  * @method
  * @param {Array} dash
  * @returns {Array}
@@ -1120,7 +1120,7 @@ Factory.addGetterSetter(Shape, 'dashOffset', 0, getNumberValidator());
 
 /**
  * get/set dash offset for stroke.
- * @name Konva.Shape#dash
+ * @name Pamela.Shape#dash
  * @method
  * @param {Number} dash offset
  * @returns {Number}
@@ -1134,7 +1134,7 @@ Factory.addGetterSetter(Shape, 'shadowColor', undefined, getStringValidator());
 
 /**
  * get/set shadow color
- * @name Konva.Shape#shadowColor
+ * @name Pamela.Shape#shadowColor
  * @method
  * @param {String} color
  * @returns {String}
@@ -1159,7 +1159,7 @@ Factory.addGetterSetter(Shape, 'shadowBlur', 0, getNumberValidator());
 
 /**
  * get/set shadow blur
- * @name Konva.Shape#shadowBlur
+ * @name Pamela.Shape#shadowBlur
  * @method
  * @param {Number} blur
  * @returns {Number}
@@ -1175,7 +1175,7 @@ Factory.addGetterSetter(Shape, 'shadowOpacity', 1, getNumberValidator());
 
 /**
  * get/set shadow opacity.  must be a value between 0 and 1
- * @name Konva.Shape#shadowOpacity
+ * @name Pamela.Shape#shadowOpacity
  * @method
  * @param {Number} opacity
  * @returns {Number}
@@ -1191,7 +1191,7 @@ Factory.addComponentsGetterSetter(Shape, 'shadowOffset', ['x', 'y']);
 
 /**
  * get/set shadow offset
- * @name Konva.Shape#shadowOffset
+ * @name Pamela.Shape#shadowOffset
  * @method
  * @param {Object} offset
  * @param {Number} offset.x
@@ -1212,7 +1212,7 @@ Factory.addGetterSetter(Shape, 'shadowOffsetX', 0, getNumberValidator());
 
 /**
  * get/set shadow offset x
- * @name Konva.Shape#shadowOffsetX
+ * @name Pamela.Shape#shadowOffsetX
  * @method
  * @param {Number} x
  * @returns {Number}
@@ -1228,7 +1228,7 @@ Factory.addGetterSetter(Shape, 'shadowOffsetY', 0, getNumberValidator());
 
 /**
  * get/set shadow offset y
- * @name Konva.Shape#shadowOffsetY
+ * @name Pamela.Shape#shadowOffsetY
  * @method
  * @param {Number} y
  * @returns {Number}
@@ -1244,7 +1244,7 @@ Factory.addGetterSetter(Shape, 'fillPatternImage');
 
 /**
  * get/set fill pattern image
- * @name Konva.Shape#fillPatternImage
+ * @name Pamela.Shape#fillPatternImage
  * @method
  * @param {Image} image object
  * @returns {Image}
@@ -1269,7 +1269,7 @@ Factory.addGetterSetter(
 
 /**
  * get/set fill color
- * @name Konva.Shape#fill
+ * @name Pamela.Shape#fill
  * @method
  * @param {String} color
  * @returns {String}
@@ -1297,7 +1297,7 @@ Factory.addGetterSetter(Shape, 'fillPatternX', 0, getNumberValidator());
 
 /**
  * get/set fill pattern x
- * @name Konva.Shape#fillPatternX
+ * @name Pamela.Shape#fillPatternX
  * @method
  * @param {Number} x
  * @returns {Number}
@@ -1312,7 +1312,7 @@ Factory.addGetterSetter(Shape, 'fillPatternY', 0, getNumberValidator());
 
 /**
  * get/set fill pattern y
- * @name Konva.Shape#fillPatternY
+ * @name Pamela.Shape#fillPatternY
  * @method
  * @param {Number} y
  * @returns {Number}
@@ -1327,7 +1327,7 @@ Factory.addGetterSetter(Shape, 'fillLinearGradientColorStops');
 
 /**
  * get/set fill linear gradient color stops
- * @name Konva.Shape#fillLinearGradientColorStops
+ * @name Pamela.Shape#fillLinearGradientColorStops
  * @method
  * @param {Array} colorStops
  * @returns {Array} colorStops
@@ -1344,7 +1344,7 @@ Factory.addGetterSetter(Shape, 'strokeLinearGradientColorStops');
 
 /**
  * get/set stroke linear gradient color stops
- * @name Konva.Shape#strokeLinearGradientColorStops
+ * @name Pamela.Shape#strokeLinearGradientColorStops
  * @method
  * @param {Array} colorStops
  * @returns {Array} colorStops
@@ -1361,7 +1361,7 @@ Factory.addGetterSetter(Shape, 'fillRadialGradientStartRadius', 0);
 
 /**
  * get/set fill radial gradient start radius
- * @name Konva.Shape#fillRadialGradientStartRadius
+ * @name Pamela.Shape#fillRadialGradientStartRadius
  * @method
  * @param {Number} radius
  * @returns {Number}
@@ -1377,7 +1377,7 @@ Factory.addGetterSetter(Shape, 'fillRadialGradientEndRadius', 0);
 
 /**
  * get/set fill radial gradient end radius
- * @name Konva.Shape#fillRadialGradientEndRadius
+ * @name Pamela.Shape#fillRadialGradientEndRadius
  * @method
  * @param {Number} radius
  * @returns {Number}
@@ -1393,7 +1393,7 @@ Factory.addGetterSetter(Shape, 'fillRadialGradientColorStops');
 
 /**
  * get/set fill radial gradient color stops
- * @name Konva.Shape#fillRadialGradientColorStops
+ * @name Pamela.Shape#fillRadialGradientColorStops
  * @method
  * @param {Number} colorStops
  * @returns {Array}
@@ -1410,7 +1410,7 @@ Factory.addGetterSetter(Shape, 'fillPatternRepeat', 'repeat');
 
 /**
  * get/set fill pattern repeat.  Can be 'repeat', 'repeat-x', 'repeat-y', or 'no-repeat'.  The default is 'repeat'
- * @name Konva.Shape#fillPatternRepeat
+ * @name Pamela.Shape#fillPatternRepeat
  * @method
  * @param {String} repeat
  * @returns {String}
@@ -1429,7 +1429,7 @@ Factory.addGetterSetter(Shape, 'fillEnabled', true);
 
 /**
  * get/set fill enabled flag
- * @name Konva.Shape#fillEnabled
+ * @name Pamela.Shape#fillEnabled
  * @method
  * @param {Boolean} enabled
  * @returns {Boolean}
@@ -1448,7 +1448,7 @@ Factory.addGetterSetter(Shape, 'strokeEnabled', true);
 
 /**
  * get/set stroke enabled flag
- * @name Konva.Shape#strokeEnabled
+ * @name Pamela.Shape#strokeEnabled
  * @method
  * @param {Boolean} enabled
  * @returns {Boolean}
@@ -1467,7 +1467,7 @@ Factory.addGetterSetter(Shape, 'shadowEnabled', true);
 
 /**
  * get/set shadow enabled flag
- * @name Konva.Shape#shadowEnabled
+ * @name Pamela.Shape#shadowEnabled
  * @method
  * @param {Boolean} enabled
  * @returns {Boolean}
@@ -1486,7 +1486,7 @@ Factory.addGetterSetter(Shape, 'dashEnabled', true);
 
 /**
  * get/set dash enabled flag
- * @name Konva.Shape#dashEnabled
+ * @name Pamela.Shape#dashEnabled
  * @method
  * @param {Boolean} enabled
  * @returns {Boolean}
@@ -1505,7 +1505,7 @@ Factory.addGetterSetter(Shape, 'strokeScaleEnabled', true);
 
 /**
  * get/set strokeScale enabled flag
- * @name Konva.Shape#strokeScaleEnabled
+ * @name Pamela.Shape#strokeScaleEnabled
  * @method
  * @param {Boolean} enabled
  * @returns {Boolean}
@@ -1525,7 +1525,7 @@ Factory.addGetterSetter(Shape, 'fillPriority', 'color');
 /**
  * get/set fill priority.  can be color, pattern, linear-gradient, or radial-gradient.  The default is color.
  *   This is handy if you want to toggle between different fill types.
- * @name Konva.Shape#fillPriority
+ * @name Pamela.Shape#fillPriority
  * @method
  * @param {String} priority
  * @returns {String}
@@ -1541,7 +1541,7 @@ Factory.addComponentsGetterSetter(Shape, 'fillPatternOffset', ['x', 'y']);
 
 /**
  * get/set fill pattern offset
- * @name Konva.Shape#fillPatternOffset
+ * @name Pamela.Shape#fillPatternOffset
  * @method
  * @param {Object} offset
  * @param {Number} offset.x
@@ -1562,7 +1562,7 @@ Factory.addGetterSetter(Shape, 'fillPatternOffsetX', 0, getNumberValidator());
 
 /**
  * get/set fill pattern offset x
- * @name Konva.Shape#fillPatternOffsetX
+ * @name Pamela.Shape#fillPatternOffsetX
  * @method
  * @param {Number} x
  * @returns {Number}
@@ -1578,7 +1578,7 @@ Factory.addGetterSetter(Shape, 'fillPatternOffsetY', 0, getNumberValidator());
 
 /**
  * get/set fill pattern offset y
- * @name Konva.Shape#fillPatternOffsetY
+ * @name Pamela.Shape#fillPatternOffsetY
  * @method
  * @param {Number} y
  * @returns {Number}
@@ -1594,7 +1594,7 @@ Factory.addComponentsGetterSetter(Shape, 'fillPatternScale', ['x', 'y']);
 
 /**
  * get/set fill pattern scale
- * @name Konva.Shape#fillPatternScale
+ * @name Pamela.Shape#fillPatternScale
  * @method
  * @param {Object} scale
  * @param {Number} scale.x
@@ -1615,7 +1615,7 @@ Factory.addGetterSetter(Shape, 'fillPatternScaleX', 1, getNumberValidator());
 
 /**
  * get/set fill pattern scale x
- * @name Konva.Shape#fillPatternScaleX
+ * @name Pamela.Shape#fillPatternScaleX
  * @method
  * @param {Number} x
  * @returns {Number}
@@ -1631,7 +1631,7 @@ Factory.addGetterSetter(Shape, 'fillPatternScaleY', 1, getNumberValidator());
 
 /**
  * get/set fill pattern scale y
- * @name Konva.Shape#fillPatternScaleY
+ * @name Pamela.Shape#fillPatternScaleY
  * @method
  * @param {Number} y
  * @returns {Number}
@@ -1650,7 +1650,7 @@ Factory.addComponentsGetterSetter(Shape, 'fillLinearGradientStartPoint', [
 
 /**
  * get/set fill linear gradient start point
- * @name Konva.Shape#fillLinearGradientStartPoint
+ * @name Pamela.Shape#fillLinearGradientStartPoint
  * @method
  * @param {Object} startPoint
  * @param {Number} startPoint.x
@@ -1674,7 +1674,7 @@ Factory.addComponentsGetterSetter(Shape, 'strokeLinearGradientStartPoint', [
 
 /**
  * get/set stroke linear gradient start point
- * @name Konva.Shape#strokeLinearGradientStartPoint
+ * @name Pamela.Shape#strokeLinearGradientStartPoint
  * @method
  * @param {Object} startPoint
  * @param {Number} startPoint.x
@@ -1695,7 +1695,7 @@ Factory.addGetterSetter(Shape, 'fillLinearGradientStartPointX', 0);
 
 /**
  * get/set fill linear gradient start point x
- * @name Konva.Shape#fillLinearGradientStartPointX
+ * @name Pamela.Shape#fillLinearGradientStartPointX
  * @method
  * @param {Number} x
  * @returns {Number}
@@ -1711,7 +1711,7 @@ Factory.addGetterSetter(Shape, 'strokeLinearGradientStartPointX', 0);
 
 /**
  * get/set stroke linear gradient start point x
- * @name Konva.Shape#linearLinearGradientStartPointX
+ * @name Pamela.Shape#linearLinearGradientStartPointX
  * @method
  * @param {Number} x
  * @returns {Number}
@@ -1727,7 +1727,7 @@ Factory.addGetterSetter(Shape, 'fillLinearGradientStartPointY', 0);
 
 /**
  * get/set fill linear gradient start point y
- * @name Konva.Shape#fillLinearGradientStartPointY
+ * @name Pamela.Shape#fillLinearGradientStartPointY
  * @method
  * @param {Number} y
  * @returns {Number}
@@ -1742,7 +1742,7 @@ Factory.addGetterSetter(Shape, 'fillLinearGradientStartPointY', 0);
 Factory.addGetterSetter(Shape, 'strokeLinearGradientStartPointY', 0);
 /**
  * get/set stroke linear gradient start point y
- * @name Konva.Shape#strokeLinearGradientStartPointY
+ * @name Pamela.Shape#strokeLinearGradientStartPointY
  * @method
  * @param {Number} y
  * @returns {Number}
@@ -1761,7 +1761,7 @@ Factory.addComponentsGetterSetter(Shape, 'fillLinearGradientEndPoint', [
 
 /**
  * get/set fill linear gradient end point
- * @name Konva.Shape#fillLinearGradientEndPoint
+ * @name Pamela.Shape#fillLinearGradientEndPoint
  * @method
  * @param {Object} endPoint
  * @param {Number} endPoint.x
@@ -1785,7 +1785,7 @@ Factory.addComponentsGetterSetter(Shape, 'strokeLinearGradientEndPoint', [
 
 /**
  * get/set stroke linear gradient end point
- * @name Konva.Shape#strokeLinearGradientEndPoint
+ * @name Pamela.Shape#strokeLinearGradientEndPoint
  * @method
  * @param {Object} endPoint
  * @param {Number} endPoint.x
@@ -1805,7 +1805,7 @@ Factory.addComponentsGetterSetter(Shape, 'strokeLinearGradientEndPoint', [
 Factory.addGetterSetter(Shape, 'fillLinearGradientEndPointX', 0);
 /**
  * get/set fill linear gradient end point x
- * @name Konva.Shape#fillLinearGradientEndPointX
+ * @name Pamela.Shape#fillLinearGradientEndPointX
  * @method
  * @param {Number} x
  * @returns {Number}
@@ -1820,7 +1820,7 @@ Factory.addGetterSetter(Shape, 'fillLinearGradientEndPointX', 0);
 Factory.addGetterSetter(Shape, 'strokeLinearGradientEndPointX', 0);
 /**
  * get/set fill linear gradient end point x
- * @name Konva.Shape#strokeLinearGradientEndPointX
+ * @name Pamela.Shape#strokeLinearGradientEndPointX
  * @method
  * @param {Number} x
  * @returns {Number}
@@ -1835,7 +1835,7 @@ Factory.addGetterSetter(Shape, 'strokeLinearGradientEndPointX', 0);
 Factory.addGetterSetter(Shape, 'fillLinearGradientEndPointY', 0);
 /**
  * get/set fill linear gradient end point y
- * @name Konva.Shape#fillLinearGradientEndPointY
+ * @name Pamela.Shape#fillLinearGradientEndPointY
  * @method
  * @param {Number} y
  * @returns {Number}
@@ -1850,7 +1850,7 @@ Factory.addGetterSetter(Shape, 'fillLinearGradientEndPointY', 0);
 Factory.addGetterSetter(Shape, 'strokeLinearGradientEndPointY', 0);
 /**
  * get/set stroke linear gradient end point y
- * @name Konva.Shape#strokeLinearGradientEndPointY
+ * @name Pamela.Shape#strokeLinearGradientEndPointY
  * @method
  * @param {Number} y
  * @returns {Number}
@@ -1869,7 +1869,7 @@ Factory.addComponentsGetterSetter(Shape, 'fillRadialGradientStartPoint', [
 
 /**
  * get/set fill radial gradient start point
- * @name Konva.Shape#fillRadialGradientStartPoint
+ * @name Pamela.Shape#fillRadialGradientStartPoint
  * @method
  * @param {Object} startPoint
  * @param {Number} startPoint.x
@@ -1889,7 +1889,7 @@ Factory.addComponentsGetterSetter(Shape, 'fillRadialGradientStartPoint', [
 Factory.addGetterSetter(Shape, 'fillRadialGradientStartPointX', 0);
 /**
  * get/set fill radial gradient start point x
- * @name Konva.Shape#fillRadialGradientStartPointX
+ * @name Pamela.Shape#fillRadialGradientStartPointX
  * @method
  * @param {Number} x
  * @returns {Number}
@@ -1904,7 +1904,7 @@ Factory.addGetterSetter(Shape, 'fillRadialGradientStartPointX', 0);
 Factory.addGetterSetter(Shape, 'fillRadialGradientStartPointY', 0);
 /**
  * get/set fill radial gradient start point y
- * @name Konva.Shape#fillRadialGradientStartPointY
+ * @name Pamela.Shape#fillRadialGradientStartPointY
  * @method
  * @param {Number} y
  * @returns {Number}
@@ -1923,7 +1923,7 @@ Factory.addComponentsGetterSetter(Shape, 'fillRadialGradientEndPoint', [
 
 /**
  * get/set fill radial gradient end point
- * @name Konva.Shape#fillRadialGradientEndPoint
+ * @name Pamela.Shape#fillRadialGradientEndPoint
  * @method
  * @param {Object} endPoint
  * @param {Number} endPoint.x
@@ -1943,7 +1943,7 @@ Factory.addComponentsGetterSetter(Shape, 'fillRadialGradientEndPoint', [
 Factory.addGetterSetter(Shape, 'fillRadialGradientEndPointX', 0);
 /**
  * get/set fill radial gradient end point x
- * @name Konva.Shape#fillRadialGradientEndPointX
+ * @name Pamela.Shape#fillRadialGradientEndPointX
  * @method
  * @param {Number} x
  * @returns {Number}
@@ -1958,7 +1958,7 @@ Factory.addGetterSetter(Shape, 'fillRadialGradientEndPointX', 0);
 Factory.addGetterSetter(Shape, 'fillRadialGradientEndPointY', 0);
 /**
  * get/set fill radial gradient end point y
- * @name Konva.Shape#fillRadialGradientEndPointY
+ * @name Pamela.Shape#fillRadialGradientEndPointY
  * @method
  * @param {Number} y
  * @returns {Number}
@@ -1974,10 +1974,10 @@ Factory.addGetterSetter(Shape, 'fillPatternRotation', 0);
 
 /**
  * get/set fill pattern rotation in degrees
- * @name Konva.Shape#fillPatternRotation
+ * @name Pamela.Shape#fillPatternRotation
  * @method
  * @param {Number} rotation
- * @returns {Konva.Shape}
+ * @returns {Pamela.Shape}
  * @example
  * // get fill pattern rotation
  * var patternRotation = shape.fillPatternRotation();

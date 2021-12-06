@@ -16,7 +16,7 @@
     <!-- <script src="https://unpkg.com/konva@7.0.3/konva.min.js"></script> -->
     <script src="http://www.html5canvastutorials.com/lib/stats/stats.js"></script>
     <script defer="defer">
-      Konva.isUnminified = false;
+      Pamela.isUnminified = false;
       // Konva.autoDrawEnabled = trye;
       var lastTime = 0;
 
@@ -42,14 +42,14 @@
       var amount = 10;
       var counter;
 
-      Konva.pixelRatio = 1;
+      Pamela.pixelRatio = 1;
 
-      var stage = new Konva.Stage({
+      var stage = new Pamela.Stage({
         container: 'container',
         width: width - 10,
         height: height - 10,
       });
-      layer = new Konva.Layer({ listening: false });
+      layer = new Pamela.Layer({ listening: false });
       stage.add(layer);
       stats = new Stats();
 
@@ -91,7 +91,7 @@
 
       function _handleTextureLoaded(event) {
         for (var i = 0; i < startBunnyCount; i++) {
-          var bunny = new Konva.Image({
+          var bunny = new Pamela.Image({
             image: wabbitTexture,
             transformsEnabled: 'position',
             x: 10,
@@ -139,7 +139,7 @@
           // add 10 at a time :)
 
           for (var i = 0; i < amount; i++) {
-            var bunny = new Konva.Image({
+            var bunny = new Pamela.Image({
               image: wabbitTexture,
               transformsEnabled: 'position',
               x: 0,
@@ -190,7 +190,7 @@
             y: pos.y,
           });
         }
-        if (!Konva.autoDrawEnabled) {
+        if (!Pamela.autoDrawEnabled) {
           layer.draw();
         }
 

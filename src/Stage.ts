@@ -1,8 +1,8 @@
 import { Util } from './Util';
 import { Factory } from './Factory';
 import { Container, ContainerConfig } from './Container';
-import { Konva } from './Global';
-import { SceneCanvas, HitCanvas } from './Canvas';
+import { Pamela }                     from './Global';
+import { SceneCanvas, HitCanvas }     from './Canvas';
 import { GetSet, Vector2d } from './types';
 import { Shape } from './Shape';
 import { Layer } from './Layer';
@@ -113,7 +113,7 @@ const getEventType = (type) => {
 const getEventsMap = (eventType: string) => {
   const type = getEventType(eventType);
   if (type === 'pointer') {
-    return Konva.pointerEventsEnabled && EVENTS_MAP.pointer;
+    return Pamela.pointerEventsEnabled && EVENTS_MAP.pointer;
   }
   if (type === 'touch') {
     return EVENTS_MAP.touch;
@@ -140,7 +140,7 @@ export const stages: Stage[] = [];
  * Stage constructor.  A stage is used to contain multiple layers
  * @constructor
  * @memberof Konva
- * @augments Konva.Container
+ * @augments Pamela.Container
  * @param {Object} config
  * @param {String|Element} config.container Container selector or DOM element
  * @@nodeParams
@@ -209,7 +209,7 @@ export class Stage extends Container<Layer> {
   /**
    * set container dom element which contains the stage wrapper div element
    * @method
-   * @name Konva.Stage#setContainer
+   * @name Pamela.Stage#setContainer
    * @param {DomElement} container can pass in a dom element or id string
    */
   setContainer(container) {
@@ -246,7 +246,7 @@ export class Stage extends Container<Layer> {
   /**
    * clear all layers
    * @method
-   * @name Konva.Stage#clear
+   * @name Pamela.Stage#clear
    */
   clear() {
     var layers = this.children,
@@ -285,7 +285,7 @@ export class Stage extends Container<Layer> {
    * pointer position doesn't include any transforms (such as scale) of the stage
    * it is just a plain position of pointer relative to top-left corner of the canvas
    * @method
-   * @name Konva.Stage#getPointerPosition
+   * @name Pamela.Stage#getPointerPosition
    * @returns {Vector2d|null}
    */
   getPointerPosition(): Vector2d | null {
@@ -351,11 +351,11 @@ export class Stage extends Container<Layer> {
    * get visible intersection shape. This is the preferred
    *  method for determining if a point intersects a shape or not
    * @method
-   * @name Konva.Stage#getIntersection
+   * @name Pamela.Stage#getIntersection
    * @param {Object} pos
    * @param {Number} pos.x
    * @param {Number} pos.y
-   * @returns {Konva.Node}
+   * @returns {Pamela.Node}
    * @example
    * var shape = stage.getIntersection({x: 50, y: 50});
    */
@@ -417,7 +417,7 @@ export class Stage extends Container<Layer> {
     // draw layer and append canvas to container
     layer.draw();
 
-    if (Konva.isBrowser) {
+    if (Pamela.isBrowser) {
       this.content.appendChild(layer.canvas._canvas);
     }
 
@@ -446,13 +446,13 @@ export class Stage extends Container<Layer> {
   /**
    * returns an array of layers
    * @method
-   * @name Konva.Stage#getLayers
+   * @name Pamela.Stage#getLayers
    */
   getLayers() {
     return this.children;
   }
   _bindContentEvents() {
-    if (!Konva.isBrowser) {
+    if (!Pamela.isBrowser) {
       return;
     }
     EVENTS.forEach(([event, methodName]) => {
@@ -496,7 +496,7 @@ export class Stage extends Container<Layer> {
     this.setPointersPositions(evt);
 
     var targetShape = this._getTargetShape(eventType);
-    var eventsEnabled = !DD.isDragging || Konva.hitOnDragEnabled;
+    var eventsEnabled = !DD.isDragging || Pamela.hitOnDragEnabled;
     if (targetShape && eventsEnabled) {
       targetShape._fireAndBubble(events.pointerout, { evt: evt });
       targetShape._fireAndBubble(events.pointerleave, { evt: evt });
@@ -535,7 +535,7 @@ export class Stage extends Container<Layer> {
       var shape = this.getIntersection(pos);
       DD.justDragged = false;
       // probably we are staring a click
-      Konva['_' + eventType + 'ListenClick'] = true;
+      Pamela['_' + eventType + 'ListenClick'] = true;
 
       // no shape detected? do nothing
       const hasShape = shape && shape.isListening();
@@ -543,7 +543,7 @@ export class Stage extends Container<Layer> {
         return;
       }
 
-      if (Konva.capturePointerEventsEnabled) {
+      if (Pamela.capturePointerEventsEnabled) {
         shape.setPointerCapture(pos.id);
       }
 
@@ -585,7 +585,7 @@ export class Stage extends Container<Layer> {
     }
     this.setPointersPositions(evt);
 
-    var eventsEnabled = !DD.isDragging || Konva.hitOnDragEnabled;
+    var eventsEnabled = !DD.isDragging || Pamela.hitOnDragEnabled;
     if (!eventsEnabled) {
       return;
     }
@@ -672,21 +672,21 @@ export class Stage extends Container<Layer> {
 
       let fireDblClick = false;
       if (
-        Konva['_' + eventType + 'InDblClickWindow'] &&
-        Konva['_' + eventType + 'InDblClickWindowId'] === pointerId
+        Pamela['_' + eventType + 'InDblClickWindow'] &&
+        Pamela['_' + eventType + 'InDblClickWindowId'] === pointerId
       ) {
         fireDblClick = true;
         clearTimeout(this[eventType + 'DblTimeout']);
       } else if (!DD.justDragged) {
         // don't set inDblClickWindow after dragging
-        Konva['_' + eventType + 'InDblClickWindow'] = true;
-        Konva['_' + eventType + 'InDblClickWindowId'] = pointerId;
+        Pamela['_' + eventType + 'InDblClickWindow'] = true;
+        Pamela['_' + eventType + 'InDblClickWindowId'] = pointerId;
         clearTimeout(this[eventType + 'DblTimeout']);
       }
 
       this[eventType + 'DblTimeout'] = setTimeout(function () {
-        Konva['_' + eventType + 'InDblClickWindow'] = false;
-      }, Konva.dblClickWindow);
+        Pamela['_' + eventType + 'InDblClickWindow'] = false;
+      }, Pamela.dblClickWindow);
 
       if (shape && shape.isListening()) {
         triggeredOnShape = true;
@@ -695,7 +695,7 @@ export class Stage extends Container<Layer> {
 
         // detect if click or double click occurred
         if (
-          Konva['_' + eventType + 'ListenClick'] &&
+          Pamela['_' + eventType + 'ListenClick'] &&
           clickStartShape &&
           clickStartShape === shape
         ) {
@@ -708,7 +708,7 @@ export class Stage extends Container<Layer> {
       } else {
         this[eventType + 'ClickEndShape'] = null;
 
-        if (Konva['_' + eventType + 'ListenClick']) {
+        if (Pamela['_' + eventType + 'ListenClick']) {
           this._fire(events.pointerclick, {
             evt: evt,
             target: this,
@@ -737,7 +737,7 @@ export class Stage extends Container<Layer> {
       });
     }
 
-    Konva['_' + eventType + 'ListenClick'] = false;
+    Pamela['_' + eventType + 'ListenClick'] = false;
 
     // always call preventDefault for desktop events because some browsers
     // try to drag and drop the canvas element
@@ -798,7 +798,7 @@ export class Stage extends Container<Layer> {
    * because all internal events are automatically registered. It may be useful if event
    * is triggered outside of the stage, but you still want to use Konva methods to get pointers position.
    * @method
-   * @name Konva.Stage#setPointersPositions
+   * @name Pamela.Stage#setPointersPositions
    * @param {Object} event Event object
    * @example
    *
@@ -888,7 +888,7 @@ export class Stage extends Container<Layer> {
       height: this.height(),
     });
 
-    if (!Konva.isBrowser) {
+    if (!Pamela.isBrowser) {
       return;
     }
     var container = this.container();
@@ -923,8 +923,8 @@ export class Stage extends Container<Layer> {
   /**
    * batch draw
    * @method
-   * @name Konva.Stage#batchDraw
-   * @return {Konva.Stage} this
+   * @name Pamela.Stage#batchDraw
+   * @return {Pamela.Stage} this
    */
   batchDraw() {
     this.getChildren().forEach(function (layer) {
@@ -942,7 +942,7 @@ _registerNode(Stage);
 /**
  * get/set container DOM element
  * @method
- * @name Konva.Stage#container
+ * @name Pamela.Stage#container
  * @returns {DomElement} container
  * @example
  * // get container

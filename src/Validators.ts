@@ -1,5 +1,5 @@
-import { Konva } from './Global';
-import { Util } from './Util';
+import { Pamela } from './Global';
+import { Util }   from './Util';
 
 function _formatValue(val: any) {
   if (Util._isString(val)) {
@@ -34,7 +34,7 @@ export function alphaComponent(val: number) {
 }
 
 export function getNumberValidator() {
-  if (Konva.isUnminified) {
+  if (Pamela.isUnminified) {
     return function <T>(val: T, attr: string): T | void {
       if (!Util._isNumber(val)) {
         Util.warn(
@@ -50,7 +50,7 @@ export function getNumberValidator() {
 }
 
 export function getNumberOrArrayOfNumbersValidator(noOfElements: number) {
-  if (Konva.isUnminified) {
+  if (Pamela.isUnminified) {
     return function <T>(val: T, attr: string): T | void {
       let isNumber = Util._isNumber(val);
       let isValidArray = Util._isArray(val) && val.length == noOfElements;
@@ -70,7 +70,7 @@ export function getNumberOrArrayOfNumbersValidator(noOfElements: number) {
 }
 
 export function getNumberOrAutoValidator() {
-  if (Konva.isUnminified) {
+  if (Pamela.isUnminified) {
     return function <T extends string>(val: T, attr: string): T | void {
       var isNumber = Util._isNumber(val);
       var isAuto = val === 'auto';
@@ -89,7 +89,7 @@ export function getNumberOrAutoValidator() {
 }
 
 export function getStringValidator() {
-  if (Konva.isUnminified) {
+  if (Pamela.isUnminified) {
     return function (val: any, attr: string) {
       if (!Util._isString(val)) {
         Util.warn(
@@ -105,7 +105,7 @@ export function getStringValidator() {
 }
 
 export function getStringOrGradientValidator() {
-  if (Konva.isUnminified) {
+  if (Pamela.isUnminified) {
     return function (val: any, attr: string) {
       const isString = Util._isString(val);
       const isGradient =
@@ -125,7 +125,7 @@ export function getStringOrGradientValidator() {
 }
 
 export function getFunctionValidator() {
-  if (Konva.isUnminified) {
+  if (Pamela.isUnminified) {
     return function (val: any, attr: string) {
       if (!Util._isFunction(val)) {
         Util.warn(
@@ -140,7 +140,7 @@ export function getFunctionValidator() {
   }
 }
 export function getNumberArrayValidator() {
-  if (Konva.isUnminified) {
+  if (Pamela.isUnminified) {
     return function (val: any, attr: string) {
       if (!Util._isArray(val)) {
         Util.warn(
@@ -167,7 +167,7 @@ export function getNumberArrayValidator() {
   }
 }
 export function getBooleanValidator() {
-  if (Konva.isUnminified) {
+  if (Pamela.isUnminified) {
     return function (val: any, attr: string) {
       var isBool = val === true || val === false;
       if (!isBool) {
@@ -183,7 +183,7 @@ export function getBooleanValidator() {
   }
 }
 export function getComponentValidator(components: any) {
-  if (Konva.isUnminified) {
+  if (Pamela.isUnminified) {
     return function (val: any, attr: string) {
       if (!Util.isObject(val)) {
         Util.warn(

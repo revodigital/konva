@@ -1,8 +1,8 @@
 import { Util } from './Util';
 import { Animation } from './Animation';
 import { Node, NodeConfig } from './Node';
-import { Konva } from './Global';
-import { Line } from './shapes/Line';
+import { Pamela }           from './Global';
+import { Line }             from './shapes/Line';
 
 var blacklist = {
     node: 1,
@@ -159,7 +159,7 @@ export interface TweenConfig extends NodeConfig {
 /**
  * Tween constructor.  Tweens enable you to animate a node between the current state and a new state.
  *  You can play, pause, reverse, seek, reset, and finish tweens.  By default, tweens are animated using
- *  a linear easing.  For more tweening options, check out {@link Konva.Easings}
+ *  a linear easing.  For more tweening options, check out {@link Pamela.Easings}
  * @constructor
  * @memberof Konva
  * @example
@@ -216,7 +216,7 @@ export class Tween {
 
     var layers =
       node.getLayer() ||
-      (node instanceof Konva['Stage'] ? node.getLayers() : null);
+      (node instanceof Pamela['Stage'] ? node.getLayers() : null);
     if (!layers) {
       Util.error(
         'Tween constructor have `node` that is not in a layer. Please add node into layer first.'
@@ -461,7 +461,7 @@ export class Tween {
   /**
    * play
    * @method
-   * @name Konva.Tween#play
+   * @name Pamela.Tween#play
    * @returns {Tween}
    */
   play() {
@@ -471,7 +471,7 @@ export class Tween {
   /**
    * reverse
    * @method
-   * @name Konva.Tween#reverse
+   * @name Pamela.Tween#reverse
    * @returns {Tween}
    */
   reverse() {
@@ -481,7 +481,7 @@ export class Tween {
   /**
    * reset
    * @method
-   * @name Konva.Tween#reset
+   * @name Pamela.Tween#reset
    * @returns {Tween}
    */
   reset() {
@@ -502,7 +502,7 @@ export class Tween {
   /**
    * pause
    * @method
-   * @name Konva.Tween#pause
+   * @name Pamela.Tween#pause
    * @returns {Tween}
    */
   pause() {
@@ -512,7 +512,7 @@ export class Tween {
   /**
    * finish
    * @method
-   * @name Konva.Tween#finish
+   * @name Pamela.Tween#finish
    * @returns {Tween}
    */
   finish() {
@@ -522,7 +522,7 @@ export class Tween {
   /**
    * destroy
    * @method
-   * @name Konva.Tween#destroy
+   * @name Pamela.Tween#destroy
    */
   destroy() {
     var nodeId = this.node._id,
@@ -541,7 +541,7 @@ export class Tween {
 }
 
 /**
- * Tween node properties. Shorter usage of {@link Konva.Tween} object.
+ * Tween node properties. Shorter usage of {@link Pamela.Tween} object.
  *
  * @method Konva.Node#to
  * @param {Object} [params] tween params

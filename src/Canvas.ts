@@ -1,7 +1,7 @@
 import { Util } from './Util';
 import { SceneContext, HitContext, Context } from './Context';
-import { Konva } from './Global';
-import { Factory } from './Factory';
+import { Pamela }                            from './Global';
+import { Factory }                           from './Factory';
 import { getNumberValidator } from './Validators';
 
 // calculate pixel ratio
@@ -13,7 +13,7 @@ function getDevicePixelRatio() {
   var canvas = Util.createCanvasElement();
   var context = canvas.getContext('2d') as any;
   _pixelRatio = (function () {
-    var devicePixelRatio = Konva._global.devicePixelRatio || 1,
+    var devicePixelRatio = Pamela._global.devicePixelRatio || 1,
       backingStoreRatio =
         context.webkitBackingStorePixelRatio ||
         context.mozBackingStorePixelRatio ||
@@ -56,7 +56,7 @@ export class Canvas {
     var conf = config || {};
 
     var pixelRatio =
-      conf.pixelRatio || Konva.pixelRatio || getDevicePixelRatio();
+      conf.pixelRatio || Pamela.pixelRatio || getDevicePixelRatio();
 
     this.pixelRatio = pixelRatio;
 
@@ -74,7 +74,7 @@ export class Canvas {
   /**
    * get canvas context
    * @method
-   * @name Konva.Canvas#getContext
+   * @name Pamela.Canvas#getContext
    * @returns {CanvasContext} context
    */
   getContext() {
@@ -121,7 +121,7 @@ export class Canvas {
   /**
    * to data url
    * @method
-   * @name Konva.Canvas#toDataURL
+   * @name Pamela.Canvas#toDataURL
    * @param {String} mimeType
    * @param {Number} quality between 0 and 1 for jpg mime types
    * @returns {String} data url string
@@ -155,7 +155,7 @@ export class Canvas {
  *  ratios of 2 or 3.  Some browsers like Firefox allow you to configure the pixel ratio of the viewport.  Unless otherwise
  *  specificed, the pixel ratio will be defaulted to the actual device pixel ratio.  You can override the device pixel
  *  ratio for special situations, or, if you don't want the pixel ratio to be taken into account, you can set it to 1.
- * @name Konva.Canvas#pixelRatio
+ * @name Pamela.Canvas#pixelRatio
  * @method
  * @param {Number} pixelRatio
  * @returns {Number}

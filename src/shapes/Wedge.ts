@@ -1,6 +1,6 @@
 import { Factory } from '../Factory';
 import { Shape, ShapeConfig } from '../Shape';
-import { Konva } from '../Global';
+import { Pamela }             from '../Global';
 import { getNumberValidator } from '../Validators';
 import { _registerNode } from '../Global';
 
@@ -16,7 +16,7 @@ export interface WedgeConfig extends ShapeConfig {
  * Wedge constructor
  * @constructor
  * @memberof Konva
- * @augments Konva.Shape
+ * @augments Pamela.Shape
  * @param {Object} config
  * @param {Number} config.angle in degrees
  * @param {Number} config.radius
@@ -42,7 +42,7 @@ export class Wedge extends Shape<WedgeConfig> {
       0,
       this.radius(),
       0,
-      Konva.getAngle(this.angle()),
+      Pamela.getAngle(this.angle()),
       this.clockwise()
     );
     context.lineTo(0, 0);
@@ -74,7 +74,7 @@ _registerNode(Wedge);
 
 /**
  * get/set radius
- * @name Konva.Wedge#radius
+ * @name Pamela.Wedge#radius
  * @method
  * @param {Number} radius
  * @returns {Number}
@@ -89,7 +89,7 @@ Factory.addGetterSetter(Wedge, 'radius', 0, getNumberValidator());
 
 /**
  * get/set angle in degrees
- * @name Konva.Wedge#angle
+ * @name Pamela.Wedge#angle
  * @method
  * @param {Number} angle
  * @returns {Number}
@@ -104,7 +104,7 @@ Factory.addGetterSetter(Wedge, 'angle', 0, getNumberValidator());
 
 /**
  * get/set clockwise flag
- * @name Konva.Wedge#clockwise
+ * @name Pamela.Wedge#clockwise
  * @method
  * @param {Number} clockwise
  * @returns {Number}

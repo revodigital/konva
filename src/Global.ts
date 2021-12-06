@@ -11,7 +11,7 @@
  */
 var PI_OVER_180 = Math.PI / 180;
 /**
- * @namespace Konva
+ * @namespace Pamela
  */
 
 function detectBrowser() {
@@ -35,14 +35,14 @@ export const glob: any =
     ? self
     : {};
 
-export const Konva = {
+export const Pamela = {
   _global: glob,
   version: '@@version',
   isBrowser: detectBrowser(),
   isUnminified: /param/.test(function (param: any) {}.toString()),
   dblClickWindow: 400,
   getAngle(angle: number) {
-    return Konva.angleDeg ? angle * PI_OVER_180 : angle;
+    return Pamela.angleDeg ? angle * PI_OVER_180 : angle;
   },
   enableTrace: false,
   pointerEventsEnabled: true,
@@ -153,7 +153,7 @@ export const Konva = {
    * @memberof Konva
    */
   isDragging() {
-    return Konva['DD'].isDragging;
+    return Pamela['DD'].isDragging;
   },
   /**
    * returns whether or not a drag and drop operation is ready, but may
@@ -162,7 +162,7 @@ export const Konva = {
    * @memberof Konva
    */
   isDragReady() {
-    return !!Konva['DD'].node;
+    return !!Pamela['DD'].node;
   },
   // user agent
   document: glob.document,
@@ -174,7 +174,7 @@ export const Konva = {
 };
 
 export const _registerNode = (NodeClass: any) => {
-  Konva[NodeClass.prototype.getClassName()] = NodeClass;
+  Pamela[NodeClass.prototype.getClassName()] = NodeClass;
 };
 
-Konva._injectGlobal(Konva);
+Pamela._injectGlobal(Pamela);

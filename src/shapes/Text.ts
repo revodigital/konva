@@ -1,13 +1,13 @@
 import { Util } from '../Util';
 import { Factory } from '../Factory';
 import { Shape, ShapeConfig } from '../Shape';
-import { Konva } from '../Global';
+import { Pamela }             from '../Global';
 import {
   getNumberValidator,
   getStringValidator,
   getNumberOrAutoValidator,
   getBooleanValidator,
-} from '../Validators';
+}                             from '../Validators';
 import { _registerNode } from '../Global';
 
 import { GetSet } from '../types';
@@ -126,7 +126,7 @@ function checkDefaultFill(config) {
  * Text constructor
  * @constructor
  * @memberof Konva
- * @augments Konva.Shape
+ * @augments Pamela.Shape
  * @param {Object} config
  * @param {String} [config.fontFamily] default is Arial
  * @param {Number} [config.fontSize] in pixels.  Default is 12
@@ -342,7 +342,7 @@ export class Text extends Shape<TextConfig> {
   /**
    * get pure text width without padding
    * @method
-   * @name Konva.Text#getTextWidth
+   * @name Pamela.Text#getTextWidth
    * @returns {Number}
    */
   getTextWidth() {
@@ -359,7 +359,7 @@ export class Text extends Shape<TextConfig> {
    * measure string with the font of current text shape.
    * That method can't handle multiline text.
    * @method
-   * @name Konva.Text#measureSize
+   * @name Pamela.Text#measureSize
    * @param {String} [text] text to measure
    * @returns {Object} { width , height} of measured text
    */
@@ -588,7 +588,7 @@ _registerNode(Text);
 
 /**
  * get/set width of text area, which includes padding.
- * @name Konva.Text#width
+ * @name Pamela.Text#width
  * @method
  * @param {Number} width
  * @returns {Number}
@@ -607,7 +607,7 @@ Factory.overWriteSetter(Text, 'width', getNumberOrAutoValidator());
 
 /**
  * get/set the height of the text area, which takes into account multi-line text, line heights, and padding.
- * @name Konva.Text#height
+ * @name Pamela.Text#height
  * @method
  * @param {Number} height
  * @returns {Number}
@@ -627,7 +627,7 @@ Factory.overWriteSetter(Text, 'height', getNumberOrAutoValidator());
 
 /**
  * get/set font family
- * @name Konva.Text#fontFamily
+ * @name Pamela.Text#fontFamily
  * @method
  * @param {String} fontFamily
  * @returns {String}
@@ -642,7 +642,7 @@ Factory.addGetterSetter(Text, 'fontFamily', 'Arial');
 
 /**
  * get/set font size in pixels
- * @name Konva.Text#fontSize
+ * @name Pamela.Text#fontSize
  * @method
  * @param {Number} fontSize
  * @returns {Number}
@@ -657,7 +657,7 @@ Factory.addGetterSetter(Text, 'fontSize', 12, getNumberValidator());
 
 /**
  * get/set font style.  Can be 'normal', 'italic', or 'bold' or even 'italic bold'.  'normal' is the default.
- * @name Konva.Text#fontStyle
+ * @name Pamela.Text#fontStyle
  * @method
  * @param {String} fontStyle
  * @returns {String}
@@ -673,7 +673,7 @@ Factory.addGetterSetter(Text, 'fontStyle', NORMAL);
 
 /**
  * get/set font variant.  Can be 'normal' or 'small-caps'.  'normal' is the default.
- * @name Konva.Text#fontVariant
+ * @name Pamela.Text#fontVariant
  * @method
  * @param {String} fontVariant
  * @returns {String}
@@ -689,7 +689,7 @@ Factory.addGetterSetter(Text, 'fontVariant', NORMAL);
 
 /**
  * get/set padding
- * @name Konva.Text#padding
+ * @name Pamela.Text#padding
  * @method
  * @param {Number} padding
  * @returns {Number}
@@ -705,7 +705,7 @@ Factory.addGetterSetter(Text, 'padding', 0, getNumberValidator());
 
 /**
  * get/set horizontal align of text.  Can be 'left', 'center', 'right' or 'justify'
- * @name Konva.Text#align
+ * @name Pamela.Text#align
  * @method
  * @param {String} align
  * @returns {String}
@@ -724,7 +724,7 @@ Factory.addGetterSetter(Text, 'align', LEFT);
 
 /**
  * get/set vertical align of text.  Can be 'top', 'middle', 'bottom'.
- * @name Konva.Text#verticalAlign
+ * @name Pamela.Text#verticalAlign
  * @method
  * @param {String} verticalAlign
  * @returns {String}
@@ -740,7 +740,7 @@ Factory.addGetterSetter(Text, 'verticalAlign', TOP);
 
 /**
  * get/set line height.  The default is 1.
- * @name Konva.Text#lineHeight
+ * @name Pamela.Text#lineHeight
  * @method
  * @param {Number} lineHeight
  * @returns {Number}
@@ -758,7 +758,7 @@ Factory.addGetterSetter(Text, 'lineHeight', 1, getNumberValidator());
  * get/set wrap.  Can be "word", "char", or "none". Default is "word".
  * In "word" wrapping any word still can be wrapped if it can't be placed in the required width
  * without breaks.
- * @name Konva.Text#wrap
+ * @name Pamela.Text#wrap
  * @method
  * @param {String} wrap
  * @returns {String}
@@ -776,7 +776,7 @@ Factory.addGetterSetter(Text, 'wrap', WORD);
  * get/set ellipsis. Can be true or false. Default is false. If ellipses is true,
  * Konva will add "..." at the end of the text if it doesn't have enough space to write characters.
  * That is possible only when you limit both width and height of the text
- * @name Konva.Text#ellipsis
+ * @name Pamela.Text#ellipsis
  * @method
  * @param {Boolean} ellipsis
  * @returns {Boolean}
@@ -792,7 +792,7 @@ Factory.addGetterSetter(Text, 'ellipsis', false, getBooleanValidator());
 
 /**
  * set letter spacing property. Default value is 0.
- * @name Konva.Text#letterSpacing
+ * @name Pamela.Text#letterSpacing
  * @method
  * @param {Number} letterSpacing
  */
@@ -801,7 +801,7 @@ Factory.addGetterSetter(Text, 'letterSpacing', 0, getNumberValidator());
 
 /**
  * get/set text
- * @name Konva.Text#text
+ * @name Pamela.Text#text
  * @method
  * @param {String} text
  * @returns {String}
@@ -817,7 +817,7 @@ Factory.addGetterSetter(Text, 'text', '', getStringValidator());
 
 /**
  * get/set text decoration of a text.  Possible values are 'underline', 'line-through' or combination of these values separated by space
- * @name Konva.Text#textDecoration
+ * @name Pamela.Text#textDecoration
  * @method
  * @param {String} textDecoration
  * @returns {String}

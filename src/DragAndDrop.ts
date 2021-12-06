@@ -1,5 +1,5 @@
-import { Konva } from './Global';
-import { Node } from './Node';
+import { Pamela } from './Global';
+import { Node }   from './Node';
 import { Vector2d } from './types';
 import { Util } from './Util';
 
@@ -115,15 +115,15 @@ export const DD = {
       if (elem.dragStatus === 'dragging' || elem.dragStatus === 'stopped') {
         // if a node is stopped manually we still need to reset events:
         DD.justDragged = true;
-        Konva._mouseListenClick = false;
-        Konva._touchListenClick = false;
-        Konva._pointerListenClick = false;
+        Pamela._mouseListenClick = false;
+        Pamela._touchListenClick = false;
+        Pamela._pointerListenClick = false;
         elem.dragStatus = 'stopped';
       }
 
       const drawNode =
         elem.node.getLayer() ||
-        ((elem.node instanceof Konva['Stage'] && elem.node) as any);
+        ((elem.node instanceof Pamela['Stage'] && elem.node) as any);
       if (drawNode) {
         drawNode.batchDraw();
       }
@@ -149,7 +149,7 @@ export const DD = {
   },
 };
 
-if (Konva.isBrowser) {
+if (Pamela.isBrowser) {
   window.addEventListener('mouseup', DD._endDragBefore, true);
   window.addEventListener('touchend', DD._endDragBefore, true);
 

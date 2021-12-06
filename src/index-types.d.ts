@@ -27,7 +27,7 @@ import { Sepia } from './filters/Sepia';
 import { Solarize } from './filters/Solarize';
 import { Threshold } from './filters/Threshold';
 
-declare namespace Konva {
+declare namespace Pamela {
   export let enableTrace: number;
   export let pixelRatio: number;
   export let autoDrawEnabled: boolean;
@@ -177,4 +177,4 @@ declare namespace Konva {
   };
 }
 
-export default Konva;
+export default Pamela;

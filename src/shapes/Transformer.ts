@@ -4,8 +4,8 @@ import { Node } from '../Node';
 import { Shape } from '../Shape';
 import { Rect } from './Rect';
 import { Group } from '../Group';
-import { ContainerConfig } from '../Container';
-import { Konva } from '../Global';
+import { ContainerConfig }                         from '../Container';
+import { Pamela }                                  from '../Global';
 import { getBooleanValidator, getNumberValidator } from '../Validators';
 import { _registerNode } from '../Global';
 
@@ -89,7 +89,7 @@ var ANGLES = {
   'bottom-right': 135,
 };
 
-const TOUCH_DEVICE = 'ontouchstart' in Konva._global;
+const TOUCH_DEVICE = 'ontouchstart' in Pamela._global;
 
 function getCursor(anchorName, rad) {
   if (anchorName === 'rotater') {
@@ -181,7 +181,7 @@ function rotateAroundCenter(shape: Box, deltaRad: number) {
 function getSnap(snaps: Array<number>, newRotationRad: number, tol: number) {
   let snapped = newRotationRad;
   for (let i = 0; i < snaps.length; i++) {
-    const angle = Konva.getAngle(snaps[i]);
+    const angle = Pamela.getAngle(snaps[i]);
 
     const absDiff = Math.abs(angle - newRotationRad) % (Math.PI * 2);
     const dif = Math.min(absDiff, Math.PI * 2 - absDiff);
@@ -261,8 +261,8 @@ export class Transformer extends Group {
   /**
    * alias to `tr.nodes([shape])`/ This method is deprecated and will be removed soon.
    * @method
-   * @name Konva.Transformer#attachTo
-   * @returns {Konva.Transformer}
+   * @name Pamela.Transformer#attachTo
+   * @returns {Pamela.Transformer}
    * @example
    * transformer.attachTo(shape);
    */
@@ -369,7 +369,7 @@ export class Transformer extends Group {
   /**
    * return the name of current active anchor
    * @method
-   * @name Konva.Transformer#getActiveAnchor
+   * @name Pamela.Transformer#getActiveAnchor
    * @returns {String | Null}
    * @example
    * transformer.getActiveAnchor();
@@ -380,8 +380,8 @@ export class Transformer extends Group {
   /**
    * detach transformer from an attached node
    * @method
-   * @name Konva.Transformer#detach
-   * @returns {Konva.Transformer}
+   * @name Pamela.Transformer#detach
+   * @returns {Pamela.Transformer}
    * @example
    * transformer.detach();
    */
@@ -419,7 +419,7 @@ export class Transformer extends Group {
     var dy = rect.y * absScale.y - node.offsetY() * absScale.y;
 
     const rotation =
-      (Konva.getAngle(node.getAbsoluteRotation()) + Math.PI * 2) %
+      (Pamela.getAngle(node.getAbsoluteRotation()) + Math.PI * 2) %
       (Math.PI * 2);
 
     const box = {
@@ -429,7 +429,7 @@ export class Transformer extends Group {
       height: rect.height * absScale.y,
       rotation: rotation,
     };
-    return rotateAroundPoint(box, -Konva.getAngle(rot), {
+    return rotateAroundPoint(box, -Pamela.getAngle(rot), {
       x: 0,
       y: 0,
     });
@@ -468,7 +468,7 @@ export class Transformer extends Group {
     });
 
     const tr = new Transform();
-    tr.rotate(-Konva.getAngle(this.rotation()));
+    tr.rotate(-Pamela.getAngle(this.rotation()));
 
     var minX: number, minY: number, maxX: number, maxY: number;
     totalPoints.forEach(function (point) {
@@ -490,7 +490,7 @@ export class Transformer extends Group {
       y: p.y,
       width: maxX - minX,
       height: maxY - minY,
-      rotation: Konva.getAngle(this.rotation()),
+      rotation: Pamela.getAngle(this.rotation()),
     };
     // const shapes = this.nodes().map(node => {
     //   return this.__getNodeShape(node);
@@ -551,7 +551,7 @@ export class Transformer extends Group {
 
     // add hover styling
     anchor.on('mouseenter', () => {
-      var rad = Konva.getAngle(this.rotation());
+      var rad = Pamela.getAngle(this.rotation());
       var cursor = getCursor(name, rad);
       anchor.getStage().content &&
         (anchor.getStage().content.style.cursor = cursor);
@@ -693,10 +693,10 @@ export class Transformer extends Group {
         delta -= Math.PI;
       }
 
-      var oldRotation = Konva.getAngle(this.rotation());
+      var oldRotation = Pamela.getAngle(this.rotation());
       const newRotation = oldRotation + delta;
 
-      const tol = Konva.getAngle(this.rotationSnapTolerance());
+      const tol = Pamela.getAngle(this.rotationSnapTolerance());
       const snappedRot = getSnap(this.rotationSnaps(), newRotation, tol);
 
       const diff = snappedRot - attrs.rotation;
@@ -881,7 +881,7 @@ export class Transformer extends Group {
         y: y,
         width: width,
         height: height,
-        rotation: Konva.getAngle(this.rotation()),
+        rotation: Pamela.getAngle(this.rotation()),
       },
       e
     );
@@ -930,7 +930,7 @@ export class Transformer extends Group {
 
     const allowNegativeScale = this.flipEnabled();
     var t = new Transform();
-    t.rotate(Konva.getAngle(this.rotation()));
+    t.rotate(Pamela.getAngle(this.rotation()));
     if (
       this._movingAnchorName &&
       newAttrs.width < 0 &&
@@ -1073,7 +1073,7 @@ export class Transformer extends Group {
    * force update of Konva.Transformer.
    * Use it when you updated attached Konva.Group and now you need to reset transformer size
    * @method
-   * @name Konva.Transformer#forceUpdate
+   * @name Pamela.Transformer#forceUpdate
    */
   forceUpdate() {
     this._resetTransformCache();
@@ -1183,7 +1183,7 @@ export class Transformer extends Group {
   /**
    * determine if transformer is in active transform
    * @method
-   * @name Konva.Transformer#isTransforming
+   * @name Pamela.Transformer#isTransforming
    * @returns {Boolean}
    */
   isTransforming() {
@@ -1192,7 +1192,7 @@ export class Transformer extends Group {
   /**
    * Stop active transform action
    * @method
-   * @name Konva.Transformer#stopTransform
+   * @name Pamela.Transformer#stopTransform
    * @returns {Boolean}
    */
   stopTransform() {
@@ -1273,7 +1273,7 @@ _registerNode(Transformer);
 
 /**
  * get/set enabled handlers
- * @name Konva.Transformer#enabledAnchors
+ * @name Pamela.Transformer#enabledAnchors
  * @method
  * @param {Array} array
  * @returns {Array}
@@ -1293,7 +1293,7 @@ Factory.addGetterSetter(
 
 /**
  * get/set flip enabled
- * @name Konva.Transformer#flipEnabled
+ * @name Pamela.Transformer#flipEnabled
  * @method
  * @param {Boolean} flag
  * @returns {Boolean}
@@ -1313,7 +1313,7 @@ Factory.addGetterSetter(
 
 /**
  * get/set resize ability. If false it will automatically hide resizing handlers
- * @name Konva.Transformer#resizeEnabled
+ * @name Pamela.Transformer#resizeEnabled
  * @method
  * @param {Array} array
  * @returns {Array}
@@ -1327,7 +1327,7 @@ Factory.addGetterSetter(
 Factory.addGetterSetter(Transformer, 'resizeEnabled', true);
 /**
  * get/set anchor size. Default is 10
- * @name Konva.Transformer#validateAnchors
+ * @name Pamela.Transformer#validateAnchors
  * @method
  * @param {Number} 10
  * @returns {Number}
@@ -1342,7 +1342,7 @@ Factory.addGetterSetter(Transformer, 'anchorSize', 10, getNumberValidator());
 
 /**
  * get/set ability to rotate.
- * @name Konva.Transformer#rotateEnabled
+ * @name Pamela.Transformer#rotateEnabled
  * @method
  * @param {Boolean} enabled
  * @returns {Boolean}
@@ -1357,7 +1357,7 @@ Factory.addGetterSetter(Transformer, 'rotateEnabled', true);
 
 /**
  * get/set rotation snaps angles.
- * @name Konva.Transformer#rotationSnaps
+ * @name Pamela.Transformer#rotationSnaps
  * @method
  * @param {Array} array
  * @returns {Array}
@@ -1372,7 +1372,7 @@ Factory.addGetterSetter(Transformer, 'rotationSnaps', []);
 
 /**
  * get/set distance for rotation handler
- * @name Konva.Transformer#rotateAnchorOffset
+ * @name Pamela.Transformer#rotateAnchorOffset
  * @method
  * @param {Number} offset
  * @returns {Number}
@@ -1392,7 +1392,7 @@ Factory.addGetterSetter(
 
 /**
  * get/set distance for rotation tolerance
- * @name Konva.Transformer#rotationSnapTolerance
+ * @name Pamela.Transformer#rotationSnapTolerance
  * @method
  * @param {Number} tolerance
  * @returns {Number}
@@ -1412,7 +1412,7 @@ Factory.addGetterSetter(
 
 /**
  * get/set visibility of border
- * @name Konva.Transformer#borderEnabled
+ * @name Pamela.Transformer#borderEnabled
  * @method
  * @param {Boolean} enabled
  * @returns {Boolean}
@@ -1427,7 +1427,7 @@ Factory.addGetterSetter(Transformer, 'borderEnabled', true);
 
 /**
  * get/set anchor stroke color
- * @name Konva.Transformer#anchorStroke
+ * @name Pamela.Transformer#anchorStroke
  * @method
  * @param {Boolean} enabled
  * @returns {Boolean}
@@ -1442,7 +1442,7 @@ Factory.addGetterSetter(Transformer, 'anchorStroke', 'rgb(0, 161, 255)');
 
 /**
  * get/set anchor stroke width
- * @name Konva.Transformer#anchorStrokeWidth
+ * @name Pamela.Transformer#anchorStrokeWidth
  * @method
  * @param {Boolean} enabled
  * @returns {Boolean}
@@ -1462,7 +1462,7 @@ Factory.addGetterSetter(
 
 /**
  * get/set anchor fill color
- * @name Konva.Transformer#anchorFill
+ * @name Pamela.Transformer#anchorFill
  * @method
  * @param {Boolean} enabled
  * @returns {Boolean}
@@ -1477,7 +1477,7 @@ Factory.addGetterSetter(Transformer, 'anchorFill', 'white');
 
 /**
  * get/set anchor corner radius
- * @name Konva.Transformer#anchorCornerRadius
+ * @name Pamela.Transformer#anchorCornerRadius
  * @method
  * @param {Number} enabled
  * @returns {Number}
@@ -1497,7 +1497,7 @@ Factory.addGetterSetter(
 
 /**
  * get/set border stroke color
- * @name Konva.Transformer#borderStroke
+ * @name Pamela.Transformer#borderStroke
  * @method
  * @param {Boolean} enabled
  * @returns {Boolean}
@@ -1512,7 +1512,7 @@ Factory.addGetterSetter(Transformer, 'borderStroke', 'rgb(0, 161, 255)');
 
 /**
  * get/set border stroke width
- * @name Konva.Transformer#borderStrokeWidth
+ * @name Pamela.Transformer#borderStrokeWidth
  * @method
  * @param {Boolean} enabled
  * @returns {Boolean}
@@ -1532,7 +1532,7 @@ Factory.addGetterSetter(
 
 /**
  * get/set border dash array
- * @name Konva.Transformer#borderDash
+ * @name Pamela.Transformer#borderDash
  * @method
  * @param {Boolean} enabled
  * @returns {Boolean}
@@ -1547,7 +1547,7 @@ Factory.addGetterSetter(Transformer, 'borderDash');
 
 /**
  * get/set should we keep ratio while resize anchors at corners
- * @name Konva.Transformer#keepRatio
+ * @name Pamela.Transformer#keepRatio
  * @method
  * @param {Boolean} keepRatio
  * @returns {Boolean}
@@ -1562,7 +1562,7 @@ Factory.addGetterSetter(Transformer, 'keepRatio', true);
 
 /**
  * get/set should we resize relative to node's center?
- * @name Konva.Transformer#centeredScaling
+ * @name Pamela.Transformer#centeredScaling
  * @method
  * @param {Boolean} centeredScaling
  * @returns {Boolean}
@@ -1578,7 +1578,7 @@ Factory.addGetterSetter(Transformer, 'centeredScaling', false);
 /**
  * get/set should we think about stroke while resize? Good to use when a shape has strokeScaleEnabled = false
  * default is false
- * @name Konva.Transformer#ignoreStroke
+ * @name Pamela.Transformer#ignoreStroke
  * @method
  * @param {Boolean} ignoreStroke
  * @returns {Boolean}
@@ -1593,7 +1593,7 @@ Factory.addGetterSetter(Transformer, 'ignoreStroke', false);
 
 /**
  * get/set padding
- * @name Konva.Transformer#padding
+ * @name Pamela.Transformer#padding
  * @method
  * @param {Number} padding
  * @returns {Number}
@@ -1611,8 +1611,8 @@ Factory.addGetterSetter(Transformer, 'node');
 /**
  * get/set attached nodes of the Transformer. Transformer will adapt to their size and listen to their events
  * @method
- * @name Konva.Transformer#nodes
- * @returns {Konva.Node}
+ * @name Pamela.Transformer#nodes
+ * @returns {Pamela.Node}
  * @example
  * // get
  * const nodes = transformer.nodes();
@@ -1631,7 +1631,7 @@ Factory.addGetterSetter(Transformer, 'nodes');
 
 /**
  * get/set bounding box function. **IMPORTANT!** boundBondFunc operates in absolute coordinates.
- * @name Konva.Transformer#boundBoxFunc
+ * @name Pamela.Transformer#boundBoxFunc
  * @method
  * @param {Function} func
  * @returns {Function}
@@ -1653,7 +1653,7 @@ Factory.addGetterSetter(Transformer, 'boundBoxFunc');
 
 /**
  * get/set dragging func for transformer anchors
- * @name Konva.Transformer#anchorDragBoundFunc
+ * @name Pamela.Transformer#anchorDragBoundFunc
  * @method
  * @param {Function} func
  * @returns {Function}
@@ -1674,7 +1674,7 @@ Factory.addGetterSetter(Transformer, 'anchorDragBoundFunc');
 /**
  * using this setting you can drag transformer group by dragging empty space between attached nodes
  * shouldOverdrawWholeArea = true may temporary disable all events on attached nodes
- * @name Konva.Transformer#shouldOverdrawWholeArea
+ * @name Pamela.Transformer#shouldOverdrawWholeArea
  * @method
  * @param {Boolean} shouldOverdrawWholeArea
  * @returns {Boolean}
@@ -1690,7 +1690,7 @@ Factory.addGetterSetter(Transformer, 'shouldOverdrawWholeArea', false);
 /**
  * If you have just one attached node to Transformer it will set its initial rotation to the rotation of that node.
  * In some cases you may need to set a different rotation.
- * @name Konva.Transformer#useSingleNodeRotation
+ * @name Pamela.Transformer#useSingleNodeRotation
  * @method
  * @param {Boolean} useSingleNodeRotation
  * @returns {Boolean}

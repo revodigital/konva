@@ -1,5 +1,5 @@
-import { Util } from './Util';
-import { Konva } from './Global';
+import { Util }   from './Util';
+import { Pamela } from './Global';
 import { Canvas } from './Canvas';
 import { Shape } from './Shape';
 
@@ -120,7 +120,7 @@ export class Context {
     this.canvas = canvas;
     this._context = canvas._canvas.getContext('2d') as CanvasRenderingContext2D;
 
-    if (Konva.enableTrace) {
+    if (Pamela.enableTrace) {
       this.traceArr = [];
       this._enableTrace();
     }
@@ -129,8 +129,8 @@ export class Context {
   /**
    * fill shape
    * @method
-   * @name Konva.Context#fillShape
-   * @param {Konva.Shape} shape
+   * @name Pamela.Context#fillShape
+   * @param {Pamela.Shape} shape
    */
   fillShape(shape: Shape) {
     if (shape.fillEnabled()) {
@@ -144,8 +144,8 @@ export class Context {
   /**
    * stroke shape
    * @method
-   * @name Konva.Context#strokeShape
-   * @param {Konva.Shape} shape
+   * @name Pamela.Context#strokeShape
+   * @param {Pamela.Shape} shape
    */
   strokeShape(shape: Shape) {
     if (shape.hasStroke()) {
@@ -160,8 +160,8 @@ export class Context {
   /**
    * fill then stroke
    * @method
-   * @name Konva.Context#fillStrokeShape
-   * @param {Konva.Shape} shape
+   * @name Pamela.Context#fillStrokeShape
+   * @param {Pamela.Shape} shape
    */
   fillStrokeShape(shape: Shape) {
     if (shape.attrs.fillAfterStrokeEnabled) {
@@ -235,7 +235,7 @@ export class Context {
   /**
    * reset canvas context transform
    * @method
-   * @name Konva.Context#reset
+   * @name Pamela.Context#reset
    */
   reset() {
     var pixelRatio = this.getCanvas().getPixelRatio();
@@ -244,8 +244,8 @@ export class Context {
   /**
    * get canvas wrapper
    * @method
-   * @name Konva.Context#getCanvas
-   * @returns {Konva.Canvas}
+   * @name Pamela.Context#getCanvas
+   * @returns {Pamela.Canvas}
    */
   getCanvas() {
     return this.canvas;
@@ -253,7 +253,7 @@ export class Context {
   /**
    * clear canvas
    * @method
-   * @name Konva.Context#clear
+   * @name Pamela.Context#clear
    * @param {Object} [bounds]
    * @param {Number} [bounds.x]
    * @param {Number} [bounds.y]
@@ -305,7 +305,7 @@ export class Context {
   /**
    * arc function.
    * @method
-   * @name Konva.Context#arc
+   * @name Pamela.Context#arc
    */
   arc(a0, a1, a2, a3, a4, a5) {
     this._context.arc(a0, a1, a2, a3, a4, a5);
@@ -313,7 +313,7 @@ export class Context {
   /**
    * arcTo function.
    * @method
-   * @name Konva.Context#arcTo
+   * @name Pamela.Context#arcTo
    */
   arcTo(a0, a1, a2, a3, a4) {
     this._context.arcTo(a0, a1, a2, a3, a4);
@@ -321,7 +321,7 @@ export class Context {
   /**
    * beginPath function.
    * @method
-   * @name Konva.Context#beginPath
+   * @name Pamela.Context#beginPath
    */
   beginPath() {
     this._context.beginPath();
@@ -329,7 +329,7 @@ export class Context {
   /**
    * bezierCurveTo function.
    * @method
-   * @name Konva.Context#bezierCurveTo
+   * @name Pamela.Context#bezierCurveTo
    */
   bezierCurveTo(a0, a1, a2, a3, a4, a5) {
     this._context.bezierCurveTo(a0, a1, a2, a3, a4, a5);
@@ -337,7 +337,7 @@ export class Context {
   /**
    * clearRect function.
    * @method
-   * @name Konva.Context#clearRect
+   * @name Pamela.Context#clearRect
    */
   clearRect(a0, a1, a2, a3) {
     this._context.clearRect(a0, a1, a2, a3);
@@ -345,7 +345,7 @@ export class Context {
   /**
    * clip function.
    * @method
-   * @name Konva.Context#clip
+   * @name Pamela.Context#clip
    */
   clip() {
     this._context.clip();
@@ -353,7 +353,7 @@ export class Context {
   /**
    * closePath function.
    * @method
-   * @name Konva.Context#closePath
+   * @name Pamela.Context#closePath
    */
   closePath() {
     this._context.closePath();
@@ -361,7 +361,7 @@ export class Context {
   /**
    * createImageData function.
    * @method
-   * @name Konva.Context#createImageData
+   * @name Pamela.Context#createImageData
    */
   createImageData(a0, a1) {
     var a = arguments;
@@ -374,7 +374,7 @@ export class Context {
   /**
    * createLinearGradient function.
    * @method
-   * @name Konva.Context#createLinearGradient
+   * @name Pamela.Context#createLinearGradient
    */
   createLinearGradient(a0, a1, a2, a3) {
     return this._context.createLinearGradient(a0, a1, a2, a3);
@@ -382,7 +382,7 @@ export class Context {
   /**
    * createPattern function.
    * @method
-   * @name Konva.Context#createPattern
+   * @name Pamela.Context#createPattern
    */
   createPattern(a0, a1) {
     return this._context.createPattern(a0, a1);
@@ -390,7 +390,7 @@ export class Context {
   /**
    * createRadialGradient function.
    * @method
-   * @name Konva.Context#createRadialGradient
+   * @name Pamela.Context#createRadialGradient
    */
   createRadialGradient(a0, a1, a2, a3, a4, a5) {
     return this._context.createRadialGradient(a0, a1, a2, a3, a4, a5);
@@ -398,7 +398,7 @@ export class Context {
   /**
    * drawImage function.
    * @method
-   * @name Konva.Context#drawImage
+   * @name Pamela.Context#drawImage
    */
   drawImage(
     a0: CanvasImageSource,
@@ -425,7 +425,7 @@ export class Context {
   /**
    * ellipse function.
    * @method
-   * @name Konva.Context#ellipse
+   * @name Pamela.Context#ellipse
    */
   ellipse(
     a0: number,
@@ -442,7 +442,7 @@ export class Context {
   /**
    * isPointInPath function.
    * @method
-   * @name Konva.Context#isPointInPath
+   * @name Pamela.Context#isPointInPath
    */
   isPointInPath(x, y) {
     return this._context.isPointInPath(x, y);
@@ -450,7 +450,7 @@ export class Context {
   /**
    * fill function.
    * @method
-   * @name Konva.Context#fill
+   * @name Pamela.Context#fill
    */
   fill(path2d?: Path2D) {
     if (path2d) {
@@ -462,7 +462,7 @@ export class Context {
   /**
    * fillRect function.
    * @method
-   * @name Konva.Context#fillRect
+   * @name Pamela.Context#fillRect
    */
   fillRect(x, y, width, height) {
     this._context.fillRect(x, y, width, height);
@@ -470,7 +470,7 @@ export class Context {
   /**
    * strokeRect function.
    * @method
-   * @name Konva.Context#strokeRect
+   * @name Pamela.Context#strokeRect
    */
   strokeRect(x, y, width, height) {
     this._context.strokeRect(x, y, width, height);
@@ -478,7 +478,7 @@ export class Context {
   /**
    * fillText function.
    * @method
-   * @name Konva.Context#fillText
+   * @name Pamela.Context#fillText
    */
   fillText(text: string, x: number, y: number, maxWidth?: number) {
     if (maxWidth) {
@@ -490,7 +490,7 @@ export class Context {
   /**
    * measureText function.
    * @method
-   * @name Konva.Context#measureText
+   * @name Pamela.Context#measureText
    */
   measureText(text) {
     return this._context.measureText(text);
@@ -498,7 +498,7 @@ export class Context {
   /**
    * getImageData function.
    * @method
-   * @name Konva.Context#getImageData
+   * @name Pamela.Context#getImageData
    */
   getImageData(a0, a1, a2, a3) {
     return this._context.getImageData(a0, a1, a2, a3);
@@ -506,7 +506,7 @@ export class Context {
   /**
    * lineTo function.
    * @method
-   * @name Konva.Context#lineTo
+   * @name Pamela.Context#lineTo
    */
   lineTo(a0, a1) {
     this._context.lineTo(a0, a1);
@@ -514,7 +514,7 @@ export class Context {
   /**
    * moveTo function.
    * @method
-   * @name Konva.Context#moveTo
+   * @name Pamela.Context#moveTo
    */
   moveTo(a0, a1) {
     this._context.moveTo(a0, a1);
@@ -522,7 +522,7 @@ export class Context {
   /**
    * rect function.
    * @method
-   * @name Konva.Context#rect
+   * @name Pamela.Context#rect
    */
   rect(a0, a1, a2, a3) {
     this._context.rect(a0, a1, a2, a3);
@@ -530,7 +530,7 @@ export class Context {
   /**
    * putImageData function.
    * @method
-   * @name Konva.Context#putImageData
+   * @name Pamela.Context#putImageData
    */
   putImageData(a0, a1, a2) {
     this._context.putImageData(a0, a1, a2);
@@ -538,7 +538,7 @@ export class Context {
   /**
    * quadraticCurveTo function.
    * @method
-   * @name Konva.Context#quadraticCurveTo
+   * @name Pamela.Context#quadraticCurveTo
    */
   quadraticCurveTo(a0, a1, a2, a3) {
     this._context.quadraticCurveTo(a0, a1, a2, a3);
@@ -546,7 +546,7 @@ export class Context {
   /**
    * restore function.
    * @method
-   * @name Konva.Context#restore
+   * @name Pamela.Context#restore
    */
   restore() {
     this._context.restore();
@@ -554,7 +554,7 @@ export class Context {
   /**
    * rotate function.
    * @method
-   * @name Konva.Context#rotate
+   * @name Pamela.Context#rotate
    */
   rotate(a0) {
     this._context.rotate(a0);
@@ -562,7 +562,7 @@ export class Context {
   /**
    * save function.
    * @method
-   * @name Konva.Context#save
+   * @name Pamela.Context#save
    */
   save() {
     this._context.save();
@@ -570,7 +570,7 @@ export class Context {
   /**
    * scale function.
    * @method
-   * @name Konva.Context#scale
+   * @name Pamela.Context#scale
    */
   scale(a0, a1) {
     this._context.scale(a0, a1);
@@ -578,7 +578,7 @@ export class Context {
   /**
    * setLineDash function.
    * @method
-   * @name Konva.Context#setLineDash
+   * @name Pamela.Context#setLineDash
    */
   setLineDash(a0) {
     // works for Chrome and IE11
@@ -597,7 +597,7 @@ export class Context {
   /**
    * getLineDash function.
    * @method
-   * @name Konva.Context#getLineDash
+   * @name Pamela.Context#getLineDash
    */
   getLineDash() {
     return this._context.getLineDash();
@@ -605,7 +605,7 @@ export class Context {
   /**
    * setTransform function.
    * @method
-   * @name Konva.Context#setTransform
+   * @name Pamela.Context#setTransform
    */
   setTransform(a0, a1, a2, a3, a4, a5) {
     this._context.setTransform(a0, a1, a2, a3, a4, a5);
@@ -613,7 +613,7 @@ export class Context {
   /**
    * stroke function.
    * @method
-   * @name Konva.Context#stroke
+   * @name Pamela.Context#stroke
    */
   stroke(path2d?: Path2D) {
     if (path2d) {
@@ -625,7 +625,7 @@ export class Context {
   /**
    * strokeText function.
    * @method
-   * @name Konva.Context#strokeText
+   * @name Pamela.Context#strokeText
    */
   strokeText(a0, a1, a2, a3) {
     this._context.strokeText(a0, a1, a2, a3);
@@ -633,7 +633,7 @@ export class Context {
   /**
    * transform function.
    * @method
-   * @name Konva.Context#transform
+   * @name Pamela.Context#transform
    */
   transform(a0, a1, a2, a3, a4, a5) {
     this._context.transform(a0, a1, a2, a3, a4, a5);
@@ -641,7 +641,7 @@ export class Context {
   /**
    * translate function.
    * @method
-   * @name Konva.Context#translate
+   * @name Pamela.Context#translate
    */
   translate(a0, a1) {
     this._context.translate(a0, a1);

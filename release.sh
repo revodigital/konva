@@ -67,7 +67,6 @@ cd ../konva-site
 
 echo "replace CDN links"
 
-
 find source themes/hexo3/layout react-demos vue-demos main-demo -name "*.json" -exec perl -i -pe "s|${old_version}|${new_version}|g" {} + >/dev/null
 find source themes/hexo3/layout react-demos vue-demos main-demo -name "*.html" -exec perl -i -pe "s|${old_version}|${new_version}|g" {} + >/dev/null
 

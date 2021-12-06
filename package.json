@@ -1,7 +1,7 @@
 {
-  "name": "konva",
-  "version": "8.3.0",
-  "author": "Anton Lavrenov",
+  "name": "@revodigital/pamela",
+  "version": "1.0.3",
+  "author": "Revo Digital",
   "files": [
     "README.md",
     "konva.js",
@@ -99,14 +99,6 @@
   "prettier": {
     "singleQuote": true
   },
-  "bugs": {
-    "url": "https://github.com/konvajs/konva/issues"
-  },
-  "homepage": "http://konvajs.org/",
   "readmeFilename": "README.md",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/konvajs/konva.git"
-  },
   "license": "MIT"
 }

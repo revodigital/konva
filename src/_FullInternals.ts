@@ -1,6 +1,6 @@
 // we need to import core of the Konva and then extend it with all additional objects
 
-import { Konva as Core } from './_CoreInternals';
+import { Pamela as Core } from './_CoreInternals';
 
 // shapes
 import { Arc } from './shapes/Arc';
@@ -42,7 +42,7 @@ import { Sepia } from './filters/Sepia';
 import { Solarize } from './filters/Solarize';
 import { Threshold } from './filters/Threshold';
 
-export const Konva = Core.Util._assign(Core, {
+export const Pamela = Core.Util._assign(Core, {
   Arc,
   Arrow,
   Circle,
