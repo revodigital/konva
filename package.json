@@ -1,13 +1,12 @@
 {
   "name": "@revodigital/pamela",
-  "version": "1.0.4",
+  "version": "1.0.8",
   "author": "Revo Digital",
   "files": [
     "README.md",
-    "konva.js",
-    "konva.min.js",
     "lib",
-    "cmj"
+    "index.d.ts",
+    "index.js"
   ],
   "main": "./lib/index-node.js",
   "browser": "./lib/index.js",
