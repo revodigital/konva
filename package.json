@@ -16,48 +16,19 @@
     "start": "npm run test:watch",
     "compile": "npm run clean && npm run tsc && cp ./src/index-types.d.ts ./lib/index-types.d.ts && npm run rollup && cp ./package-cmj.json ./cmj/package.json && cp ./src/index-types.d.ts ./cmj/index-types.d.ts",
     "build": "npm run compile && cp ./src/index-types.d.ts ./lib && gulp build && node ./rename-imports.mjs",
-    "test:import": "npm run build  && node ./test/import-test.cjs &&node ./test/import-test.mjs",
+    "test:import": "npm run build  && node ./test/import-test.cjs && node ./test/import-test.mjs",
     "test": "npm run test:browser && npm run test:node",
     "test:build": "parcel build ./test/unit-tests.html --dist-dir test-build --target none --public-url ./ --no-source-maps",
     "test:browser": "npm run test:build && mocha-headless-chrome -f ./test-build/unit-tests.html -a disable-web-security",
     "test:node": "env TS_NODE_PROJECT=\"./test/tsconfig.json\" mocha -r ts-node/register test/unit/**/*.ts --exit && npm run test:import",
     "test:watch": "rm -rf ./parcel-cache && parcel serve ./test/unit-tests.html ./test/manual-tests.html ./test/sandbox.html",
-    "tsc": "tsc --removeComments && tsc --build ./tsconfig-cmj.json",
-    "rollup": "rollup -c",
-    "clean": "rm -rf ./lib && rm -rf ./types && rm -rf ./cmj && rm -rf ./test-build",
-    "watch": "rollup -c -w",
+    "tsc": "tsc && tsc --build ./tsconfig-cmj.json",
+    "clean": "rm -rf ./lib ./types ./test-build ./cmj",
     "size": "size-limit"
   },
   "targets": {
     "none": {}
   },
-  "funding": [
-    {
-      "type": "patreon",
-      "url": "https://www.patreon.com/lavrton"
-    },
-    {
-      "type": "opencollective",
-      "url": "https://opencollective.com/konva"
-    },
-    {
-      "type": "github",
-      "url": "https://github.com/sponsors/lavrton"
-    }
-  ],
-  "size-limit": [
-    {
-      "limit": "45 KB",
-      "path": "./lib/index.js"
-    },
-    {
-      "limit": "26 KB",
-      "path": "./lib/Core.js"
-    },
-    {
-      "path": "./konva.min.js"
-    }
-  ],
   "dependencies": {
     "canvas": "^2.8.0",
     "gulp": "^4.0.2",
@@ -95,7 +66,9 @@
     "canvas",
     "animations",
     "graphic",
-    "html5"
+    "html5",
+    "pamela",
+    "graphic"
   ],
   "prettier": {
     "singleQuote": true
