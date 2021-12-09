@@ -1,0 +1,162 @@
+/*
+ * Copyright (c) 2021-2021. Revo Digital
+ * ---
+ * Author: gabriele
+ * File: TableLayout.ts
+ * Project: pamela
+ * Committed last: 2021/12/9 @ 1822
+ * ---
+ * Description:
+ */
+
+import { CellLayout }                   from './celllayout';
+import { CellPosition }                 from './cellposition';
+import { ColumnRowLayoutConfiguration } from './columnrowlayoutconfiguration';
+import { Invalidconfiguration }         from './invalidconfiguration';
+import { PointRectangle }               from './pointrectangle';
+import { RowLayout }                    from './rowlayout';
+
+export interface ITableLayout {
+  rowsPercentages: number[];
+  columnPercentages: number[];
+  tableWidth: number;
+  tableHeight: number;
+}
+
+/**
+ * Represents the layout of a table
+ */
+export class TableLayout implements ITableLayout {
+  columnPercentages: number[];
+  rowsPercentages: number[];
+  tableHeight: number;
+  tableWidth: number;
+  /**
+   * Rectangle with the 4 edges of this shape
+   * @private
+   */
+  edgesRectangle = new PointRectangle();
+
+  /**
+   * Creates a new TableLayout.
+   */
+  constructor() {
+    this.columnPercentages = [];
+    this.rowsPercentages = [];
+    this.tableHeight = 0;
+    this.tableWidth = 0;
+    this.edgesRectangle = new PointRectangle();
+  }
+
+  /**
+   * Returns the column percentage of a specific column
+   * @param columnIndex Column index
+   */
+  getColumnPercentage(columnIndex: number): number {
+    return this.columnPercentages[columnIndex];
+  }
+
+  /**
+   *  Returns the effective column width applying the percentage to the real value
+   * @param columnIndex
+   */
+  getEffectiveColumnWidth(columnIndex: number): number {
+    return (this.columnPercentages[columnIndex] / 100) * this.tableWidth;
+  }
+
+  /**
+   * Returns the effective row height applying the percentage to the real value
+   * @param rowIndex The row index
+   */
+  getEffectiveRowHeight(rowIndex: number): number {
+    return (this.rowsPercentages[rowIndex] / 100) * this.tableHeight;
+  }
+
+  /**
+   * Returns the percentage of a specific row
+   * @param rowIndex Row index
+   */
+  getRowPercentage(rowIndex: number): number {
+    return this.rowsPercentages[rowIndex];
+  }
+
+  /**
+   * Returns the layout of a specific cell
+   * @param position The position of the cell
+   */
+  getCellLayout(position: CellPosition): CellLayout {
+    return new CellLayout(this.rowsPercentages[position.rowIndex],
+      this.columnPercentages[position.columnIndex]);
+  }
+
+  /**
+   * Calculates the number of rows in this layout
+   */
+  getRowsCount(): number {
+    return this.rowsPercentages.length;
+  }
+
+  /**
+   * Calculates the number of columns in this layout
+   */
+  getColumnsCount(): number {
+    return this.columnPercentages.length;
+  }
+
+  /**
+   * Initializes this layout with a set of fixed-size columns and rows
+   * @param cols Column number
+   * @param rows Rows number
+   */
+  initLayout(cols: number, rows: number): void {
+    if (cols < 0 || rows < 0) throw new Error('Invalid column or row count. ');
+
+    const rPerc = 100 / rows;
+    const cPerc = 100 / cols;
+
+    // Create arrays
+    this.columnPercentages = new Array(cols).fill(cPerc, 0, cols + 1);
+    this.rowsPercentages = new Array(rows).fill(rPerc, 0, rows + 1);
+  }
+
+  /**
+   * Calculates a layout of a table starting from his configuration
+   * @param config The configuration
+   */
+  parseFromConfiguration(config: ColumnRowLayoutConfiguration): void {
+    // Validate values
+    if (!config.isValid()) throw new Invalidconfiguration(config);
+
+    // Calculate auto width for columns
+    const autoRows = config.rowGroup.getAutoRowCount();
+    const autoCols = config.columnGroup.getAutoColCount();
+
+    const rowAutoWidth = (100 - config.rowGroup.getRowsTotalSpace()) / (config.rowGroup.getAutoRowCount());
+    const colAutoWidth = (100 - config.columnGroup.getColsTotalSpace()) / config.columnGroup.getAutoColCount();
+
+    const columnsCount = config.columnGroup.columns.length;
+    const rowsCount = config.rowGroup.rows.length;
+
+    // Fill array
+    this.columnPercentages = [];
+    for (let x = 0; x < columnsCount; x++) {
+      if (config.columnGroup.columns[x].widthIsAuto())
+        this.columnPercentages.push(colAutoWidth);
+      else this.columnPercentages.push(config.columnGroup.columns[x].width as number);
+    }
+
+    this.rowsPercentages = [];
+    for (let y = 0; y < rowsCount; y++) {
+      let row: RowLayout;
+
+      if (y === 0) row = config.rowGroup.rows[0];
+      else row = config.rowGroup.rows[y];
+
+      if (row.heightIsAuto())
+        this.rowsPercentages.push(rowAutoWidth);
+      else this.rowsPercentages.push(config.rowGroup.rows[y].height as number);
+    }
+
+    // Calculate auto height for rows
+  }
+}

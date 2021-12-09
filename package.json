@@ -31,9 +31,9 @@
   },
   "dependencies": {
     "canvas": "^2.8.0",
-    "gulp": "^4.0.2",
     "chai": "4.3.4",
     "filehound": "^1.17.5",
+    "gulp": "^4.0.2",
     "gulp-concat": "^2.6.1",
     "gulp-connect": "^5.7.0",
     "gulp-exec": "^5.0.0",
@@ -43,7 +43,8 @@
     "gulp-typescript": "^5.0.1",
     "gulp-uglify": "^3.0.2",
     "gulp-uglify-es": "^3.0.0",
-    "gulp-util": "^3.0.8"
+    "gulp-util": "^3.0.8",
+    "jsbarcode": "^3.11.5"
   },
   "devDependencies": {
     "@parcel/transformer-image": "2.0.0-beta.2",
