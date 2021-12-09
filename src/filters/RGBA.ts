@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2021. Revo Digital
+ * ---
+ * Author: gabriele
+ * File: RGBA.ts
+ * Project: pamela
+ * Committed last: 2021/12/5 @ 141
+ * ---
+ * Description:
+ */
+
 import { Factory } from '../Factory';
 import { Node, Filter } from '../Node';
 import { RGBComponent } from '../Validators';

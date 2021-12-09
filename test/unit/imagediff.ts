@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2021. Revo Digital
+ * ---
+ * Author: gabriele
+ * File: imagediff.ts
+ * Project: pamela
+ * Committed last: 2021/12/5 @ 141
+ * ---
+ * Description:
+ */
+
 import { createCanvas, Canvas } from 'canvas';
 
 var TYPE_ARRAY = /\[object Array\]/i,

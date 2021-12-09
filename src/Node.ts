@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2021. Revo Digital
+ * ---
+ * Author: gabriele
+ * File: Node.ts
+ * Project: pamela
+ * Committed last: 2021/12/6 @ 159
+ * ---
+ * Description:
+ */
+
 import { Util, Transform } from './Util';
 import { Factory } from './Factory';
 import { SceneCanvas, HitCanvas, Canvas } from './Canvas';

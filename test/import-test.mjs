@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2021. Revo Digital
+ * ---
+ * Author: gabriele
+ * File: import-test.mjs
+ * Project: pamela
+ * Committed last: 2021/12/5 @ 141
+ * ---
+ * Description:
+ */
+
 function equal(val1, val2, message) {
   if (val1 !== val2) {
     throw new Error('Not passed: ' + message);

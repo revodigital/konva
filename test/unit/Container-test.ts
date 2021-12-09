@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2021. Revo Digital
+ * ---
+ * Author: gabriele
+ * File: Container-test.ts
+ * Project: pamela
+ * Committed last: 2021/12/5 @ 141
+ * ---
+ * Description:
+ */
+
 import { assert } from 'chai';
 import { Shape } from '../../src/Shape.js';
 import { addStage, Konva, compareLayers, isNode } from './test-utils';

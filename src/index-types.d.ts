@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2021. Revo Digital
+ * ---
+ * Author: gabriele
+ * File: index-types.d.ts
+ * Project: pamela
+ * Committed last: 2021/12/6 @ 159
+ * ---
+ * Description:
+ */
+
 // the purpose of that file is very stupid
 // I was not able to generate correct typescript declarations from the main source code
 // because right now Konva is an object. Typescript can not define types from object like this:

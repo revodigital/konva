@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2021. Revo Digital
+ * ---
+ * Author: gabriele
+ * File: _FullInternals.ts
+ * Project: pamela
+ * Committed last: 2021/12/6 @ 155
+ * ---
+ * Description:
+ */
+
 // we need to import core of the Konva and then extend it with all additional objects
 
 import { Pamela as Core } from './_CoreInternals';

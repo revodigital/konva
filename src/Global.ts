@@ -1,13 +1,12 @@
 /*
- * Konva JavaScript Framework v@@version
- * http://konvajs.org/
- * Licensed under the MIT
- * Date: @@date
- *
- * Original work Copyright (C) 2011 - 2013 by Eric Rowell (KineticJS)
- * Modified work Copyright (C) 2014 - present by Anton Lavrenov (Konva)
- *
- * @license
+ * Copyright (c) 2021. Revo Digital
+ * ---
+ * Author: gabriele
+ * File: Global.ts
+ * Project: pamela
+ * Committed last: 2021/12/6 @ 159
+ * ---
+ * Description:
  */
 var PI_OVER_180 = Math.PI / 180;
 /**
