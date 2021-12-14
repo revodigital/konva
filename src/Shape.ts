@@ -9,9 +9,9 @@
  * Description:
  */
 
-import { Pamela }          from './Global';
-import { Transform, Util } from './Util';
-import { Factory } from './Factory';
+import { Pamela }           from './Global';
+import { Transform, Util }  from './Util';
+import { Factory }          from './Factory';
 import { Node, NodeConfig } from './Node';
 import {
   getNumberValidator,
@@ -19,13 +19,13 @@ import {
   getStringValidator,
   getBooleanValidator,
   getStringOrGradientValidator,
-} from './Validators';
+}                           from './Validators';
 
 import { Context, SceneContext } from './Context';
-import { _registerNode } from './Global';
-import * as PointerEvents from './PointerEvents';
+import { _registerNode }         from './Global';
+import * as PointerEvents        from './PointerEvents';
 
-import { GetSet, Vector2d } from './types';
+import { GetSet, Vector2d }       from './types';
 import { HitCanvas, SceneCanvas } from './Canvas';
 
 // hack from here https://stackoverflow.com/questions/52667959/what-is-the-purpose-of-bivariancehack-in-typescript-types/52668133#52668133
@@ -106,6 +106,7 @@ var linearGradient = 'linearGradient';
 var radialGradient = 'radialGradient';
 
 let dummyContext: CanvasRenderingContext2D;
+
 function getDummyContext(): CanvasRenderingContext2D {
   if (dummyContext) {
     return dummyContext;
@@ -125,12 +126,15 @@ export const shapes: { [key: string]: Shape } = {};
 function _fillFunc(context) {
   context.fill();
 }
+
 function _strokeFunc(context) {
   context.stroke();
 }
+
 function _fillFuncHit(context) {
   context.fill();
 }
+
 function _strokeFuncHit(context) {
   context.stroke();
 }
@@ -181,9 +185,7 @@ function _clearRadialGradientCache() {
  *   }
  *});
  */
-export class Shape<
-  Config extends ShapeConfig = ShapeConfig
-> extends Node<Config> {
+export class Shape<Config extends ShapeConfig = ShapeConfig> extends Node<Config> {
   _centroid: boolean;
   colorKey: string;
 
@@ -191,6 +193,15 @@ export class Shape<
   _strokeFunc: (ctx: Context) => void;
   _fillFuncHit: (ctx: Context) => void;
   _strokeFuncHit: (ctx: Context) => void;
+
+  /**
+   * Function called on init of this shape, receives initial configuration
+   * and performs basic default options applying.
+   * @param config Shape configuration
+   */
+  _initFunc(config?: Config) {
+    // nothing
+  };
 
   constructor(config?: Config) {
     super(config);
@@ -206,6 +217,10 @@ export class Shape<
 
     this.colorKey = key;
     shapes[key] = this;
+
+    // Call init function
+    if (this._initFunc)
+      this._initFunc(config);
   }
 
   getContext() {
@@ -214,6 +229,7 @@ export class Shape<
     );
     return this.getLayer().getContext();
   }
+
   getCanvas() {
     Util.warn('shape.getCanvas() method is deprecated. Please do not use it.');
     return this.getLayer().getCanvas();
@@ -226,6 +242,7 @@ export class Shape<
   getHitFunc() {
     return this.attrs.hitFunc || this['_hitFunc'];
   }
+
   /**
    * returns whether or not a shadow will be rendered
    * @method
@@ -235,6 +252,7 @@ export class Shape<
   hasShadow() {
     return this._getCache(HAS_SHADOW, this._hasShadow);
   }
+
   _hasShadow() {
     return (
       this.shadowEnabled() &&
@@ -247,9 +265,11 @@ export class Shape<
       )
     );
   }
+
   _getFillPattern() {
     return this._getCache(patternImage, this.__getFillPattern);
   }
+
   __getFillPattern() {
     if (this.fillPatternImage()) {
       var ctx = getDummyContext();
@@ -282,9 +302,11 @@ export class Shape<
       return pattern;
     }
   }
+
   _getLinearGradient() {
     return this._getCache(linearGradient, this.__getLinearGradient);
   }
+
   __getLinearGradient() {
     var colorStops = this.fillLinearGradientColorStops();
     if (colorStops) {
@@ -305,6 +327,7 @@ export class Shape<
   _getRadialGradient() {
     return this._getCache(radialGradient, this.__getRadialGradient);
   }
+
   __getRadialGradient() {
     var colorStops = this.fillRadialGradientColorStops();
     if (colorStops) {
@@ -328,9 +351,11 @@ export class Shape<
       return grd;
     }
   }
+
   getShadowRGBA() {
     return this._getCache(SHADOW_RGBA, this._getShadowRGBA);
   }
+
   _getShadowRGBA() {
     if (this.hasShadow()) {
       var rgba = Util.colorToRGBA(this.shadowColor());
@@ -347,6 +372,7 @@ export class Shape<
       );
     }
   }
+
   /**
    * returns whether or not the shape will be filled
    * @method
@@ -376,6 +402,7 @@ export class Shape<
       }
     );
   }
+
   /**
    * returns whether or not the shape will be stroked
    * @method
@@ -407,6 +434,7 @@ export class Shape<
     //   // this.getStrokeRadialGradientColorStops()
     // );
   }
+
   hasHitStroke() {
     const width = this.hitStrokeWidth();
 
@@ -419,6 +447,7 @@ export class Shape<
     // and we have some value from width
     return this.strokeEnabled() && !!width;
   }
+
   /**
    * determines if point is in the shape, regardless if other shapes are on top of it.  Note: because
    *  this method clears a temporary canvas and then redraws the shape, it performs very poorly if executed many times
@@ -453,6 +482,7 @@ export class Shape<
     delete this.colorKey;
     return this;
   }
+
   // why do we need buffer canvas?
   // it give better result when a shape has
   // stroke with fill and with some opacity
@@ -485,6 +515,7 @@ export class Shape<
     }
     return false;
   }
+
   setStrokeHitEnabled(val: number) {
     Util.warn(
       'strokeHitEnabled property is deprecated. Please use hitStrokeWidth instead.'
@@ -495,6 +526,7 @@ export class Shape<
       this.hitStrokeWidth(0);
     }
   }
+
   getStrokeHitEnabled() {
     if (this.hitStrokeWidth() === 0) {
       return false;
@@ -502,6 +534,7 @@ export class Shape<
       return true;
     }
   }
+
   /**
    * return self rectangle (x, y, width, height) of shape.
    * This method are not taken into account transformation and styles.
@@ -523,6 +556,7 @@ export class Shape<
       height: size.height,
     };
   }
+
   getClientRect(config: ShapeGetClientRectConfig = {}) {
     const skipTransform = config.skipTransform;
 
@@ -572,6 +606,7 @@ export class Shape<
     }
     return rect;
   }
+
   drawScene(can?: SceneCanvas, top?: Node) {
     // basically there are 3 drawing modes
     // 1 - simple drawing when nothing is cached.
@@ -658,6 +693,7 @@ export class Shape<
     context.restore();
     return this;
   }
+
   drawHit(can?: HitCanvas, top?: Node, skipDragCheck = false) {
     if (!this.shouldDrawHit(top, skipDragCheck)) {
       return this;
@@ -701,6 +737,7 @@ export class Shape<
     context.restore();
     return this;
   }
+
   /**
    * draw hit graph using the cached scene canvas
    * @method
