@@ -9,8 +9,8 @@
  * Description:
  */
 
-import { Table } from '../../src/shapes/Table';
-import { Stage } from '../../src/Stage';
+import { Table }           from '../../src/shapes/Table';
+import { Stage }           from '../../src/Stage';
 import { Layer }           from '../../src/Layer';
 import { MyShape }         from '../../src/shapes/Testme';
 import { TEST_ELEMENT_ID } from '../global/global-defs';
@@ -24,16 +24,19 @@ before(() => {
 });
 
 describe('All tests about tables', () => {
-  it('Should correctly instantiate this table', () => {
+  it('Should correctly instantiate this table and store properties', () => {
     const s = new Table({
+      headerHeight: 'auto',
+      width: 200,
+      height: 300,
       header: [
         {
-          width: 40
+          width: 'auto'
         }
       ],
       rows: [
         {
-          height: 30,
+          height: 'auto',
           data: [],
         }
       ]
@@ -41,6 +44,8 @@ describe('All tests about tables', () => {
 
     expect(s.rows().length).to.be.eq(1);
     expect(s.header().length).to.be.eq(1);
+    expect(s.height()).to.be.eq(300);
+    expect(s.width()).to.be.eq(200);
   });
 
   it('Should correctly draw this table', () => {
@@ -49,20 +54,26 @@ describe('All tests about tables', () => {
 
       const s = new Stage({
         container: root.get()[0] as any,
-        width: 300,
-        height: 300
+        width: 800,
+        height: 800
       });
 
       const l = new Layer();
       const m = new Table({
+        headerHeight: 'auto',
+        width: 300,
+        height: 300,
+        x: 20,
+        y: 30,
         header: [
           {
-            width: 40
+            width: 'auto',
+            text: 'ciao'
           }
         ],
         rows: [
           {
-            height: 30,
+            height: 'auto',
             data: [],
           }
         ]
