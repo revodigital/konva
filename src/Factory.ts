@@ -9,18 +9,44 @@
  * Description:
  */
 
-import { Util } from './Util';
+import { Util }                  from './Util';
 import { getComponentValidator } from './Validators';
 
-var GET = 'get',
-  SET = 'set';
+/**
+ * Prefix for creating getter methods
+ */
+export const GET = 'get';
 
+/**
+ * Prefix for creating setter methods
+ */
+export const SET = 'set';
+
+/**
+ * Contains useful methods for adding getters / setters
+ */
 export const Factory = {
-  addGetterSetter(constructor, attr, def?, validator?, after?) {
+
+  /**
+   * Adds a getter and a setter for a specific attribute of a class
+   * @param constructor Constructor to add to
+   * @param attr Attribute to operate on
+   * @param def Default value
+   * @param validator Validator function
+   * @param after Function to execute after value set / get
+   */
+  addGetterSetter<Type>(constructor: any, attr: string, def?: Type, validator?: (val: Type) => boolean, after?: (ths: any) => void) {
     Factory.addGetter(constructor, attr, def);
     Factory.addSetter(constructor, attr, validator, after);
     Factory.addOverloadedGetterSetter(constructor, attr);
   },
+
+  /**
+   * Adds a getter for a specific attribute in format 'get<Attr>'
+   * @param constructor Class to add to
+   * @param attr Attribute
+   * @param def Default value
+   */
   addGetter(constructor, attr, def?) {
     var method = GET + Util._capitalize(attr);
 
@@ -32,14 +58,29 @@ export const Factory = {
       };
   },
 
-  addSetter(constructor, attr, validator?, after?) {
+  /**
+   * Adds a setter to a class for a specific attribute
+   * @param constructor Constructor class
+   * @param attr Attribute to set
+   * @param validator validator function
+   * @param after
+   */
+  addSetter<T>(constructor: any, attr: string, validator?: (val: T) => boolean, after?) {
     var method = SET + Util._capitalize(attr);
 
     if (!constructor.prototype[method]) {
       Factory.overWriteSetter(constructor, attr, validator, after);
     }
   },
-  overWriteSetter(constructor, attr, validator?, after?) {
+
+  /**
+   * Overwrites the setter for a specific attribute
+   * @param constructor
+   * @param attr
+   * @param validator
+   * @param after
+   */
+  overWriteSetter<T>(constructor: any, attr: string, validator?: (val: T) => boolean, after?) {
     var method = SET + Util._capitalize(attr);
     constructor.prototype[method] = function (val) {
       if (validator && val !== undefined && val !== null) {
@@ -151,10 +192,10 @@ export const Factory = {
         method.apply(this, arguments);
         Util.error(
           '"' +
-            oldMethodName +
-            '" method is deprecated and will be removed soon. Use ""' +
-            newMethodName +
-            '" instead.'
+          oldMethodName +
+          '" method is deprecated and will be removed soon. Use ""' +
+          newMethodName +
+          '" instead.'
         );
       }
 
