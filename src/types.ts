@@ -11,7 +11,16 @@
 
 export interface GetSet<Type, This> {
   (): Type;
+
   (v: Type): This;
+}
+
+export interface Set<Type, This> {
+  (v: Type): This;
+}
+
+export interface Get<Type> {
+  (): Type;
 }
 
 export interface Vector2d {
