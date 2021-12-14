@@ -21,8 +21,12 @@ import { Factory }                               from '../Factory';
 import { TableLayout }                           from './TableLayout';
 import {
   ColumnRowLayoutConfiguration
-}                                                from './columnrowlayoutconfiguration';
-import { PointRectangle }                        from './pointrectangle';
+}                           from './columnrowlayoutconfiguration';
+import { PointRectangle2D } from '../common/PointRectangle2D';
+import { Cell }             from './cell';
+import { CellPosition }         from './cellposition';
+import { Point2D }              from '../common/Point2D';
+import { Invalidconfiguration } from './invalidconfiguration';
 
 interface TableConfig extends ShapeConfig {
   header: IColumn[];
@@ -79,33 +83,33 @@ export class Table extends Shape<TableConfig> {
    * Adds the header row to the rows
    * @private
    */
-  private _addHeaderRow(): void {
+  private _getEffectiveRows(): Row[] {
     // Copy array
     const temp = Array.from(this.rows());
     const rowsData = this.header().map((col) => {
       return col.text;
     }) as string[];
 
-    this.rows([new Row({
+    return [new Row({
       height: this.headerHeight(),
       data: rowsData,
       fill: this.headerFill(), ...this.headerText()
-    }), ...temp]);
+    }), ...temp];
   }
 
   /**
    * Calculates the layout of this table, including rows and columns.
    * @private
    */
-  private _calculateLayout(): TableLayout {
+  private _calculateLayout(rows: Row[]): TableLayout {
     // Calculate edges positions
     let layout = new TableLayout();
     // Add a row for the header and generate internal values
 
     layout.parseFromConfiguration(ColumnRowLayoutConfiguration.fromColRowConfig(
       this.header(),
-      this.rows()));
-    layout.edgesRectangle = PointRectangle.calculateFromCenter(this.width(),
+      rows));
+    layout.edgesRectangle = PointRectangle2D.calculateFromStart(this.width(),
       this.height());
     layout.tableHeight = this.height();
     layout.tableWidth = this.width();
@@ -114,10 +118,13 @@ export class Table extends Shape<TableConfig> {
   }
 
   _sceneFunc(context: Context) {
-    this._addHeaderRow();
+
+    const rows = this._getEffectiveRows();
 
     // Calculate layout
-    const layout = this._calculateLayout();
+    const layout = this._calculateLayout(rows);
+
+    this._renderContent(layout, rows, context._context);
 
     this._renderTableBorders(layout, context._context);
   }
@@ -132,17 +139,65 @@ export class Table extends Shape<TableConfig> {
     ctx.lineTo(layout.tableWidth, layout.tableHeight);
     ctx.lineTo(0, layout.tableHeight);
     ctx.lineTo(0, 0);
-    // ctx.lineTo(layout.edgesRectangle.bottomRight.x,
-    //   layout.edgesRectangle.bottomRight.y);
-    // ctx.lineTo(layout.edgesRectangle.bottomLeft.x,
-    //   layout.edgesRectangle.bottomLeft.y);
-    // ctx.lineTo(layout.edgesRectangle.topLeft.x,
-    //   layout.edgesRectangle.topLeft.y);
     ctx.closePath();
 
     ctx.strokeStyle = this.externalBorder().color;
     ctx.lineWidth = this.externalBorder().width;
     ctx.stroke();
+  }
+
+  /**
+   * Renders the content of this table (effective data)
+   * @param ctx The drawing context
+   * @param layout Content layout
+   * @private
+   */
+  private _renderContent(layout: TableLayout, rows: Row[], ctx: CanvasRenderingContext2D): void {
+    // Drawing start point
+    let startingPoint = new Point2D(layout.edgesRectangle.topLeft.x,
+      layout.edgesRectangle.topLeft.y);
+
+    console.log('Layout rows: ',
+      layout.getRowsCount(),
+      ' ',
+      JSON.stringify(layout));
+    for (let row = 0; row < layout.getRowsCount(); row++) {
+      for (let col = 0; col < layout.getColumnsCount(); col++) {
+        // Create cell layout
+        let cellLayout = layout.getCellLayout(new CellPosition(row, col));
+
+        cellLayout.startPoint = startingPoint;
+        const cellRect = cellLayout.calculateLayout(this.height(),
+          this.width());
+
+        // Draw cell
+        let cellContent: string;
+        let cellConf: TextConfiguration;
+
+        const rowConfiguration = rows[row];
+
+        cellContent = rowConfiguration.data[col];
+        cellConf = rows[row];
+
+        const cell = new Cell({
+            content: cellContent,
+            edges: cellRect,
+            ...cellConf,
+            border: this.internalBorder()
+          },
+          (col === (layout.getColumnsCount() - 1)),
+          (row === (layout.getRowsCount() - 1)), this.externalBorder());
+        cell._render(ctx);
+
+        // Increment point
+        startingPoint = new Point2D(startingPoint.x + cellLayout.getEffectiveWidth(
+          this.width()), startingPoint.y);
+      }
+
+      // Increment point
+      startingPoint.y += layout.getEffectiveRowHeight(row);
+      startingPoint.x = layout.edgesRectangle.topLeft.x;
+    }
   }
 }
 

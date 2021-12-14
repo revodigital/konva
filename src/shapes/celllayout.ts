@@ -9,8 +9,8 @@
  * Description: Implements the CellLayout class
  */
 
-import { PointRectangle } from './pointrectangle';
-import { Point }          from '../common/Point';
+import { PointRectangle2D } from '../common/PointRectangle2D';
+import { Point2D }          from '../common/Point2D';
 
 export interface ICelllayout {
   widthPercentage: number;
@@ -23,7 +23,7 @@ export interface ICelllayout {
 export class CellLayout implements ICelllayout {
   heightPercentage: number;
   widthPercentage: number;
-  startPoint: Point;
+  startPoint: Point2D;
 
   /**
    * Creates a new CellLayout
@@ -31,10 +31,10 @@ export class CellLayout implements ICelllayout {
    * @param widthPerc Percentage of width
    * @param startPoint TopLeft point of the cell
    */
-  constructor(heightPerc: number, widthPerc: number, startPoint?: Point) {
+  constructor(heightPerc: number, widthPerc: number, startPoint?: Point2D) {
     this.heightPercentage = heightPerc;
     this.widthPercentage = widthPerc;
-    this.startPoint = startPoint || new Point(0, 0);
+    this.startPoint = startPoint || new Point2D(0, 0);
   }
 
   /**
@@ -42,13 +42,13 @@ export class CellLayout implements ICelllayout {
    * @param tableHeight
    * @param tableWidth
    */
-  calculateLayout(tableHeight: number, tableWidth: number): PointRectangle {
+  calculateLayout(tableHeight: number, tableWidth: number): PointRectangle2D {
     const effectiveWidth = (this.widthPercentage / 100) * tableWidth;
     const effectiveHeight = (this.heightPercentage / 100) * tableHeight;
 
-    let rect = new PointRectangle();
+    let rect = new PointRectangle2D();
     rect.topLeft = this.startPoint;
-    rect.bottomRight = new Point(rect.topLeft.x + effectiveWidth, rect.topLeft.y + effectiveHeight);
+    rect.bottomRight = new Point2D(rect.topLeft.x + effectiveWidth, rect.topLeft.y + effectiveHeight);
     rect.complete();
 
     return rect;

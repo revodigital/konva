@@ -9,18 +9,18 @@
  * Description: Implements the class Cell for rendering a cell
  */
 
-import { PointRectangle }                         from './pointrectangle';
+import { PointRectangle2D }                       from '../common/PointRectangle2D';
 import { HorizontalAlignment, VerticalAlignment } from './alignment';
 import { ITextConfiguration, TextConfiguration }  from './TextConfiguration';
-import { IBorderOptions }                         from './borderoptions';
-import { Point }                                  from '../common/Point';
+import { IBorderOptions } from './borderoptions';
+import { Point2D }        from '../common/Point2D';
 
 /**
  * Defines the configuration properties of a single cell
  */
 export interface ICell extends ITextConfiguration {
   content?: string;
-  edges: PointRectangle;
+  edges: PointRectangle2D;
   fill?: string;
   border?: IBorderOptions;
 }
@@ -40,7 +40,7 @@ export class Cell extends TextConfiguration {
   /**
    * Cell edges rectangle
    */
-  edges: PointRectangle;
+  edges: PointRectangle2D;
 
   /**
    * Cell fill color
@@ -110,7 +110,7 @@ export class Cell extends TextConfiguration {
     // Calculate rectangle center
     const center = this.edges.getCenter();
     const textMeasure = ctx.measureText(this.content);
-    let startPoint = new Point(0, 0);
+    let startPoint = new Point2D(0, 0);
 
     // Set horizontal position
     switch (this.textAlign) {

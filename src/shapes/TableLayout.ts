@@ -12,9 +12,9 @@
 import { CellLayout }                   from './celllayout';
 import { CellPosition }                 from './cellposition';
 import { ColumnRowLayoutConfiguration } from './columnrowlayoutconfiguration';
-import { Invalidconfiguration }         from './invalidconfiguration';
-import { PointRectangle }               from './pointrectangle';
-import { RowLayout }                    from './rowlayout';
+import { Invalidconfiguration } from './invalidconfiguration';
+import { PointRectangle2D }     from '../common/PointRectangle2D';
+import { RowLayout }            from './rowlayout';
 
 export interface ITableLayout {
   rowsPercentages: number[];
@@ -35,7 +35,7 @@ export class TableLayout implements ITableLayout {
    * Rectangle with the 4 edges of this shape
    * @private
    */
-  edgesRectangle = new PointRectangle();
+  edgesRectangle = new PointRectangle2D();
 
   /**
    * Creates a new TableLayout.
@@ -45,7 +45,7 @@ export class TableLayout implements ITableLayout {
     this.rowsPercentages = [];
     this.tableHeight = 0;
     this.tableWidth = 0;
-    this.edgesRectangle = new PointRectangle();
+    this.edgesRectangle = new PointRectangle2D();
   }
 
   /**

@@ -14,7 +14,7 @@ export interface IPoint {
   y: number;
 }
 
-export class Point implements IPoint {
+export class Point2D implements IPoint {
   x: number;
   y: number;
 

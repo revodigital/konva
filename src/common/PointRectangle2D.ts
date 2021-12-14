@@ -1,47 +1,47 @@
 /*
  * Copyright (c) 2021-2021. Revo Digital
  * ---
- * Author: Gabri
- * File: pointrectangle.ts
- * Project: complex-shapes
- * Committed last: 2021/10/18 @ 1315
+ * Author: gabriele
+ * File: PointRectangle2D.ts
+ * Project: pamela
+ * Committed last: 2021/12/14 @ 1825
  * ---
- * Description: Implements class PointRectangle for managing 4 points rectangles
+ * Description:
  */
 
-import { negate } from './utils';
-import { Point }  from '../common/Point';
+import { negate }  from '../shapes/utils';
+import { Point2D } from './Point2D';
 
 export interface IPointrectangle {
-  topLeft: Point;
-  topRight: Point;
-  bottomLeft: Point;
-  bottomRight: Point;
+  topLeft: Point2D;
+  topRight: Point2D;
+  bottomLeft: Point2D;
+  bottomRight: Point2D;
 }
 
 /**
  * Represents a rectangle of 4 points. Allows the programmer to simplify geometry calculations.
  */
-export class PointRectangle implements IPointrectangle {
+export class PointRectangle2D implements IPointrectangle {
   /**
    * Bottom left edge point
    */
-  bottomLeft: Point;
+  bottomLeft: Point2D;
 
   /**
    * Bottom right edge point
    */
-  bottomRight: Point;
+  bottomRight: Point2D;
 
   /**
    * Top left edge point
    */
-  topLeft: Point;
+  topLeft: Point2D;
 
   /**
    * Top right edge point
    */
-  topRight: Point;
+  topRight: Point2D;
 
   /**
    * Creates a new PointRectangle class, with possibility of defining all of its points.
@@ -51,12 +51,12 @@ export class PointRectangle implements IPointrectangle {
    * @param tl Top left
    * @param tr Top right
    */
-  constructor(bl?: Point, br?: Point, tl?: Point, tr?: Point) {
+  constructor(bl?: Point2D, br?: Point2D, tl?: Point2D, tr?: Point2D) {
     // Initialize default points
-    this.bottomLeft = bl || new Point(0, 0);
-    this.topLeft = tl || new Point(0, 0);
-    this.bottomRight = br || new Point(0, 0);
-    this.topRight = tr || new Point(0, 0);
+    this.bottomLeft = bl || new Point2D(0, 0);
+    this.topLeft = tl || new Point2D(0, 0);
+    this.bottomRight = br || new Point2D(0, 0);
+    this.topRight = tr || new Point2D(0, 0);
   }
 
   /**
@@ -64,17 +64,32 @@ export class PointRectangle implements IPointrectangle {
    * @param width The rectangle width
    * @param height The rectangle height
    */
-  static calculateFromCenter(width: number, height: number): PointRectangle {
+  static calculateFromCenter(width: number, height: number): PointRectangle2D {
     // Point rectangle
-    let rect = new PointRectangle();
+    let rect = new PointRectangle2D();
     // Calculate half sizes (the coordinates start from the center [0, 0])
     const hm = height / 2;
     const wm = width / 2;
     // Calculate all the edge positions
-    rect.topLeft = new Point(negate(wm), negate(hm));
-    rect.topRight = new Point(wm, negate(hm));
-    rect.bottomLeft = new Point(negate(wm), hm);
-    rect.bottomRight = new Point(wm, hm);
+    rect.topLeft = new Point2D(negate(wm), negate(hm));
+    rect.topRight = new Point2D(wm, negate(hm));
+    rect.bottomLeft = new Point2D(negate(wm), hm);
+    rect.bottomRight = new Point2D(wm, hm);
+
+    return rect;
+  }
+
+  /**
+   * Calculates coordinates from normal start at topleft angle
+   * @param width Rectangle width
+   * @param height Rectangle height
+   */
+  static calculateFromStart(width: number, height: number): PointRectangle2D {
+    let rect = new PointRectangle2D();
+    rect.topLeft = new Point2D(0, 0);
+    rect.topRight = new Point2D(width, 0);
+    rect.bottomLeft = new Point2D(0, height);
+    rect.bottomRight = new Point2D(width, height);
 
     return rect;
   }
@@ -82,15 +97,15 @@ export class PointRectangle implements IPointrectangle {
   /**
    * Calculates the center coordinates starting from the edges appliying an offset
    */
-  getCenterWithOffset(offsetX: number, offsetY: number): Point {
-    return new Point ((((this.topLeft.x - this.topRight.x) / 2) + offsetX), ((this.topLeft.y) - (this.bottomLeft.y)) / 2 + offsetY);
+  getCenterWithOffset(offsetX: number, offsetY: number): Point2D {
+    return new Point2D ((((this.topLeft.x - this.topRight.x) / 2) + offsetX), ((this.topLeft.y) - (this.bottomLeft.y)) / 2 + offsetY);
   }
 
   /**
    * Calculates center coordinates starting from the edges
    */
-  getCenter(): Point {
-    let center = new Point(0, 0);
+  getCenter(): Point2D {
+    let center = new Point2D(0, 0);
     center.x = this.topLeft.x + (this.getWidth() / 2);
     center.y = this.topLeft.y + (this.getHeight() / 2);
 
@@ -109,8 +124,8 @@ export class PointRectangle implements IPointrectangle {
    * calculates the other 2 edges of this rectangle.
    */
   complete(): void {
-    this.bottomLeft = new Point(this.topLeft.x, this.bottomRight.y);
-    this.topRight = new Point(this.bottomRight.x, this.topLeft.y);
+    this.bottomLeft = new Point2D(this.topLeft.x, this.bottomRight.y);
+    this.topRight = new Point2D(this.bottomRight.x, this.topLeft.y);
   }
 
   /**
