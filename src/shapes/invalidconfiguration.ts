@@ -24,11 +24,15 @@ export class Invalidconfiguration extends Error {
    * @param config The configuration that contains errors
    */
   constructor(config: ColumnRowLayoutConfiguration) {
-    super();
+    super(`Invalidconfiguration: Layout configuration ${JSON.stringify(config)} is not valid or contains ambiguous informations`);
     this.config = config;
+    this.name = 'Invalidconfiguration';
   }
 
   toString(): string {
     return `InvalidConfiguration. Config: ${JSON.stringify(this.config)}`
   }
+
+  message: string;
+  name: string;
 }

@@ -49,8 +49,8 @@ export class ColumnRowLayoutConfiguration implements IColumnRowLayoutConfigurati
    * Checks if this configuration is valid
    */
   isValid(): boolean {
-    if(!this.columnGroup.isValid()) return false;
-    if(!this.rowGroup.isValid()) return false;
+    if (!this.columnGroup.isValid()) return false;
+    if (!this.rowGroup.isValid()) return false;
 
     return true;
   }
@@ -76,7 +76,7 @@ export class ColumnRowLayoutConfiguration implements IColumnRowLayoutConfigurati
    * Returns the number of rows that override the height
    */
   getOverrideRowCount(): number {
-    return this.rowGroup.rows.length - this.rowGroup.getAutoRowCount()
+    return this.rowGroup.rows.length - this.rowGroup.getAutoRowCount();
   }
 
   /**
@@ -88,12 +88,12 @@ export class ColumnRowLayoutConfiguration implements IColumnRowLayoutConfigurati
     let config = new ColumnRowLayoutConfiguration();
 
     // Columns
-    for(const c of columns)
-      config.addColumn(c.extractLayout());
+    for (const c of columns)
+      config.addColumn((new Column(c)).extractLayout());
 
     // Rows
-    for(const r of rows)
-      config.addRow(r.extractLayout());
+    for (const r of rows)
+      config.addRow((new Row(r)).extractLayout());
 
     return config;
   }

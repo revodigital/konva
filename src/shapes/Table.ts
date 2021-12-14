@@ -30,28 +30,55 @@ interface TableConfig extends ShapeConfig {
 
   headerFill?: string;
   headerText?: ITextConfiguration;
-  headerHeight?: number | 'auto';
+  headerHeight: number | 'auto';
   externalBorder?: IBorderOptions;
   internalBorder?: IBorderOptions;
 }
 
+/**
+ * Represents a table
+ */
 export class Table extends Shape<TableConfig> {
+  /**
+   * Table header, defines the column width for all rows of the table
+   */
   header: GetSet<Column[], this>;
-  rows: GetSet<Row[], this>;
-  internalBorder: GetSet<IBorderOptions, this>;
-  externalBorder: GetSet<IBorderOptions, this>;
-  headerHeight: GetSet<number | 'auto', this>;
-  headerFill: GetSet<string, this>;
-  headerText: GetSet<ITextConfiguration, this>;
-
-  _initFunc(config: TableConfig) {
-
-  }
 
   /**
-   //    * Adds the header row to the rows
-   //    * @private
-   //    */
+   * Array with all the rows of the table. Each Row object handles the configuration
+   * and the content of all cells inside it.
+   */
+  rows: GetSet<Row[], this>;
+
+  /**
+   * Configuration for the internal border of this table
+   */
+  internalBorder: GetSet<IBorderOptions, this>;
+
+  /**
+   * Configuration for the external border of this table
+   */
+  externalBorder: GetSet<IBorderOptions, this>;
+
+  /**
+   * The height percentage of the header row
+   */
+  headerHeight: GetSet<number | 'auto', this>;
+
+  /**
+   * Fill color for the background of the header
+   */
+  headerFill: GetSet<string, this>;
+
+  /**
+   * Header text options
+   */
+  headerText: GetSet<ITextConfiguration, this>;
+
+  /**
+   * Adds the header row to the rows
+   * @private
+   */
   private _addHeaderRow(): void {
     // Copy array
     const temp = Array.from(this.rows());
@@ -62,7 +89,7 @@ export class Table extends Shape<TableConfig> {
     this.rows([new Row({
       height: this.headerHeight(),
       data: rowsData,
-      fill: this.headerFill(), ...this.headerText
+      fill: this.headerFill(), ...this.headerText()
     }), ...temp]);
   }
 
@@ -98,17 +125,21 @@ export class Table extends Shape<TableConfig> {
   private _renderTableBorders(layout: TableLayout, ctx: CanvasRenderingContext2D): void {
     // Draw table borders
     ctx.beginPath();
-    ctx.moveTo(layout.edgesRectangle.topLeft.x,
-      layout.edgesRectangle.topLeft.y);
-    ctx.lineTo(layout.edgesRectangle.topRight.x,
-      layout.edgesRectangle.topRight.y);
-    ctx.lineTo(layout.edgesRectangle.bottomRight.x,
-      layout.edgesRectangle.bottomRight.y);
-    ctx.lineTo(layout.edgesRectangle.bottomLeft.x,
-      layout.edgesRectangle.bottomLeft.y);
-    ctx.lineTo(layout.edgesRectangle.topLeft.x,
-      layout.edgesRectangle.topLeft.y);
+    ctx.moveTo(0,
+      0);
+    ctx.lineTo(layout.tableWidth,
+      0);
+    ctx.lineTo(layout.tableWidth, layout.tableHeight);
+    ctx.lineTo(0, layout.tableHeight);
+    ctx.lineTo(0, 0);
+    // ctx.lineTo(layout.edgesRectangle.bottomRight.x,
+    //   layout.edgesRectangle.bottomRight.y);
+    // ctx.lineTo(layout.edgesRectangle.bottomLeft.x,
+    //   layout.edgesRectangle.bottomLeft.y);
+    // ctx.lineTo(layout.edgesRectangle.topLeft.x,
+    //   layout.edgesRectangle.topLeft.y);
     ctx.closePath();
+
     ctx.strokeStyle = this.externalBorder().color;
     ctx.lineWidth = this.externalBorder().width;
     ctx.stroke();
