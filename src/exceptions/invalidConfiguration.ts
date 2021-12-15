@@ -1,22 +1,22 @@
 /*
- * Copyright (c) 2021. Revo Digital
+ * Copyright (c) 2021-2021. Revo Digital
  * ---
- * Author: Gabri
+ * Author: gabriele
  * File: invalidconfiguration.ts
- * Project: complex-shapes-dev
- * Committed last: 2021/10/20 @ 1725
+ * Project: pamela
+ * Committed last: 2021/12/14 @ 1741
  * ---
  * Description:
  */
 
 
-import { ColumnRowLayoutConfiguration } from './columnrowlayoutconfiguration';
+import { ColumnRowLayoutConfiguration } from '../shapes/columnrowlayoutconfiguration';
 
 /**
  * Invalid configuration exception. Thrown when the layout is not correct
  * or contains ambiguous informations.
  */
-export class Invalidconfiguration extends Error {
+export class InvalidConfiguration extends Error {
   config: ColumnRowLayoutConfiguration;
 
   /**
@@ -24,9 +24,9 @@ export class Invalidconfiguration extends Error {
    * @param config The configuration that contains errors
    */
   constructor(config: ColumnRowLayoutConfiguration) {
-    super(`Invalidconfiguration: Layout configuration ${JSON.stringify(config)} is not valid or contains ambiguous informations`);
+    super(`InvalidConfiguration: Layout configuration ${JSON.stringify(config)} is not valid or contains ambiguous informations`);
     this.config = config;
-    this.name = 'Invalidconfiguration';
+    this.name = 'InvalidConfiguration';
   }
 
   toString(): string {

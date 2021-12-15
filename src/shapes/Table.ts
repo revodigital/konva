@@ -27,9 +27,9 @@ import {
 }                                                from '../common/PointRectangle2D';
 import { Cell }                                  from './cell';
 import { CellPosition }                          from './cellposition';
-import { Point2D }                               from '../common/Point2D';
-import { Invalidconfiguration }                  from './invalidconfiguration';
-import { Verse }                                 from './Verse';
+import { Point2D }              from '../common/Point2D';
+import { InvalidConfiguration } from '../exceptions/invalidConfiguration';
+import { Verse }                from './Verse';
 import { Vector }                                from './Vector';
 import { ColumnLayout }                          from './columnlayout';
 import { ColLayoutGroup }                        from './collayoutgroup';
@@ -166,10 +166,6 @@ export class Table extends Shape<TableConfig> {
     let startingPoint = new Point2D(layout.edgesRectangle.topLeft.x,
       layout.edgesRectangle.topLeft.y);
 
-    console.log('Layout rows: ',
-      layout.getRowsCount(),
-      ' ',
-      JSON.stringify(layout));
     for (let row = 0; row < layout.getRowsCount(); row++) {
       for (let col = 0; col < layout.getColumnsCount(); col++) {
         // Create cell layout

@@ -12,9 +12,12 @@
 import { CellLayout }                   from './celllayout';
 import { CellPosition }                 from './cellposition';
 import { ColumnRowLayoutConfiguration } from './columnrowlayoutconfiguration';
-import { Invalidconfiguration } from './invalidconfiguration';
-import { PointRectangle2D }     from '../common/PointRectangle2D';
-import { RowLayout }            from './rowlayout';
+import {
+  InvalidConfiguration
+}                                       from '../exceptions/invalidConfiguration';
+import { PointRectangle2D }             from '../common/PointRectangle2D';
+import { RowLayout }                    from './rowlayout';
+import { InvalidPercentage }            from '../exceptions/invalidpercentage';
 
 export interface ITableLayout {
   rowsPercentages: number[];
@@ -125,7 +128,7 @@ export class TableLayout implements ITableLayout {
    */
   parseFromConfiguration(config: ColumnRowLayoutConfiguration): void {
     // Validate values
-    if (!config.isValid()) throw new Invalidconfiguration(config);
+    if (!config.isValid()) throw new InvalidConfiguration(config);
 
     // Calculate auto width for columns
     const autoRows = config.rowGroup.getAutoRowCount();
@@ -139,22 +142,41 @@ export class TableLayout implements ITableLayout {
 
     // Fill array
     this.columnPercentages = [];
+    let csum = 0;
     for (let x = 0; x < columnsCount; x++) {
+      let val;
       if (config.columnGroup.columns[x].widthIsAuto())
-        this.columnPercentages.push(colAutoWidth);
-      else this.columnPercentages.push(config.columnGroup.columns[x].width as number);
+        val = colAutoWidth;
+
+      else val = config.columnGroup.columns[x].width as number;
+
+      this.columnPercentages.push(val);
+      csum += val;
+
+      if (csum > 100) throw new InvalidPercentage(csum,
+        `invalid percentage for column ${ x }.`);
     }
 
     this.rowsPercentages = [];
+    let rsum = 0;
     for (let y = 0; y < rowsCount; y++) {
+      let val;
       let row: RowLayout;
 
       if (y === 0) row = config.rowGroup.rows[0];
       else row = config.rowGroup.rows[y];
 
       if (row.heightIsAuto())
-        this.rowsPercentages.push(rowAutoWidth);
-      else this.rowsPercentages.push(config.rowGroup.rows[y].height as number);
+        val = rowAutoWidth;
+      else
+        val = config.rowGroup.rows[y].height as number;
+
+      this.rowsPercentages.push(val);
+      rsum += val;
+
+      // Error throw
+      if (rsum > 100) throw new InvalidPercentage(rsum,
+        `invalid percentage sum for rows. row ${ y } overflows`);
     }
 
     // Calculate auto height for rows

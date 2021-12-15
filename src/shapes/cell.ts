@@ -83,6 +83,8 @@ export class Cell extends TextConfiguration {
    * @param ctx The drawing context
    */
   _render(ctx: CanvasRenderingContext2D): void {
+    if(this.edges.getWidth() === 0 || this.edges.getHeight() === 0) return;
+
     if (this.fill !== 'transparent') {
       ctx.fillStyle = this.fill;
       ctx.fillRect(this.edges.topLeft.x,
