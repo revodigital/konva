@@ -14,7 +14,7 @@ import { Stage }               from '../../src/Stage';
 import { Layer }               from '../../src/Layer';
 import { TEST_ELEMENT_ID }     from '../global/global-defs';
 import { HorizontalAlignment } from '../../src/shapes/alignment';
-import { Row }                 from '../../lib/shapes/Row';
+import { Row }                 from '../../src/shapes/Row';
 import { Verse }               from '../../src/shapes/Verse';
 
 before(() => {
@@ -125,4 +125,59 @@ describe('All tests about tables', () => {
       l.draw();
     });
   });
+
+  it('Should correctly draw a dynamic table', () => {
+    cy.document().get('#root').then((root) => {
+      expect(root).to.not.be.undefined;
+
+      const s = new Stage({
+        container: root.get()[0] as any,
+        width: 800,
+        height: 800
+      });
+
+      const l = new Layer();
+      const m = new Table({
+        headerHeight: 20,
+        width: 600,
+        height: 300,
+        x: 20,
+        y: 30,
+        headerFill: 'orange',
+        header: [
+          {
+            width: 30,
+            text: 'First column',
+          },
+          {
+            width: 'auto',
+            text: 'Second column',
+          }
+        ],
+        rows: [
+          {
+            height: 80,
+            data: ['first cell'],
+            textAlign: HorizontalAlignment.Right,
+            padding: 10,
+            fontSize: 20,
+            fill: 'white'
+          },
+          {
+            height: 'auto',
+            data: ['second cell'],
+            textAlign: HorizontalAlignment.Right,
+            padding: 10,
+            fontSize: 20,
+            fill: 'white'
+          }
+        ]
+      });
+
+      l.add(m);
+
+      s.add(l);
+      l.draw();
+    });
+  })
 });
