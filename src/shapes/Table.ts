@@ -298,7 +298,7 @@ export class Table extends Shape<TableConfig> {
   public clearRow(index: number): void {
     if (!this.existsRowWithIndex(index)) throw new Error('Invalid row index');
 
-    this.rows[index].data = [];
+    this.rows()[index].data = [];
   }
 
   /**
@@ -307,24 +307,14 @@ export class Table extends Shape<TableConfig> {
    * @param start Start index
    * @param end End index
    */
-  public setRowsBackground(color: string, start: number = 0, end: number = this.rows.length): void {
+  public setRowsBackground(color: string, start: number = 0, end: number = this.rows().length): void {
     if (color === '') throw new Error('Invalid row background color');
-    if (start < 0 || start >= this.rows.length) throw new Error(
+    if (start < 0 || start >= this.rows().length) throw new Error(
       'Invalid start index');
-    if (end < 0 || end > this.rows.length) throw new Error('Invalid end index');
+    if (end < 0 || end > this.rows().length) throw new Error('Invalid end index');
     if (start > end) throw new Error('Invalid start / end indexes');
 
-    for (let x = start; x < end; x++) this.rows[x].fill = color;
-  }
-
-  /**
-   * Sets the width and the height of this table to a new value
-   * @param width Table width
-   * @param height Table height
-   */
-  public setBounds(width: number, height: number): void {
-    this.width(width);
-    this.height(height);
+    for (let x = start; x < end; x++) this.rows()[x].fill = color;
   }
 
   /**
@@ -417,7 +407,7 @@ export class Table extends Shape<TableConfig> {
 
     // Clear header
     if (clearHeader)
-      this.header[index].text = '';
+      this.header()[index].text = '';
 
     // Clear all row cells
     for (let r of this.rows())
@@ -433,7 +423,7 @@ export class Table extends Shape<TableConfig> {
     if (!this.existsRowWithIndex(index)) throw new Error('Invalid row index');
 
     if (resize === true) {
-      const rowConf = new RowLayout(this.rows[index].height);
+      const rowConf = new RowLayout(this.rows()[index].height);
 
       if (rowConf.heightIsAuto()) this.downscaleHeightByPerc(RowLayoutGroup.fromRawConfiguration(
         this.rows()).getAutoRowPercentage());
@@ -454,7 +444,7 @@ export class Table extends Shape<TableConfig> {
       'Invalid column index');
 
     if (resize === true) {
-      const colConf = new ColumnLayout(this.header[index].width);
+      const colConf = new ColumnLayout(this.header()[index].width);
 
       if (colConf.widthIsAuto()) this.downscaleWidthByPerc(ColLayoutGroup.fromRawConfiguration(
         this.header()).getAutoColPercentage());
@@ -517,9 +507,9 @@ export class Table extends Shape<TableConfig> {
     const termIndex = verse === Verse.After ? index + gap : index - gap;
     if (!this.existsRowWithIndex(termIndex)) throw new Error('Invalid gap value');
 
-    const temp = this.rows[index];
-    this.rows[index] = this.rows[termIndex];
-    this.rows[termIndex] = temp;
+    const temp = this.rows()[index];
+    this.rows()[index] = this.rows()[termIndex];
+    this.rows()[termIndex] = temp;
   }
 
   /**
@@ -533,9 +523,9 @@ export class Table extends Shape<TableConfig> {
 
     if (!this.existsRowWithIndex(endIndex)) throw new Error('Invalid end index');
 
-    const temp = this.rows[startIndex];
-    this.rows[startIndex] = this.rows[endIndex];
-    this.rows[endIndex] = temp;
+    const temp = this.rows()[startIndex];
+    this.rows()[startIndex] = this.rows()[endIndex];
+    this.rows()[endIndex] = temp;
   }
 
   /**

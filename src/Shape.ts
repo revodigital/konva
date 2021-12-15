@@ -27,6 +27,7 @@ import * as PointerEvents        from './PointerEvents';
 
 import { GetSet, Vector2d }       from './types';
 import { HitCanvas, SceneCanvas } from './Canvas';
+import { Size2D }                 from './common/Size2D';
 
 // hack from here https://stackoverflow.com/questions/52667959/what-is-the-purpose-of-bivariancehack-in-typescript-types/52668133#52668133
 export type ShapeConfigHandler<TTarget> = {
@@ -555,6 +556,15 @@ export class Shape<Config extends ShapeConfig = ShapeConfig> extends Node<Config
       width: size.width,
       height: size.height,
     };
+  }
+
+  /**
+   * Sets bounds of this shape
+   * @param size
+   */
+  setBounds(size: Size2D): void {
+    this.width(size.getWidth());
+    this.height(size.getHeight());
   }
 
   getClientRect(config: ShapeGetClientRectConfig = {}) {

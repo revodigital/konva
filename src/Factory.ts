@@ -35,7 +35,7 @@ export const Factory = {
    * @param validator Validator function
    * @param after Function to execute after value set / get
    */
-  addGetterSetter<Type>(constructor: any, attr: string, def?: Type, validator?: (val: Type) => boolean, after?: (ths: any) => void) {
+  addGetterSetter<Type>(constructor: any, attr: string, def?: Type, validator?, after?) {
     Factory.addGetter(constructor, attr, def);
     Factory.addSetter(constructor, attr, validator, after);
     Factory.addOverloadedGetterSetter(constructor, attr);
