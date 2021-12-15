@@ -9,11 +9,13 @@
  * Description:
  */
 
-import { Table }           from '../../src/shapes/Table';
-import { Stage }           from '../../src/Stage';
-import { Layer }           from '../../src/Layer';
-import { MyShape }         from '../../src/shapes/Testme';
-import { TEST_ELEMENT_ID } from '../global/global-defs';
+import { Table }               from '../../src/shapes/Table';
+import { Stage }               from '../../src/Stage';
+import { Layer }               from '../../src/Layer';
+import { TEST_ELEMENT_ID }     from '../global/global-defs';
+import { HorizontalAlignment } from '../../src/shapes/alignment';
+import { Row }                 from '../../lib/shapes/Row';
+import { Verse }               from '../../src/shapes/Verse';
 
 before(() => {
   const el = document.createElement('div');
@@ -61,20 +63,51 @@ describe('All tests about tables', () => {
       const l = new Layer();
       const m = new Table({
         headerHeight: 'auto',
-        width: 300,
+        width: 600,
         height: 300,
         x: 20,
         y: 30,
+        externalBorder: {
+          width: 5,
+          color: 'black',
+          visible: true,
+        },
+        internalBorder: {
+          width: 3,
+          color: 'gray',
+          visible: true
+        },
+        headerText: {
+          fontSize: 30,
+          bold: true
+        },
+        headerFill: 'orange',
         header: [
           {
             width: 'auto',
-            text: 'ciao'
+            text: 'First column',
+          },
+          {
+            width: 'auto',
+            text: 'Second column',
           }
         ],
         rows: [
           {
             height: 'auto',
-            data: [],
+            data: ['first cell'],
+            textAlign: HorizontalAlignment.Right,
+            padding: 10,
+            fontSize: 20,
+            fill: 'white'
+          },
+          {
+            height: 'auto',
+            data: ['second cell'],
+            textAlign: HorizontalAlignment.Right,
+            padding: 10,
+            fontSize: 20,
+            fill: 'white'
           }
         ]
       });
@@ -82,6 +115,13 @@ describe('All tests about tables', () => {
       l.add(m);
 
       s.add(l);
+      l.draw();
+      m.addRow(new Row({
+        height: 'auto',
+        data: ['ciao'],
+      }), 0, Verse.After);
+      m.popRow(true);
+      m.autoBackground('red', 'orange');
       l.draw();
     });
   });
