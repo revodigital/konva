@@ -15,7 +15,7 @@ import { Vector2d } from './types';
 import { Util } from './Util';
 
 export const DD = {
-  get isDragging() {
+  isDragging() {
     var flag = false;
     DD._dragElements.forEach((elem) => {
       if (elem.dragStatus === 'dragging') {
@@ -25,7 +25,7 @@ export const DD = {
     return flag;
   },
   justDragged: false,
-  get node() {
+  node() {
     // return first dragging node
     var node: Node | undefined;
     DD._dragElements.forEach((elem) => {

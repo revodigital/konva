@@ -35,7 +35,7 @@ export const Factory = {
    * @param validator Validator function
    * @param after Function to execute after value set / get
    */
-  addGetterSetter<Type>(constructor: any, attr: string, def?: Type, validator?, after?) {
+  addGetterSetter<T>(constructor: any, attr: string, def?: T, validator?, after?) {
     Factory.addGetter(constructor, attr, def);
     Factory.addSetter(constructor, attr, validator, after);
     Factory.addOverloadedGetterSetter(constructor, attr);
@@ -80,7 +80,7 @@ export const Factory = {
    * @param validator
    * @param after
    */
-  overWriteSetter<T>(constructor: any, attr: string, validator?: (val: T) => boolean, after?) {
+  overWriteSetter(constructor: any, attr: string, validator?, after?) {
     var method = SET + Util._capitalize(attr);
     constructor.prototype[method] = function (val) {
       if (validator && val !== undefined && val !== null) {

@@ -41,17 +41,18 @@ import { Enhance } from './filters/Enhance';
 import { Grayscale } from './filters/Grayscale';
 import { HSL } from './filters/HSL';
 import { HSV } from './filters/HSV';
-import { Invert } from './filters/Invert';
+import { Invert }       from './filters/Invert';
 import { Kaleidoscope } from './filters/Kaleidoscope';
-import { Mask } from './filters/Mask';
-import { Noise } from './filters/Noise';
-import { Pixelate } from './filters/Pixelate';
-import { Posterize } from './filters/Posterize';
-import { RGB } from './filters/RGB';
-import { RGBA } from './filters/RGBA';
-import { Sepia } from './filters/Sepia';
-import { Solarize } from './filters/Solarize';
-import { Threshold } from './filters/Threshold';
+import { Mask }         from './filters/Mask';
+import { Noise }        from './filters/Noise';
+import { Pixelate }     from './filters/Pixelate';
+import { Posterize }    from './filters/Posterize';
+import { RGB }          from './filters/RGB';
+import { RGBA }         from './filters/RGBA';
+import { Sepia }        from './filters/Sepia';
+import { Solarize }     from './filters/Solarize';
+import { Threshold }    from './filters/Threshold';
+import { Table }        from './shapes/Table';
 
 export const Pamela = Core.Util._assign(Core, {
   Arc,
@@ -72,6 +73,7 @@ export const Pamela = Core.Util._assign(Core, {
   TextPath,
   Transformer,
   Wedge,
+  Table,
   /**
    * @namespace Filters
    * @memberof Konva

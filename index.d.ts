@@ -9,5 +9,5 @@
  * Description:
  */
 
-import { Pamela } from './src/_FullInternals';
+import { Pamela } from './lib/_FullInternals';
 export default Pamela;

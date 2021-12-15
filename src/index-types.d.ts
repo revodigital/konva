@@ -138,6 +138,8 @@ declare namespace Pamela {
   export type Path = import('./shapes/Path').Path;
   export type PathConfig = import('./shapes/Path').PathConfig;
   export const Rect: typeof import('./shapes/Rect').Rect;
+  export const Table: typeof import('./shapes/Table').Table;
+  export type Table = import('./shapes/Table').Table;
   export type Rect = import('./shapes/Rect').Rect;
   export type RectConfig = import('./shapes/Rect').RectConfig;
   export const RegularPolygon: typeof import('./shapes/RegularPolygon').RegularPolygon;

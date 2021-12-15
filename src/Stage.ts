@@ -507,7 +507,7 @@ export class Stage extends Container<Layer> {
     this.setPointersPositions(evt);
 
     var targetShape = this._getTargetShape(eventType);
-    var eventsEnabled = !DD.isDragging || Pamela.hitOnDragEnabled;
+    var eventsEnabled = !DD.isDragging() || Pamela.hitOnDragEnabled;
     if (targetShape && eventsEnabled) {
       targetShape._fireAndBubble(events.pointerout, { evt: evt });
       targetShape._fireAndBubble(events.pointerleave, { evt: evt });
@@ -591,12 +591,12 @@ export class Stage extends Container<Layer> {
     if (!events) {
       return;
     }
-    if (DD.isDragging && DD.node.preventDefault() && evt.cancelable) {
+    if (DD.isDragging() && DD.node().preventDefault() && evt.cancelable) {
       evt.preventDefault();
     }
     this.setPointersPositions(evt);
 
-    var eventsEnabled = !DD.isDragging || Pamela.hitOnDragEnabled;
+    var eventsEnabled = !DD.isDragging() || Pamela.hitOnDragEnabled;
     if (!eventsEnabled) {
       return;
     }
