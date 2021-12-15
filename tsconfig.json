@@ -2,15 +2,18 @@
   "compilerOptions": {
     "outDir": "lib",
     "lib": [
-      "ES2019",
-      "dom"
+      "es5",
+      "dom",
     ],
     "module": "CommonJS",
     "sourceMap": true,
     "noEmitOnError": true,
     "moduleResolution": "node",
     "declaration": true,
-    "types": ["cypress"]
+    "types": ["cypress", "node"]
   },
-  "include": ["./src/**/*.ts"]
+  "include": [
+    "./src/**/*.ts",
+    "node_modules/@types/node/globals.global.d.ts"
+  ]
 }
