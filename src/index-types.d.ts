@@ -38,6 +38,9 @@ import { Sepia } from './filters/Sepia';
 import { Solarize } from './filters/Solarize';
 import { Threshold } from './filters/Threshold';
 
+/**
+ * Default Pamela namespace
+ */
 declare namespace Pamela {
   export let enableTrace: number;
   export let pixelRatio: number;

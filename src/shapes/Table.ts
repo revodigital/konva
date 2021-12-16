@@ -37,7 +37,7 @@ import { insertToArray }                         from './utils';
 import { RowLayout }                             from './rowlayout';
 import { RowLayoutGroup }                        from './rowlayoutgroup';
 
-interface TableConfig extends ShapeConfig {
+export interface TableConfig extends ShapeConfig {
   header: IColumn[];
   rows: IRow[];
 
