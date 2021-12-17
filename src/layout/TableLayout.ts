@@ -15,8 +15,8 @@ import { ColumnRowLayoutConfiguration } from './ColumnRowLayoutConfiguration';
 import {
   InvalidConfiguration
 }                                       from '../exceptions/InvalidConfiguration';
-import { PointRectangle2D }             from '../common/PointRectangle2D';
-import { RowLayout }         from '../shapes/rowlayout';
+import { PointRectangle2D }  from '../common/PointRectangle2D';
+import { RowLayout }         from './RowLayout';
 import { InvalidPercentage } from '../exceptions/InvalidPercentage';
 
 export interface ITableLayout {

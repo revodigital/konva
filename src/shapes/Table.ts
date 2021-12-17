@@ -6,38 +6,45 @@
  * Project: pamela
  * Committed last: 2021/12/14 @ 117
  * ---
- * Description:
+ * Description: Implements Table shape
  */
 
-import { Shape, ShapeConfig, ShapeGetClientRectConfig } from '../Shape';
-import { _registerNode }                                from '../Global';
-import { Context }                               from '../Context';
-import { Column, IColumn }                       from './column';
-import { IRow, Row }                             from './Row';
-import { ITextConfiguration, TextConfiguration } from '../configuration/TextConfiguration';
-import { BorderOptions, IBorderOptions }         from '../configuration/BorderOptions';
-import { Get, GetSet }                           from '../types';
-import { Factory }     from '../Factory';
-import { TableLayout } from '../layout/TableLayout';
+import { Shape, ShapeConfig } from '../Shape';
+import { _registerNode }      from '../Global';
+import { Context }            from '../Context';
+import { Column, IColumn }    from './column';
+import { IRow, Row }          from './Row';
+import {
+  ITextConfiguration,
+  TextConfiguration
+}                             from '../configuration/TextConfiguration';
+import {
+  BorderOptions,
+  IBorderOptions
+}                             from '../configuration/BorderOptions';
+import { GetSet }             from '../types';
+import { Factory }            from '../Factory';
+import { TableLayout }        from '../layout/TableLayout';
 import {
   ColumnRowLayoutConfiguration
-}                      from '../layout/ColumnRowLayoutConfiguration';
+}                             from '../layout/ColumnRowLayoutConfiguration';
 import {
   PointRectangle2D
-}                      from '../common/PointRectangle2D';
-import { Cell }         from './cell';
-import { CellPosition } from '../common/CellPosition';
-import { Point2D }              from '../common/Point2D';
-import { InvalidConfiguration } from '../exceptions/InvalidConfiguration';
-import { Verse }                from './Verse';
-import { Vector }         from './Vector';
-import { ColumnLayout }   from '../layout/ColumnLayout';
-import { ColLayoutGroup } from '../layout/ColLayoutGroup';
-import { insertToArray }  from './utils';
-import { RowLayout }            from './rowlayout';
-import { RowLayoutGroup }       from './rowlayoutgroup';
-import { Transform }            from '../Util';
-import { NodeConfig }           from '../Node';
+}                             from '../common/PointRectangle2D';
+import { Cell }               from './cell';
+import { CellPosition }       from '../common/CellPosition';
+import { Point2D }            from '../common/Point2D';
+import { Verse }              from './Verse';
+import { Vector }             from './Vector';
+import { ColumnLayout }       from '../layout/ColumnLayout';
+import {
+  ColLayoutGroup
+}                             from '../layout/ColLayoutGroup';
+import { insertToArray } from './utils';
+import { RowLayout } from '../layout/RowLayout';
+import {
+  RowLayoutGroup
+}                    from '../layout/RowLayoutGroup';
 
 export interface TableConfig extends ShapeConfig {
   header: IColumn[];

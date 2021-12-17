@@ -10,11 +10,11 @@
  */
 
 import { ColumnLayout } from './ColumnLayout';
-import { RowLayout }    from '../shapes/rowlayout';
-import { Column }         from '../shapes/column';
+import { RowLayout }    from './RowLayout';
+import { Column }       from '../shapes/column';
 import { Row }            from '../shapes/Row';
 import { ColLayoutGroup } from './ColLayoutGroup';
-import { RowLayoutGroup } from '../shapes/rowlayoutgroup';
+import { RowLayoutGroup } from './RowLayoutGroup';
 
 export interface IColumnRowLayoutConfiguration {
   columnGroup: ColLayoutGroup;

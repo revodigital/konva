@@ -1,17 +1,17 @@
 /*
- * Copyright (c) 2021. Revo Digital
+ * Copyright (c) 2021-2021. Revo Digital
  * ---
- * Author: Gabri
- * File: rowlayoutgroup.ts
- * Project: complex-shapes-dev
- * Committed last: 2021/11/8 @ 114
+ * Author: gabriele
+ * File: RowLayoutGroup.ts
+ * Project: pamela
+ * Committed last: 2021/12/9 @ 1827
  * ---
  * Description:
  */
 
-import { RowLayout } from './rowlayout';
-import { IRow, Row } from './Row';
-import { Column }    from './column';
+import { RowLayout } from './RowLayout';
+import { IRow, Row } from '../shapes/Row';
+import { Column }    from '../shapes/column';
 
 export interface IRowLayoutGroup {
   rows: RowLayout[];

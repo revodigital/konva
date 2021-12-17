@@ -10,7 +10,7 @@
  */
 
 import { TextConfiguration, ITextConfiguration } from '../configuration/TextConfiguration';
-import { RowLayout }                             from './rowlayout';
+import { RowLayout }                             from '../layout/RowLayout';
 
 /**
  * Represents a line of a Table
