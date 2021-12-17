@@ -14,26 +14,26 @@ import { _registerNode }                                from '../Global';
 import { Context }                               from '../Context';
 import { Column, IColumn }                       from './column';
 import { IRow, Row }                             from './Row';
-import { ITextConfiguration, TextConfiguration } from './TextConfiguration';
-import { BorderOptions, IBorderOptions }         from './borderoptions';
+import { ITextConfiguration, TextConfiguration } from '../configuration/TextConfiguration';
+import { BorderOptions, IBorderOptions }         from '../configuration/BorderOptions';
 import { Get, GetSet }                           from '../types';
-import { Factory }                               from '../Factory';
-import { TableLayout }                           from './TableLayout';
+import { Factory }     from '../Factory';
+import { TableLayout } from '../layout/TableLayout';
 import {
   ColumnRowLayoutConfiguration
-}                                                from './columnrowlayoutconfiguration';
+}                      from '../layout/ColumnRowLayoutConfiguration';
 import {
   PointRectangle2D
-}                                                from '../common/PointRectangle2D';
-import { Cell }                 from './cell';
-import { CellPosition }         from './cellposition';
+}                      from '../common/PointRectangle2D';
+import { Cell }         from './cell';
+import { CellPosition } from '../common/CellPosition';
 import { Point2D }              from '../common/Point2D';
-import { InvalidConfiguration } from '../exceptions/invalidConfiguration';
+import { InvalidConfiguration } from '../exceptions/InvalidConfiguration';
 import { Verse }                from './Verse';
-import { Vector }               from './Vector';
-import { ColumnLayout }         from './columnlayout';
-import { ColLayoutGroup }       from './collayoutgroup';
-import { insertToArray }        from './utils';
+import { Vector }         from './Vector';
+import { ColumnLayout }   from '../layout/ColumnLayout';
+import { ColLayoutGroup } from '../layout/ColLayoutGroup';
+import { insertToArray }  from './utils';
 import { RowLayout }            from './rowlayout';
 import { RowLayoutGroup }       from './rowlayoutgroup';
 import { Transform }            from '../Util';

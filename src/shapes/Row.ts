@@ -9,7 +9,7 @@
  * Description: Implements class Row for representing a table row.
  */
 
-import { TextConfiguration, ITextConfiguration } from './TextConfiguration';
+import { TextConfiguration, ITextConfiguration } from '../configuration/TextConfiguration';
 import { RowLayout }                             from './rowlayout';
 
 /**

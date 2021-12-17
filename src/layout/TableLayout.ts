@@ -4,20 +4,20 @@
  * Author: gabriele
  * File: TableLayout.ts
  * Project: pamela
- * Committed last: 2021/12/9 @ 1822
+ * Committed last: 2021/12/15 @ 1016
  * ---
  * Description:
  */
 
-import { CellLayout }                   from './celllayout';
-import { CellPosition }                 from './cellposition';
-import { ColumnRowLayoutConfiguration } from './columnrowlayoutconfiguration';
+import { CellLayout }   from './CellLayout';
+import { CellPosition }                 from '../common/CellPosition';
+import { ColumnRowLayoutConfiguration } from './ColumnRowLayoutConfiguration';
 import {
   InvalidConfiguration
-}                                       from '../exceptions/invalidConfiguration';
+}                                       from '../exceptions/InvalidConfiguration';
 import { PointRectangle2D }             from '../common/PointRectangle2D';
-import { RowLayout }                    from './rowlayout';
-import { InvalidPercentage }            from '../exceptions/invalidpercentage';
+import { RowLayout }         from '../shapes/rowlayout';
+import { InvalidPercentage } from '../exceptions/InvalidPercentage';
 
 export interface ITableLayout {
   rowsPercentages: number[];

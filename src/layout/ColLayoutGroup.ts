@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2021. Revo Digital
+ * Copyright (c) 2021-2021. Revo Digital
  * ---
- * Author: Gabri
- * File: collayoutgroup.ts
- * Project: complex-shapes-dev
- * Committed last: 2021/11/8 @ 1118
+ * Author: gabriele
+ * File: ColLayoutGroup.ts
+ * Project: pamela
+ * Committed last: 2021/11/20 @ 956
  * ---
  * Description:
  */
 
-import { ColumnLayout }    from './columnlayout';
-import { Column, IColumn } from './column';
+import { ColumnLayout }    from './ColumnLayout';
+import { Column, IColumn } from '../shapes/column';
 
 export interface IColLayoutGroup {
   columns: ColumnLayout[];

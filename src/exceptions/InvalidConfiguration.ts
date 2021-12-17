@@ -10,7 +10,7 @@
  */
 
 
-import { ColumnRowLayoutConfiguration } from '../shapes/columnrowlayoutconfiguration';
+import { ColumnRowLayoutConfiguration } from '../layout/ColumnRowLayoutConfiguration';
 
 /**
  * Invalid configuration exception. Thrown when the layout is not correct

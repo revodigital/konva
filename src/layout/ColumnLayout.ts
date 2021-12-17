@@ -2,7 +2,7 @@
  * Copyright (c) 2021. Revo Digital
  * ---
  * Author: Gabri
- * File: columnlayout.ts
+ * File: ColumnLayout.ts
  * Project: complex-shapes-dev
  * Committed last: 2021/10/20 @ 179
  * ---

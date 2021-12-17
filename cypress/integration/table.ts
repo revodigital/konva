@@ -13,7 +13,7 @@ import { Table }               from '../../src/shapes/Table';
 import { Stage }               from '../../src/Stage';
 import { Layer }               from '../../src/Layer';
 import { TEST_ELEMENT_ID }     from '../global/global-defs';
-import { HorizontalAlignment } from '../../src/shapes/alignment';
+import { HorizontalAlignment } from '../../src/configuration/Alignment';
 import { Row }                 from '../../src/shapes/Row';
 import { Verse }               from '../../src/shapes/Verse';
 

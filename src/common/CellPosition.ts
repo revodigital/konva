@@ -2,11 +2,11 @@
  * Copyright (c) 2021. Revo Digital
  * ---
  * Author: Gabri
- * File: cellposition.ts
+ * File: CellPosition.ts
  * Project: complex-shapes-dev
  * Committed last: 2021/10/20 @ 1650
  * ---
- * Description:
+ * Description: Implements cell position for representing a cell location into a table
  */
 
 export interface ICellposition {

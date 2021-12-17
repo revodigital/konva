@@ -9,8 +9,8 @@
  * Description: Implements the Column class for representing a table column.
  */
 
-import { TextConfiguration, ITextConfiguration } from './TextConfiguration';
-import { ColumnLayout }                          from './columnlayout';
+import { TextConfiguration, ITextConfiguration } from '../configuration/TextConfiguration';
+import { ColumnLayout }                          from '../layout/ColumnLayout';
 
 /**
  * Represents a Column into a Table

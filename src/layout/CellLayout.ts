@@ -2,7 +2,7 @@
  * Copyright (c) 2021. Revo Digital
  * ---
  * Author: Gabri
- * File: celllayout.ts
+ * File: CellLayout.ts
  * Project: complex-shapes-dev
  * Committed last: 2021/10/20 @ 1647
  * ---

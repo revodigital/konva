@@ -2,7 +2,7 @@
  * Copyright (c) 2021. Revo Digital
  * ---
  * Author: gabriele
- * File: borderoptions.ts
+ * File: BorderOptions.ts
  * Project: complexshapestest
  * Committed last: 2021/10/22 @ 2154
  * ---

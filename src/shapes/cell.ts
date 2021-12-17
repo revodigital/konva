@@ -10,10 +10,10 @@
  */
 
 import { PointRectangle2D }                       from '../common/PointRectangle2D';
-import { HorizontalAlignment, VerticalAlignment } from './alignment';
-import { ITextConfiguration, TextConfiguration }  from './TextConfiguration';
-import { IBorderOptions } from './borderoptions';
-import { Point2D }        from '../common/Point2D';
+import { HorizontalAlignment, VerticalAlignment } from '../configuration/Alignment';
+import { ITextConfiguration, TextConfiguration } from '../configuration/TextConfiguration';
+import { IBorderOptions }                        from '../configuration/BorderOptions';
+import { Point2D }                               from '../common/Point2D';
 
 /**
  * Defines the configuration properties of a single cell

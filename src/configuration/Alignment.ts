@@ -2,7 +2,7 @@
  * Copyright (c) 2021. Revo Digital
  * ---
  * Author: gabriele
- * File: alignment.ts
+ * File: Alignment.ts
  * Project: complexshapestest
  * Committed last: 2021/10/18 @ 1643
  * ---

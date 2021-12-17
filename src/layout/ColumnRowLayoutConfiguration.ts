@@ -1,20 +1,20 @@
 /*
- * Copyright (c) 2021. Revo Digital
+ * Copyright (c) 2021-2021. Revo Digital
  * ---
- * Author: Gabri
- * File: columnrowconfiguration.ts
- * Project: complex-shapes-dev
- * Committed last: 2021/10/20 @ 1659
+ * Author: gabriele
+ * File: ColumnRowLayoutConfiguration.ts
+ * Project: pamela
+ * Committed last: 2021/12/14 @ 1735
  * ---
- * Description: Implements the class ColumnRowLayoutConfiguration
+ * Description:
  */
 
-import { ColumnLayout }   from './columnlayout';
-import { RowLayout }      from './rowlayout';
-import { Column }         from './column';
-import { Row }            from './Row';
-import { ColLayoutGroup } from './collayoutgroup';
-import { RowLayoutGroup } from './rowlayoutgroup';
+import { ColumnLayout } from './ColumnLayout';
+import { RowLayout }    from '../shapes/rowlayout';
+import { Column }         from '../shapes/column';
+import { Row }            from '../shapes/Row';
+import { ColLayoutGroup } from './ColLayoutGroup';
+import { RowLayoutGroup } from '../shapes/rowlayoutgroup';
 
 export interface IColumnRowLayoutConfiguration {
   columnGroup: ColLayoutGroup;
