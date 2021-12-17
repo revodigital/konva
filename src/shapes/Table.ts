@@ -9,8 +9,8 @@
  * Description:
  */
 
-import { Shape, ShapeConfig }                    from '../Shape';
-import { _registerNode }                         from '../Global';
+import { Shape, ShapeConfig, ShapeGetClientRectConfig } from '../Shape';
+import { _registerNode }                                from '../Global';
 import { Context }                               from '../Context';
 import { Column, IColumn }                       from './column';
 import { IRow, Row }                             from './Row';
@@ -25,17 +25,19 @@ import {
 import {
   PointRectangle2D
 }                                                from '../common/PointRectangle2D';
-import { Cell }                                  from './cell';
-import { CellPosition }                          from './cellposition';
+import { Cell }                 from './cell';
+import { CellPosition }         from './cellposition';
 import { Point2D }              from '../common/Point2D';
 import { InvalidConfiguration } from '../exceptions/invalidConfiguration';
 import { Verse }                from './Verse';
-import { Vector }                                from './Vector';
-import { ColumnLayout }                          from './columnlayout';
-import { ColLayoutGroup }                        from './collayoutgroup';
-import { insertToArray }                         from './utils';
-import { RowLayout }                             from './rowlayout';
-import { RowLayoutGroup }                        from './rowlayoutgroup';
+import { Vector }               from './Vector';
+import { ColumnLayout }         from './columnlayout';
+import { ColLayoutGroup }       from './collayoutgroup';
+import { insertToArray }        from './utils';
+import { RowLayout }            from './rowlayout';
+import { RowLayoutGroup }       from './rowlayoutgroup';
+import { Transform }            from '../Util';
+import { NodeConfig }           from '../Node';
 
 export interface TableConfig extends ShapeConfig {
   header: IColumn[];
@@ -106,6 +108,15 @@ export class Table extends Shape<TableConfig> {
     }), ...temp];
   }
 
+  getSelfRect(): { x: number; width: number; y: number; height: number } {
+    return {
+      x: 0,
+      y: 0,
+      width: this.width(),
+      height: this.height()
+    }
+  }
+
   /**
    * Calculates the layout of this table, including rows and columns.
    * @private
@@ -136,6 +147,8 @@ export class Table extends Shape<TableConfig> {
     this._renderContent(layout, rows, context._context);
 
     this._renderTableBorders(layout, context._context);
+
+    context.fillStrokeShape(this);
   }
 
   private _renderTableBorders(layout: TableLayout, ctx: CanvasRenderingContext2D): void {
