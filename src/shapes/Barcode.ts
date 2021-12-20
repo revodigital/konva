@@ -147,6 +147,15 @@ export class Barcode extends Shape<BarcodeConfig> {
       });
     return canvas.toDataURL('image/png');
   }
+
+  getSelfRect(): { x: number; width: number; y: number; height: number } {
+    return {
+      x: 0,
+      y: 0,
+      width: this.width(),
+      height: this.height()
+    };
+  }
 }
 
 Factory.addGetterSetter(Barcode, 'code');
