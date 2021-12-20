@@ -1,6 +1,6 @@
 {
   "name": "@revodigital/pamela",
-  "version": "1.0.21",
+  "version": "1.0.22",
   "author": "Revo Digital",
   "files": [
     "README.md",
@@ -13,7 +13,7 @@
   "type": "module",
   "scripts": {
     "start": "npx serve && npx cypress open",
-    "build": "npm run clean && tsc",
+    "build": "npm run clean && tsc && cp ./src/index-types.d.ts ./lib/",
     "clean": "rm -rf ./lib ./types ./test-build"
   },
   "targets": {
