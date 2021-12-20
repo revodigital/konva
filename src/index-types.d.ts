@@ -115,7 +115,7 @@ declare namespace Pamela {
   export type TweenConfig = import('./Tween').TweenConfig;
   export const Easings: typeof import('./Tween').Easings;
 
-  export const Barcode: typeof import('./shapes/Barcode');
+  export const Barcode: typeof import('./shapes/Barcode').Barcode;
   export type Barcode = import('./shapes/Barcode').Barcode;
   export type BarcodeConfig = import('./shapes/Barcode').BarcodeConfig;
 
