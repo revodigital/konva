@@ -13,17 +13,8 @@
   "type": "module",
   "scripts": {
     "start": "npx cypress open",
-    "compile": "npm run clean && npm run tsc && cp ./src/index-types.d.ts ./lib/index-types.d.ts && npm run rollup && cp ./package-cmj.json ./cmj/package.json && cp ./src/index-types.d.ts ./cmj/index-types.d.ts",
-    "build": "npm run compile && cp ./src/index-types.d.ts ./lib && gulp build && node ./rename-imports.mjs",
-    "test:import": "npm run build  && node ./test/import-test.cjs && node ./test/import-test.mjs",
-    "test": "npm run test:browser && npm run test:node",
-    "test:build": "parcel build ./test/unit-tests.html --dist-dir test-build --target none --public-url ./ --no-source-maps",
-    "test:browser": "npm run test:build && mocha-headless-chrome -f ./test-build/unit-tests.html -a disable-web-security",
-    "test:node": "env TS_NODE_PROJECT=\"./test/tsconfig.json\" mocha -r ts-node/register test/unit/**/*.ts --exit && npm run test:import",
-    "test:watch": "rm -rf ./parcel-cache && parcel serve ./test/unit-tests.html ./test/manual-tests.html ./test/sandbox.html",
-    "tsc": "tsc && tsc --build ./tsconfig-cmj.json",
-    "clean": "rm -rf ./lib ./types ./test-build ./cmj",
-    "size": "size-limit"
+    "build": "npm run clean && tsc",
+    "clean": "rm -rf ./lib ./types ./test-build"
   },
   "targets": {
     "none": {}
