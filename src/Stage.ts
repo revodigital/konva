@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2021. Revo Digital
+ * ---
+ * Author: gabriele
+ * File: Stage.ts
+ * Project: pamela
+ * Committed last: 2021/12/6 @ 159
+ * ---
+ * Description:
+ */
+
 import { Util } from './Util';
 import { Factory } from './Factory';
 import { Container, ContainerConfig } from './Container';
@@ -496,7 +507,7 @@ export class Stage extends Container<Layer> {
     this.setPointersPositions(evt);
 
     var targetShape = this._getTargetShape(eventType);
-    var eventsEnabled = !DD.isDragging || Pamela.hitOnDragEnabled;
+    var eventsEnabled = !DD.isDragging() || Pamela.hitOnDragEnabled;
     if (targetShape && eventsEnabled) {
       targetShape._fireAndBubble(events.pointerout, { evt: evt });
       targetShape._fireAndBubble(events.pointerleave, { evt: evt });
@@ -580,12 +591,12 @@ export class Stage extends Container<Layer> {
     if (!events) {
       return;
     }
-    if (DD.isDragging && DD.node.preventDefault() && evt.cancelable) {
+    if (DD.isDragging() && DD.node().preventDefault() && evt.cancelable) {
       evt.preventDefault();
     }
     this.setPointersPositions(evt);
 
-    var eventsEnabled = !DD.isDragging || Pamela.hitOnDragEnabled;
+    var eventsEnabled = !DD.isDragging() || Pamela.hitOnDragEnabled;
     if (!eventsEnabled) {
       return;
     }

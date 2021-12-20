@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2021. Revo Digital
+ * ---
+ * Author: gabriele
+ * File: index-types.d.ts
+ * Project: pamela
+ * Committed last: 2021/12/6 @ 159
+ * ---
+ * Description:
+ */
+
 // the purpose of that file is very stupid
 // I was not able to generate correct typescript declarations from the main source code
 // because right now Konva is an object. Typescript can not define types from object like this:
@@ -15,18 +26,22 @@ import { Enhance } from './filters/Enhance';
 import { Grayscale } from './filters/Grayscale';
 import { HSL } from './filters/HSL';
 import { HSV } from './filters/HSV';
-import { Invert } from './filters/Invert';
+import { Invert }       from './filters/Invert';
 import { Kaleidoscope } from './filters/Kaleidoscope';
-import { Mask } from './filters/Mask';
-import { Noise } from './filters/Noise';
-import { Pixelate } from './filters/Pixelate';
-import { Posterize } from './filters/Posterize';
-import { RGB } from './filters/RGB';
-import { RGBA } from './filters/RGBA';
-import { Sepia } from './filters/Sepia';
-import { Solarize } from './filters/Solarize';
-import { Threshold } from './filters/Threshold';
+import { Mask }         from './filters/Mask';
+import { Noise }        from './filters/Noise';
+import { Pixelate }     from './filters/Pixelate';
+import { Posterize }    from './filters/Posterize';
+import { RGB }          from './filters/RGB';
+import { RGBA }         from './filters/RGBA';
+import { Sepia }        from './filters/Sepia';
+import { Solarize }     from './filters/Solarize';
+import { Threshold }    from './filters/Threshold';
+import { isMainThread } from 'worker_threads';
 
+/**
+ * Default Pamela namespace
+ */
 declare namespace Pamela {
   export let enableTrace: number;
   export let pixelRatio: number;
@@ -45,17 +60,18 @@ declare namespace Pamela {
   export const Node: typeof import('./Node').Node;
   export type Node = import('./Node').Node;
   export type NodeConfig = import('./Node').NodeConfig;
+  export type Point2D = import('./common/Point2D').Point2D;
 
   export type KonvaEventObject<
     EventType
-  > = import('./Node').KonvaEventObject<EventType>;
+    > = import('./Node').KonvaEventObject<EventType>;
 
   export type KonvaPointerEvent = import('./PointerEvents').KonvaPointerEvent;
 
   export type KonvaEventListener<
     This,
     EventType
-  > = import('./Node').KonvaEventListener<This, EventType>;
+    > = import('./Node').KonvaEventListener<This, EventType>;
 
   export const Container: typeof import('./Container').Container;
   export type Container = import('./Container').Container<Node>;
@@ -99,15 +115,22 @@ declare namespace Pamela {
   export type TweenConfig = import('./Tween').TweenConfig;
   export const Easings: typeof import('./Tween').Easings;
 
+  export const Barcode: typeof import('./shapes/Barcode').Barcode;
+  export type Barcode = import('./shapes/Barcode').Barcode;
+  export type BarcodeConfig = import('./shapes/Barcode').BarcodeConfig;
+
   export const Arc: typeof import('./shapes/Arc').Arc;
   export type Arc = import('./shapes/Arc').Arc;
   export type ArcConfig = import('./shapes/Arc').ArcConfig;
+
   export const Arrow: typeof import('./shapes/Arrow').Arrow;
   export type Arrow = import('./shapes/Arrow').Arrow;
   export type ArrowConfig = import('./shapes/Arrow').ArrowConfig;
+
   export const Circle: typeof import('./shapes/Circle').Circle;
   export type Circle = import('./shapes/Circle').Circle;
   export type CircleConfig = import('./shapes/Circle').CircleConfig;
+
   export const Ellipse: typeof import('./shapes/Ellipse').Ellipse;
   export type Ellipse = import('./shapes/Ellipse').Ellipse;
   export type EllipseConfig = import('./shapes/Ellipse').EllipseConfig;
@@ -127,29 +150,42 @@ declare namespace Pamela {
   export type Path = import('./shapes/Path').Path;
   export type PathConfig = import('./shapes/Path').PathConfig;
   export const Rect: typeof import('./shapes/Rect').Rect;
+
+  export const Table: typeof import('./shapes/Table').Table;
+  export type Table = import('./shapes/Table').Table;
+  export type TableConfig = import('./shapes/Table').TableConfig;
+
   export type Rect = import('./shapes/Rect').Rect;
   export type RectConfig = import('./shapes/Rect').RectConfig;
+
   export const RegularPolygon: typeof import('./shapes/RegularPolygon').RegularPolygon;
   export type RegularPolygon = import('./shapes/RegularPolygon').RegularPolygon;
   export type RegularPolygonConfig = import('./shapes/RegularPolygon').RegularPolygonConfig;
+
   export const Ring: typeof import('./shapes/Ring').Ring;
   export type Ring = import('./shapes/Ring').Ring;
   export type RingConfig = import('./shapes/Ring').RingConfig;
+
   export const Sprite: typeof import('./shapes/Sprite').Sprite;
   export type Sprite = import('./shapes/Sprite').Sprite;
   export type SpriteConfig = import('./shapes/Sprite').SpriteConfig;
+
   export const Star: typeof import('./shapes/Star').Star;
   export type Star = import('./shapes/Star').Star;
   export type StarConfig = import('./shapes/Star').StarConfig;
+
   export const Text: typeof import('./shapes/Text').Text;
   export type Text = import('./shapes/Text').Text;
   export type TextConfig = import('./shapes/Text').TextConfig;
+
   export const TextPath: typeof import('./shapes/TextPath').TextPath;
   export type TextPath = import('./shapes/TextPath').TextPath;
   export type TextPathConfig = import('./shapes/TextPath').TextPathConfig;
+
   export const Transformer: typeof import('./shapes/Transformer').Transformer;
   export type Transformer = import('./shapes/Transformer').Transformer;
   export type TransformerConfig = import('./shapes/Transformer').TransformerConfig;
+
   export const Wedge: typeof import('./shapes/Wedge').Wedge;
   export type Wedge = import('./shapes/Wedge').Wedge;
   export type WedgeConfig = import('./shapes/Wedge').WedgeConfig;

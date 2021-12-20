@@ -1,10 +1,21 @@
+/*
+ * Copyright (c) 2021. Revo Digital
+ * ---
+ * Author: gabriele
+ * File: DragAndDrop.ts
+ * Project: pamela
+ * Committed last: 2021/12/6 @ 159
+ * ---
+ * Description:
+ */
+
 import { Pamela } from './Global';
 import { Node }   from './Node';
 import { Vector2d } from './types';
 import { Util } from './Util';
 
 export const DD = {
-  get isDragging() {
+  isDragging() {
     var flag = false;
     DD._dragElements.forEach((elem) => {
       if (elem.dragStatus === 'dragging') {
@@ -14,7 +25,7 @@ export const DD = {
     return flag;
   },
   justDragged: false,
-  get node() {
+  node() {
     // return first dragging node
     var node: Node | undefined;
     DD._dragElements.forEach((elem) => {

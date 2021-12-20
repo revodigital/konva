@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2021. Revo Digital
+ * ---
+ * Author: gabriele
+ * File: Invert.ts
+ * Project: pamela
+ * Committed last: 2021/12/5 @ 141
+ * ---
+ * Description:
+ */
+
 import { Filter } from '../Node';
 /**
  * Invert Filter

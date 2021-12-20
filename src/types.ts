@@ -1,6 +1,26 @@
+/*
+ * Copyright (c) 2021. Revo Digital
+ * ---
+ * Author: gabriele
+ * File: types.ts
+ * Project: pamela
+ * Committed last: 2021/12/5 @ 141
+ * ---
+ * Description:
+ */
+
 export interface GetSet<Type, This> {
   (): Type;
+
   (v: Type): This;
+}
+
+export interface Set<Type, This> {
+  (v: Type): This;
+}
+
+export interface Get<Type> {
+  (): Type;
 }
 
 export interface Vector2d {

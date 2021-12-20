@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2021. Revo Digital
+ * ---
+ * Author: gabriele
+ * File: _FullInternals.ts
+ * Project: pamela
+ * Committed last: 2021/12/6 @ 155
+ * ---
+ * Description:
+ */
+
 // we need to import core of the Konva and then extend it with all additional objects
 
 import { Pamela as Core } from './_CoreInternals';
@@ -30,17 +41,19 @@ import { Enhance } from './filters/Enhance';
 import { Grayscale } from './filters/Grayscale';
 import { HSL } from './filters/HSL';
 import { HSV } from './filters/HSV';
-import { Invert } from './filters/Invert';
+import { Invert }       from './filters/Invert';
 import { Kaleidoscope } from './filters/Kaleidoscope';
-import { Mask } from './filters/Mask';
-import { Noise } from './filters/Noise';
-import { Pixelate } from './filters/Pixelate';
-import { Posterize } from './filters/Posterize';
-import { RGB } from './filters/RGB';
-import { RGBA } from './filters/RGBA';
-import { Sepia } from './filters/Sepia';
-import { Solarize } from './filters/Solarize';
-import { Threshold } from './filters/Threshold';
+import { Mask }         from './filters/Mask';
+import { Noise }        from './filters/Noise';
+import { Pixelate }     from './filters/Pixelate';
+import { Posterize }    from './filters/Posterize';
+import { RGB }          from './filters/RGB';
+import { RGBA }         from './filters/RGBA';
+import { Sepia }        from './filters/Sepia';
+import { Solarize }     from './filters/Solarize';
+import { Threshold }    from './filters/Threshold';
+import { Table }        from './shapes/Table';
+import { Barcode }      from './shapes/Barcode';
 
 export const Pamela = Core.Util._assign(Core, {
   Arc,
@@ -61,6 +74,8 @@ export const Pamela = Core.Util._assign(Core, {
   TextPath,
   Transformer,
   Wedge,
+  Table,
+  Barcode,
   /**
    * @namespace Filters
    * @memberof Konva

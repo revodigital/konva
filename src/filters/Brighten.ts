@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2021. Revo Digital
+ * ---
+ * Author: gabriele
+ * File: Brighten.ts
+ * Project: pamela
+ * Committed last: 2021/12/5 @ 141
+ * ---
+ * Description:
+ */
+
 import { Factory } from '../Factory';
 import { Node, Filter } from '../Node';
 import { getNumberValidator } from '../Validators';

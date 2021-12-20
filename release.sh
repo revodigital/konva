@@ -1,5 +1,16 @@
 #!/usr/bin/env bash
 
+#
+# Copyright (c) 2021. Revo Digital
+# ---
+# Author: gabriele
+# File: release.sh
+# Project: pamela
+# Committed last: 2021/12/6 @ 1457
+# ---
+# Description:
+#
+
 set -e
 old_version="$(git describe --abbrev=0 --tags)"
 new_version=$1

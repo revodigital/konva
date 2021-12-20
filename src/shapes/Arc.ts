@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2021. Revo Digital
+ * ---
+ * Author: gabriele
+ * File: Arc.ts
+ * Project: pamela
+ * Committed last: 2021/12/6 @ 159
+ * ---
+ * Description:
+ */
+
 import { Factory } from '../Factory';
 import { Shape, ShapeConfig } from '../Shape';
 import { Pamela }             from '../Global';
