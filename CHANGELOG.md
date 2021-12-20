@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.0.19 (2021-12-20)
+Adds new shape **Barcode**, for drawing automatically generated 
+barcode starting from code and encoding.
+
 ## 1.0.8 (2021-12-8)
 Added support for **jest** testing suite, migrated compiling
 defaults to **CommonJs** for better user experience and 
