@@ -12,7 +12,7 @@
   "typings": "./lib/index-types.d.ts",
   "type": "module",
   "scripts": {
-    "start": "npx cypress open",
+    "start": "npx serve && npx cypress open",
     "build": "npm run clean && tsc",
     "clean": "rm -rf ./lib ./types ./test-build"
   },
