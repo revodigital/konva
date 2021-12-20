@@ -23,13 +23,44 @@ import * as JsBarcode         from 'jsbarcode';
 import { _registerNode }      from '../Global';
 
 export interface BarcodeConfig extends ShapeConfig {
+  /**
+   * Code to generate barcode
+   */
   code?: string;
+
+  /**
+   * Indicates if the background should be transparent
+   */
   transparentBackground?: boolean;
+
+  /**
+   * Indicates width of code line
+   */
   codeLineWidth: number;
+
+  /**
+   * Encoding of generated barcode
+   */
   encoding?: string;
+
+  /**
+   * Indicates if the content of barcode should be visible
+   * or not
+   */
   showContent?: boolean;
+
+  /**
+   * Text formatting for content
+   */
   contentOptions?: ITextConfiguration;
+  /**
+   * Placeholder text used when no code is provided
+   */
   placeHolder: string;
+
+  /**
+   * Placeholder text configuration
+   */
   placeHolderOptions?: ITextConfiguration;
 }
 

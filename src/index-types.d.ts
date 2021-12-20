@@ -26,17 +26,18 @@ import { Enhance } from './filters/Enhance';
 import { Grayscale } from './filters/Grayscale';
 import { HSL } from './filters/HSL';
 import { HSV } from './filters/HSV';
-import { Invert } from './filters/Invert';
+import { Invert }       from './filters/Invert';
 import { Kaleidoscope } from './filters/Kaleidoscope';
-import { Mask } from './filters/Mask';
-import { Noise } from './filters/Noise';
-import { Pixelate } from './filters/Pixelate';
-import { Posterize } from './filters/Posterize';
-import { RGB } from './filters/RGB';
-import { RGBA } from './filters/RGBA';
-import { Sepia } from './filters/Sepia';
-import { Solarize } from './filters/Solarize';
-import { Threshold } from './filters/Threshold';
+import { Mask }         from './filters/Mask';
+import { Noise }        from './filters/Noise';
+import { Pixelate }     from './filters/Pixelate';
+import { Posterize }    from './filters/Posterize';
+import { RGB }          from './filters/RGB';
+import { RGBA }         from './filters/RGBA';
+import { Sepia }        from './filters/Sepia';
+import { Solarize }     from './filters/Solarize';
+import { Threshold }    from './filters/Threshold';
+import { isMainThread } from 'worker_threads';
 
 /**
  * Default Pamela namespace
@@ -114,15 +115,22 @@ declare namespace Pamela {
   export type TweenConfig = import('./Tween').TweenConfig;
   export const Easings: typeof import('./Tween').Easings;
 
+  export const Barcode: typeof import('./shapes/Barcode');
+  export type Barcode = import('./shapes/Barcode').Barcode;
+  export type BarcodeConfig = import('./shapes/Barcode').BarcodeConfig;
+
   export const Arc: typeof import('./shapes/Arc').Arc;
   export type Arc = import('./shapes/Arc').Arc;
   export type ArcConfig = import('./shapes/Arc').ArcConfig;
+
   export const Arrow: typeof import('./shapes/Arrow').Arrow;
   export type Arrow = import('./shapes/Arrow').Arrow;
   export type ArrowConfig = import('./shapes/Arrow').ArrowConfig;
+
   export const Circle: typeof import('./shapes/Circle').Circle;
   export type Circle = import('./shapes/Circle').Circle;
   export type CircleConfig = import('./shapes/Circle').CircleConfig;
+
   export const Ellipse: typeof import('./shapes/Ellipse').Ellipse;
   export type Ellipse = import('./shapes/Ellipse').Ellipse;
   export type EllipseConfig = import('./shapes/Ellipse').EllipseConfig;
