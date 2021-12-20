@@ -3,6 +3,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.0.21
+Fixes targeting problems
+
 ## 1.0.20
 Fixes Barcode transform problems.
 

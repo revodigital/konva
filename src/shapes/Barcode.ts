@@ -100,6 +100,7 @@ export class Barcode extends Shape<BarcodeConfig> {
 
       context.drawImage(this._imageBuffer, 0, 0);
     } else throw new InvalidBarcodeConfiguration('invalid barcode options');
+    context.fillStrokeShape(this);
   }
 
   /**
