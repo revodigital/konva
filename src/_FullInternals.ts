@@ -53,6 +53,7 @@ import { Sepia }        from './filters/Sepia';
 import { Solarize }     from './filters/Solarize';
 import { Threshold }    from './filters/Threshold';
 import { Table }        from './shapes/Table';
+import { Barcode }      from './shapes/Barcode';
 
 export const Pamela = Core.Util._assign(Core, {
   Arc,
@@ -74,6 +75,7 @@ export const Pamela = Core.Util._assign(Core, {
   Transformer,
   Wedge,
   Table,
+  Barcode,
   /**
    * @namespace Filters
    * @memberof Konva
