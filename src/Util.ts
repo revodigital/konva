@@ -983,3 +983,26 @@ export const Util = {
     }
   },
 };
+
+/**
+ * Changes the sign of the given value
+ * @param num A number to change sign to
+ */
+export const negate = (num: number): number => {
+  return (-1) * num;
+};
+
+/**
+ * Compares two arrays and returns true if they are equal, false otherwise
+ * @param a
+ * @param b
+ */
+export function isEqual<T>(a: Array<T>, b: Array<T>): boolean {
+  if (a.length !== b.length) return false;
+
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) return false;
+  }
+
+  return true;
+}
