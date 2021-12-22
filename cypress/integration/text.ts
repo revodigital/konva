@@ -13,6 +13,8 @@ import { TEST_ELEMENT_ID } from '../global/global-defs';
 import { Stage }           from '../../src/Stage';
 import { Layer }           from '../../src/Layer';
 import { Text }            from '../../src/shapes/Text';
+import { Rect }            from '../../src/shapes/Rect';
+import { Transformer }     from '../../src/shapes/Transformer';
 
 before(() => {
   const el = document.createElement('div');
@@ -33,8 +35,31 @@ it('Should make this text write', () => {
     });
 
     const l = new Layer();
-    l.add(new Text({ draggable: true, text: 'hellow', width: 200, height: 200, editable: true, fontSize: 20, lockSize: true }));
-    s.add(l)
+    const text = new Text({
+      draggable: true,
+      text: 'hellow',
+      width: 200,
+      height: 200,
+      editable: true,
+      enableNewLine: false,
+      fontSize: 15,
+      lockSize: true
+    });
+    l.add(text);
+
+    l.add(new Rect({
+      x: 200,
+      width: 200,
+      height: 200,
+      fill: 'red'
+    }));
+
+    const t = new Transformer({
+      nodes: [text]
+    });
+
+    l.add(t);
+    s.add(l);
     l.draw();
   });
 });

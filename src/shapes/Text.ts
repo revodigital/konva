@@ -51,9 +51,11 @@ export interface TextConfig extends ShapeConfig {
   letterSpacing?: number;
   wrap?: string;
   ellipsis?: boolean;
+
   editable?: boolean;
   lockSize?: boolean;
   autoFontSize?: boolean;
+  spellcheckOnEdit?: boolean;
   enableNewLine?: boolean;
 }
 
@@ -191,6 +193,7 @@ export class Text extends Shape<TextConfig> {
   lockSize: GetSet<boolean, this>;
   autoFontSize: GetSet<boolean, this>;
   enableNewLine: GetSet<boolean, this>;
+  spellcheckOnEdit: GetSet<boolean, this>;
 
   constructor(config?: TextConfig) {
     super(checkDefaultFill(config));
@@ -271,6 +274,7 @@ export class Text extends Shape<TextConfig> {
 
     // reset height
     this._textArea.style.height = 'auto';
+    this._textArea.spellcheck = this.spellcheckOnEdit() || false;
     // after browsers resized it we can set actual value
     this._textArea.style.height = this._textArea.scrollHeight + 3 + 'px';
     this._textArea.focus();
@@ -284,6 +288,8 @@ export class Text extends Shape<TextConfig> {
    * @param e
    */
   _onInputKeyDown(e: KeyboardEvent): void {
+    e.preventDefault();
+
     if (eventIsPrintableChar(e))
       this._onCharInput(e);
     else if (eventIsExit(e))
@@ -310,7 +316,6 @@ export class Text extends Shape<TextConfig> {
   _onCharInput(e: KeyboardEvent): void {
     // If input is already blocked, skip this event
     if (this._inputBlocked === true) return;
-    console.log('Input char ', e.key);
     let scale = this.getAbsoluteScale().x;
 
     // Block text area width
@@ -325,23 +330,28 @@ export class Text extends Shape<TextConfig> {
     // Current shape size
     const curShapeSize = Size2D.fromBounds(this.width(), this.height());
 
-    console.log("Txt: ", JSON.stringify(textAreaSize));
-    console.log("Shape: ", JSON.stringify(curShapeSize));
-
     // Let size grow if allowed
     if (this.lockSize() === false && textAreaSize.overflowsHeight(curShapeSize.getHeight())) {
       this.width(textAreaSize.getWidth());
       this.height(textAreaSize.getHeight());
     }
 
-    // When overflowing with blocked boundaries, block input
-    if (this.lockSize() && textAreaSize.overflowsHeight(curShapeSize.getHeight())) {
-      this._inputBlocked = true;
-      return;
+    if (this.lockSize() && this.measureTextHeight() >= (this.height() - this.fontSize())) {
+      if (this.fontSize() >= 7) {
+        this.fontSize(this.fontSize() - 1);
+        this._textArea.style.fontSize = `${ this.fontSize() }px`;
+      } else
+        this._inputBlocked = true;
     }
-      this._textArea.style.height =
-        this._textArea.scrollHeight + this.fontSize() + 'px';
+
+    this._textArea.style.height =
+      this._textArea.scrollHeight + this.fontSize() + 'px';
     this.text(this._textArea.value);
+  }
+
+  measureTextHeight(): number {
+    return (this.fontSize() * this.textArr.length * this.lineHeight()) +
+           this.padding() * 2;
   }
 
   _hideTextArea(): void {
@@ -385,6 +395,9 @@ export class Text extends Shape<TextConfig> {
       me.width(clientSize.getWidth());
       me.height(clientSize.getHeight());
     }
+
+    me._textArea.style.width = '0px';
+    me._textArea.style.height = '0px';
   }
 
   _sceneFunc(context) {
@@ -1084,3 +1097,8 @@ Factory.addGetterSetter(Text, 'autoFontSize', false);
  * Enable/disable new line creation (Break line)
  */
 Factory.addGetterSetter(Text, 'enableNewLine', false);
+
+/**
+ * Enable/disable spell checking on editing text area
+ */
+Factory.addGetterSetter(Text, 'spellcheckOnEdit', false);
