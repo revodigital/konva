@@ -246,8 +246,6 @@ export class Text extends Shape<TextConfig> {
     this._textArea.style.top = areaPosition.y + 'px';
     this._textArea.style.left = areaPosition.x + 'px';
     this._textArea.style.width = this.width() + 'px';
-    this._textArea.style.height =
-      this.height() + 5 + 'px';
     this._textArea.style.fontSize = this.fontSize() + 'px';
     this._textArea.style.border = 'none';
     this._textArea.style.padding = '0px';
@@ -339,33 +337,25 @@ export class Text extends Shape<TextConfig> {
     // Block text area width
     this._resizeTextAreaWidth(this.width() * scale);
 
-    // Text area bounds
-    const textAreaSize = Size2D.fromBounds(parseInt(this._textArea.style.width.replace(
-        'px',
-        '')),
-      parseInt(this._textArea.style.height.replace('px', '')));
-
-    // Current shape size
-    const curShapeSize = Size2D.fromBounds(this.width(), this.height());
-
     // Let size grow if allowed
-    if (this.lockSize() === false && textAreaSize.overflowsHeight(curShapeSize.getHeight())) {
-      this.width(textAreaSize.getWidth());
-      this.height(textAreaSize.getHeight());
+    if (this.lockSize() === false && this.measureTextHeight() >= (this.height() - this.fontSize())) {
+      // Resize height of shape and also of text area
+      this.height(this.measureTextHeight() + this.fontSize());
+      this._textArea.style.height = this.height() + 'px';
     }
 
-    if (this.lockSize() && this.measureTextHeight() >= (this.height() - this.fontSize())) {
+    // Check for possibility of font decrease
+    if (this.lockSize() === true && this.measureTextHeight() >= (this.height() - this.fontSize())) {
       if (this.fontSize() >= 7) {
         this.fontSize(this.fontSize() - 1);
         this._textArea.style.fontSize = `${ this.fontSize() }px`;
       } else {
+        // Completely block input (only add-text actions)
         this._inputBlocked = true;
         this._textArea.disabled = true;
       }
     }
 
-    this._textArea.style.height =
-      this._textArea.scrollHeight + this.fontSize() + 'px';
     this.text(this._textArea.value);
   }
 

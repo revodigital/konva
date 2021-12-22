@@ -38,8 +38,8 @@ it('Should make this text write', () => {
     const text = new Text({
       draggable: true,
       text: 'hellow',
-      width: 200,
-      height: 200,
+      width: 100,
+      height: 100,
       editable: true,
       fontSize: 15,
       lockSize: true
