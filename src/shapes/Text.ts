@@ -29,6 +29,11 @@ import {
 import { cli }                                               from 'cypress';
 import { eventIsExit, eventIsNewLine, eventIsPrintableChar } from './utils';
 
+/**
+ * Minimum font size
+ */
+export const MIN_FONT_SIZE = 6;
+
 export function stringToArray(string: string) {
   // we need to use `Array.from` because it can split unicode string correctly
   // we also can use some regexp magic from lodash:
@@ -210,6 +215,10 @@ export class Text extends Shape<TextConfig> {
     document.body.appendChild(this._textArea);
   }
 
+  /**
+   * Called when user starts editing this text
+   * @param event Event fired
+   */
   _onEditingStart(event: KonvaEventObject<MouseEvent>): void {
     if (!this.editable()) return;
 
@@ -271,10 +280,9 @@ export class Text extends Shape<TextConfig> {
     this._textArea.style.transform = transform;
 
     // reset height
-    this._textArea.style.height = 'auto';
     this._textArea.spellcheck = this.spellcheckOnEdit() || false;
     // after browsers resized it we can set actual value
-    this._textArea.style.height = this._textArea.scrollHeight + 3 + 'px';
+    this._textArea.style.height = this.height() + 'px';
     this._textArea.focus();
 
     // Event listener for unprintable chars
@@ -294,6 +302,19 @@ export class Text extends Shape<TextConfig> {
       this._onCharInput(e);
     else if (eventIsExit(e))
       this._onExitInput(e);
+  }
+
+  /**
+   * Calculates font size to make text fit into the given rectangle.
+   * @param size Rectangle size
+   * @returns true is it can be contained, false otherwise.
+   */
+  canFitRect(size: Size2D): boolean {
+    const newFontSize = Math.floor(Math.sqrt((size.getWidth() * size.getHeight()) / this.text().length));
+
+    if (newFontSize < MIN_FONT_SIZE) return false;
+    this.fontSize(newFontSize);
+    return true;
   }
 
   /**
@@ -337,8 +358,10 @@ export class Text extends Shape<TextConfig> {
       if (this.fontSize() >= 7) {
         this.fontSize(this.fontSize() - 1);
         this._textArea.style.fontSize = `${ this.fontSize() }px`;
-      } else
+      } else {
         this._inputBlocked = true;
+        this._textArea.disabled = true;
+      }
     }
 
     this._textArea.style.height =
@@ -1089,11 +1112,6 @@ Factory.addGetterSetter(Text, 'lockSize', false);
  * Enable/disable auto font size
  */
 Factory.addGetterSetter(Text, 'autoFontSize', false);
-
-/**
- * Enable/disable new line creation (Break line)
- */
-Factory.addGetterSetter(Text, 'enableNewLine', false);
 
 /**
  * Enable/disable spell checking on editing text area

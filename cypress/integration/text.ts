@@ -41,7 +41,6 @@ it('Should make this text write', () => {
       width: 200,
       height: 200,
       editable: true,
-      enableNewLine: false,
       fontSize: 15,
       lockSize: true
     });
