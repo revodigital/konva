@@ -56,7 +56,6 @@ export interface TextConfig extends ShapeConfig {
   lockSize?: boolean;
   autoFontSize?: boolean;
   spellcheckOnEdit?: boolean;
-  enableNewLine?: boolean;
 }
 
 // constants
@@ -192,7 +191,6 @@ export class Text extends Shape<TextConfig> {
   editable: GetSet<boolean, this>;
   lockSize: GetSet<boolean, this>;
   autoFontSize: GetSet<boolean, this>;
-  enableNewLine: GetSet<boolean, this>;
   spellcheckOnEdit: GetSet<boolean, this>;
 
   constructor(config?: TextConfig) {
@@ -288,15 +286,14 @@ export class Text extends Shape<TextConfig> {
    * @param e
    */
   _onInputKeyDown(e: KeyboardEvent): void {
-    e.preventDefault();
+    // by default, new line is disabled
+    if (eventIsNewLine(e))
+      return;
 
     if (eventIsPrintableChar(e))
       this._onCharInput(e);
     else if (eventIsExit(e))
       this._onExitInput(e);
-
-    else if (eventIsNewLine(e) && this.enableNewLine())
-      this._onCharInput(e);
   }
 
   /**
