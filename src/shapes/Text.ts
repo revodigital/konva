@@ -21,7 +21,8 @@ import {
 }                             from '../Validators';
 import { _registerNode } from '../Global';
 
-import { GetSet } from '../types';
+import { GetSet }           from '../types';
+import { KonvaEventObject } from '../Node';
 
 export function stringToArray(string: string) {
   // we need to use `Array.from` because it can split unicode string correctly
@@ -45,6 +46,7 @@ export interface TextConfig extends ShapeConfig {
   letterSpacing?: number;
   wrap?: string;
   ellipsis?: boolean;
+  editable?: boolean;
 }
 
 // constants
@@ -171,6 +173,9 @@ export class Text extends Shape<TextConfig> {
 
   textWidth: number;
   textHeight: number;
+
+  editable: GetSet<boolean, this>;
+
   constructor(config?: TextConfig) {
     super(checkDefaultFill(config));
     // update text data for certain attr changes
@@ -178,6 +183,133 @@ export class Text extends Shape<TextConfig> {
       this.on(ATTR_CHANGE_LIST[n] + CHANGE_KONVA, this._setTextData);
     }
     this._setTextData();
+
+    // Editing listeners
+    this.on('dblclick', (e) => this._onEditingStart(e))
+  }
+
+  _onEditingStart(event: KonvaEventObject<MouseEvent>): void {
+    if(!this.editable()) return;
+
+    this.hide();
+
+    // at first lets find position of text node relative to the stage:
+    var textPosition = this.absolutePosition();
+    let node = this;
+
+    // so position of textarea will be the sum of positions above:
+    var areaPosition = {
+      x: this.getStage().container().offsetLeft + textPosition.x,
+      y: this.getStage().container().offsetTop + textPosition.y,
+    };
+
+    // create textarea and style it
+    var textarea = document.createElement('textarea');
+    document.body.appendChild(textarea);
+
+    // apply many styles to match text on canvas as close as possible
+    // remember that text rendering on canvas and on the textarea can be different
+    // and sometimes it is hard to make it 100% the same. But we will try...
+    textarea.value = this.text();
+    textarea.style.position = 'absolute';
+    textarea.style.top = areaPosition.y + 'px';
+    textarea.style.left = areaPosition.x + 'px';
+    textarea.style.width = this.width() + 'px';
+    textarea.style.height =
+      this.height()+ 5 + 'px';
+    textarea.style.fontSize = this.fontSize() + 'px';
+    textarea.style.border = 'none';
+    textarea.style.padding = '0px';
+    textarea.style.margin = '0px';
+    textarea.style.overflow = 'hidden';
+    textarea.style.background = 'none';
+    textarea.style.outline = 'none';
+    textarea.style.resize = 'none';
+    textarea.style.lineHeight = this.lineHeight().toString();
+    textarea.style.fontFamily = this.fontFamily();
+    textarea.style.transformOrigin = 'left top';
+    textarea.style.textAlign = this.align();
+    textarea.style.color = this.fill();
+    let rotation = this.rotation();
+    let transform = '';
+    if (rotation) {
+      transform += 'rotateZ(' + rotation + 'deg)';
+    }
+
+    var px = 0;
+    // also we need to slightly move textarea on firefox
+    // because it jumps a bit
+    var isFirefox =
+      navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+    if (isFirefox) {
+      px += 2 + Math.round(this.fontSize() / 20);
+    }
+    transform += 'translateY(-' + px + 'px)';
+
+    textarea.style.transform = transform;
+
+    // reset height
+    textarea.style.height = 'auto';
+    // after browsers resized it we can set actual value
+    textarea.style.height = textarea.scrollHeight + 3 + 'px';
+
+    textarea.focus();
+
+    function removeTextarea() {
+      textarea.parentNode.removeChild(textarea);
+      window.removeEventListener('click', handleOutsideClick);
+      node.show();
+    }
+
+    // function setTextareaWidth(newWidth) {
+    //   if (!newWidth) {
+    //     // set width for placeholder
+    //     newWidth = this.placeholder.length * node.fontSize();
+    //   }
+    //   // some extra fixes on different browsers
+    //   var isSafari = /^((?!chrome|android).)*safari/i.test(
+    //     navigator.userAgent
+    //   );
+    //   var isFirefox =
+    //     navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+    //   if (isSafari || isFirefox) {
+    //     newWidth = Math.ceil(newWidth);
+    //   }
+    //
+    //   textarea.style.width = newWidth + 'px';
+    // }
+
+    textarea.addEventListener('keydown', function (e) {
+      // hide on enter
+      // but don't hide on shift + enter
+      if (e.code === 'Enter' && !e.shiftKey) {
+        node.text(textarea.value);
+        removeTextarea();
+      }
+      // on esc do not set value back to node
+      if (e.keyCode === 27) {
+        removeTextarea();
+      }
+    });
+
+    textarea.addEventListener('keydown', function (e) {
+      let scale = node.getAbsoluteScale().x;
+      //setTextareaWidth(node.width() * scale);
+      textarea.style.height = 'auto';
+      textarea.style.height =
+        textarea.scrollHeight + node.fontSize() + 'px';
+    });
+
+    function handleOutsideClick(e) {
+      if (e.target !== textarea) {
+        node.text(textarea.value);
+        removeTextarea();
+      }
+    }
+  }
+
+  _onEditingEnd(): void {
+
   }
 
   _sceneFunc(context) {
@@ -847,3 +979,8 @@ Factory.addGetterSetter(Text, 'text', '', getStringValidator());
  */
 
 Factory.addGetterSetter(Text, 'textDecoration', '');
+
+/**
+ * Enable/disable editing possibility to this text
+ */
+Factory.addGetterSetter(Text, 'editable', false)
