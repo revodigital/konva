@@ -92,3 +92,23 @@ export const toInitialUpper = (txt: string): string => {
     return '';
   }
 };
+
+/**
+ * Checks if an event is a printable character
+ * @param e
+ */
+export const eventIsPrintableChar = (e: KeyboardEvent): boolean => {
+  return e.key !== undefined && e.key.length === 1;
+}
+
+/**
+ * Checks if an event is an exit char for an input text area
+ * @param e
+ */
+export const eventIsExit = (e: KeyboardEvent): boolean => {
+  return (e.code === 'Enter' && !e.shiftKey) || e.keyCode === 27;
+}
+
+export const eventIsNewLine = (e: KeyboardEvent): boolean => {
+  return (e.code === 'Enter' && e.shiftKey);
+}
