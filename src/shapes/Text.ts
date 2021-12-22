@@ -21,13 +21,23 @@ import {
 }                             from '../Validators';
 import { _registerNode }      from '../Global';
 
-import { GetSet }                                            from '../types';
-import { KonvaEventObject }                                  from '../Node';
+import { GetSet }           from '../types';
+import { KonvaEventObject } from '../Node';
 import {
   Size2D
-}                                                            from '../common/Size2D';
-import { cli }                                               from 'cypress';
-import { eventIsExit, eventIsNewLine, eventIsPrintableChar } from './utils';
+}                           from '../common/Size2D';
+import { cli }              from 'cypress';
+import {
+  eventIsExit,
+  eventIsNewLine,
+  eventAddsText,
+  eventRemovesText,
+  removeSlice,
+  isDeleteForward,
+  isSimplePushPop,
+  popBefore,
+  popAfter, cursorIsAtEndOfInput, cursorIsAtStartOfInput
+} from './utils';
 
 /**
  * Minimum font size
@@ -292,14 +302,51 @@ export class Text extends Shape<TextConfig> {
    * @param e
    */
   _onInputKeyDown(e: KeyboardEvent): void {
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+
     // by default, new line is disabled
     if (eventIsNewLine(e))
       return;
 
-    if (eventIsPrintableChar(e))
-      this._onCharInput(e);
-    else if (eventIsExit(e))
+    // Directly sync text and allow editing
+    if (eventRemovesText(e, this._textArea)) {
+      this._onRemoveText(e);
+    }
+
+    if (eventAddsText(e, this._textArea) && !this._inputBlocked) {
+      this._onAddText(e);
+      console.log('Add ', e.key);
+    } else if (eventIsExit(e))
       this._onExitInput(e);
+  }
+
+  _onRemoveText(e: KeyboardEvent): void {
+    if (isDeleteForward(e)) {
+      if(cursorIsAtStartOfInput(this._textArea, this.text())) return;
+
+      this._applyTextToEditor(removeSlice(this.text(),
+        this._textArea.selectionStart,
+        this._textArea.selectionEnd));
+    }
+
+    else if (!isDeleteForward(e)) {
+      if(cursorIsAtEndOfInput(this._textArea, this.text())) return;
+
+      if (isSimplePushPop(this._textArea))
+        this._applyTextToEditor(popBefore(this.text(), this._textArea.selectionStart));
+      else {
+        this._applyTextToEditor(removeSlice(this.text(),
+          this._textArea.selectionStart,
+          this._textArea.selectionEnd));
+      }
+    }
+  }
+
+  _applyTextToEditor(text: string) {
+    this.text(text);
+    this._textArea.value = text;
   }
 
   /**
@@ -329,9 +376,7 @@ export class Text extends Shape<TextConfig> {
    * Called when there is a new input char (not an exit one)
    * @param e
    */
-  _onCharInput(e: KeyboardEvent): void {
-    // If input is already blocked, skip this event
-    if (this._inputBlocked === true) return;
+  _onAddText(e: KeyboardEvent): void {
     let scale = this.getAbsoluteScale().x;
 
     // Block text area width
@@ -356,7 +401,8 @@ export class Text extends Shape<TextConfig> {
       }
     }
 
-    this.text(this._textArea.value);
+    this._textArea.value += e.key;
+    this.text(this.text() + e.key);
   }
 
   measureTextHeight(): number {
