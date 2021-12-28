@@ -302,19 +302,20 @@ export class Text extends Shape<TextConfig> {
    * @param e
    */
   _onInputKeyDown(e: KeyboardEvent): void {
-    console.log(e);
     // by default, new line is disabled
     if (eventIsNewLine(e))
       return;
 
-    if (eventAddsText(e, this._textArea) && !this._inputBlocked) {
+    // Intercept add text events
+    if (eventAddsText(e, this._textArea) && !this._inputBlocked)
       this._onAddText(e);
-      e.preventDefault();
-      e.stopImmediatePropagation();
-    }
+
+    // Check for exiting events
     else if (eventIsExit(e))
       this._onExitInput(e);
 
+    // Stop propagation from other listeners
+    e.stopImmediatePropagation();
   }
 
   /**
@@ -368,8 +369,6 @@ export class Text extends Shape<TextConfig> {
         this._inputBlocked = true;
       }
     }
-
-    this._textArea.value += e.key;
   }
 
   measureTextHeight(): number {
