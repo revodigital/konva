@@ -255,7 +255,7 @@ export class Text extends Shape<TextConfig> {
     this._textArea.style.visibility = 'hidden';
     document.body.appendChild(this._textArea);
 
-    if(this.expandToFit()) this.fitContainer();
+    if (this.expandToFit()) this.fitContainer();
   }
 
   /**
@@ -336,12 +336,6 @@ export class Text extends Shape<TextConfig> {
   private _onInputKeyDown(e: KeyboardEvent): void {
     const tmp = this.text();
 
-    // Check if text can be resized to fit container
-    if (this.expandToFit() === true) {
-      const f = this.fitContainer();
-      this._setTextAreaFontSize(f);
-    }
-
     // Handle specifically new line
     if (eventIsNewLine(e))
       this._onNewLine(e);
@@ -404,6 +398,12 @@ export class Text extends Shape<TextConfig> {
    * @param e
    */
   private _onRemoveText(e: KeyboardEvent): void {
+    // Check if text can be resized to fit container
+    if (this.expandToFit() === true) {
+      const f = this.fitContainer();
+      this._setTextAreaFontSize(f);
+    }
+
     // Resize if dimensions are not locked
     if (this.lockSize() === true) return;
 
@@ -442,17 +442,30 @@ export class Text extends Shape<TextConfig> {
     }
 
     // Check for possibility of font decrease when in lockSize mode
-    if (this.lockSize() === true && this.measureTextHeight() + this.fontSize() > this.height()) {
-      if (this.fontSize() >= 7) {
-        this.fontSize(this.fontSize() - 1);
-        this._textArea.style.fontSize = `${ this.fontSize() }px`;
-      } else
-        // Block only add-text actions
-        this._inputBlocked = true;
-    }
+    if (!this._decreaseFontSizeToFit())
+      // Block only add-text actions
+      this._inputBlocked = true;
+
 
     // Sync current text. If it is removed, all calculations of text height will be incorrect
     this.text(this._textArea.value + e.key);
+  }
+
+  /**
+   * Decreases font size to make text fit container
+   * @private
+   */
+  private _decreaseFontSizeToFit(): boolean {
+    if(this.lockSize() === false) return true;
+
+    while (this.measureTextHeight() + this.fontSize() > this.height()) {
+      if (this.fontSize() < 7) return false;
+
+      this.fontSize(this.fontSize() - 1);
+      this._textArea.style.fontSize = `${ this.fontSize() }px`;
+      console.log("Pass to ", this.fontSize());
+    }
+    return true;
   }
 
   /**
