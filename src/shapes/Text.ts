@@ -246,8 +246,8 @@ export class Text extends Shape<TextConfig> {
 
     // so position of textarea will be the sum of positions above:
     var areaPosition = {
-      x: this.getStage().container().offsetLeft + textPosition.x,
-      y: this.getStage().container().offsetTop + textPosition.y,
+      x: this.getStage().container().offsetLeft + textPosition.x + 2,
+      y: this.getStage().container().offsetTop + textPosition.y + 2,
     };
 
     // apply many styles to match text on canvas as close as possible
@@ -278,14 +278,14 @@ export class Text extends Shape<TextConfig> {
     }
 
     var px = 0;
-    // also we need to slightly move this._textArea on firefox
-    // because it jumps a bit
-    var isFirefox =
-      navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
-    if (isFirefox) {
-      px += 2 + Math.round(this.fontSize() / 20);
-    }
-    transform += 'translateY(-' + px + 'px)';
+    // // also we need to slightly move this._textArea on firefox
+    // // because it jumps a bit
+    // var isFirefox =
+    //   navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+    // if (isFirefox) {
+    //   px += 2 + Math.round(this.fontSize() / 20);
+    // }
+    // transform += 'translateY(-' + px + 'px)';
 
     this._textArea.style.transform = transform;
 
