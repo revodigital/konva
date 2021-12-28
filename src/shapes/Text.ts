@@ -71,6 +71,7 @@ export interface TextConfig extends ShapeConfig {
   lockSize?: boolean;
   autoFontSize?: boolean;
   spellcheckOnEdit?: boolean;
+  enableNewLine?: boolean;
 }
 
 // constants
@@ -207,6 +208,7 @@ export class Text extends Shape<TextConfig> {
   lockSize: GetSet<boolean, this>;
   autoFontSize: GetSet<boolean, this>;
   spellcheckOnEdit: GetSet<boolean, this>;
+  enableNewLine: GetSet<boolean, this>;
 
   constructor(config?: TextConfig) {
     super(checkDefaultFill(config));
@@ -302,17 +304,18 @@ export class Text extends Shape<TextConfig> {
    * @param e
    */
   _onInputKeyDown(e: KeyboardEvent): void {
-    // by default, new line is disabled
+    // Handle specifically new line
     if (eventIsNewLine(e))
-      return;
+      this._onNewLine(e);
 
     // Intercept add text events
-    if (eventAddsText(e, this._textArea) && !this._inputBlocked)
+    else if (eventAddsText(e, this._textArea) && !this._inputBlocked)
       this._onAddText(e);
 
     // Check for exiting events
-    else if (eventIsExit(e))
+    else if (eventIsExit(e)) {
       this._onExitInput(e);
+    }
 
     // Stop propagation from other listeners
     e.stopImmediatePropagation();
@@ -340,6 +343,18 @@ export class Text extends Shape<TextConfig> {
     this.text(this._textArea.value);
     this._hideTextArea();
     this._onEditingEnd(this);
+  }
+
+  /**
+   * Called when new line is inserted
+   * @param e
+   */
+  _onNewLine(e: KeyboardEvent): void {
+    if (this.enableNewLine() === true) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
   }
 
   /**
@@ -1122,3 +1137,8 @@ Factory.addGetterSetter(Text, 'autoFontSize', false);
  * Enable/disable spell checking on editing text area
  */
 Factory.addGetterSetter(Text, 'spellcheckOnEdit', false);
+
+/**
+ * Enable / disable new line insert
+ */
+Factory.addGetterSetter(Text, 'enableNewLine', false);

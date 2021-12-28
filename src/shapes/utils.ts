@@ -143,9 +143,9 @@ export const isDeleteForward = (e: KeyboardEvent): boolean => {
  * @param e
  */
 export const eventIsExit = (e: KeyboardEvent): boolean => {
-  return (e.code === 'Enter' && !e.shiftKey) || e.keyCode === 27;
+  return (e.code === 'Enter' && !e.shiftKey);
 };
 
 export const eventIsNewLine = (e: KeyboardEvent): boolean => {
-  return (e.code === 'Enter' && e.shiftKey);
+  return (e.key === 'Enter' && e.shiftKey === true);
 };
