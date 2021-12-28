@@ -37,7 +37,7 @@ import {
   isSimplePushPop,
   popBefore,
   popAfter, cursorIsAtEndOfInput, cursorIsAtStartOfInput
-} from './utils';
+}                           from './utils';
 
 /**
  * Minimum font size
@@ -302,51 +302,14 @@ export class Text extends Shape<TextConfig> {
    * @param e
    */
   _onInputKeyDown(e: KeyboardEvent): void {
-    e.preventDefault();
-    e.stopPropagation();
-    e.stopImmediatePropagation();
-
     // by default, new line is disabled
     if (eventIsNewLine(e))
       return;
 
-    // Directly sync text and allow editing
-    if (eventRemovesText(e, this._textArea)) {
-      this._onRemoveText(e);
-    }
-
-    if (eventAddsText(e, this._textArea) && !this._inputBlocked) {
+    if (eventAddsText(e, this._textArea) && !this._inputBlocked)
       this._onAddText(e);
-      console.log('Add ', e.key);
-    } else if (eventIsExit(e))
+    else if (eventIsExit(e))
       this._onExitInput(e);
-  }
-
-  _onRemoveText(e: KeyboardEvent): void {
-    if (isDeleteForward(e)) {
-      if(cursorIsAtStartOfInput(this._textArea, this.text())) return;
-
-      this._applyTextToEditor(removeSlice(this.text(),
-        this._textArea.selectionStart,
-        this._textArea.selectionEnd));
-    }
-
-    else if (!isDeleteForward(e)) {
-      if(cursorIsAtEndOfInput(this._textArea, this.text())) return;
-
-      if (isSimplePushPop(this._textArea))
-        this._applyTextToEditor(popBefore(this.text(), this._textArea.selectionStart));
-      else {
-        this._applyTextToEditor(removeSlice(this.text(),
-          this._textArea.selectionStart,
-          this._textArea.selectionEnd));
-      }
-    }
-  }
-
-  _applyTextToEditor(text: string) {
-    this.text(text);
-    this._textArea.value = text;
   }
 
   /**
@@ -364,10 +327,11 @@ export class Text extends Shape<TextConfig> {
 
   /**
    * Called when user presses something to exit editing mode
-   * (enter or outside press)
+   * (enter or outside press) Closes editing mode and saves edited text
    * @param e
    */
   _onExitInput(e: KeyboardEvent): void {
+    this.text(this._textArea.value);
     this._hideTextArea();
     this._onEditingEnd(this);
   }
@@ -400,9 +364,6 @@ export class Text extends Shape<TextConfig> {
         this._textArea.disabled = true;
       }
     }
-
-    this._textArea.value += e.key;
-    this.text(this.text() + e.key);
   }
 
   measureTextHeight(): number {
