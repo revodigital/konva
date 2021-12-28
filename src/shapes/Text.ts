@@ -335,6 +335,13 @@ export class Text extends Shape<TextConfig> {
    */
   private _onInputKeyDown(e: KeyboardEvent): void {
     const tmp = this.text();
+
+    // Check if text can be resized to fit container
+    if (this.expandToFit() === true) {
+      const f = this.fitContainer();
+      this._setTextAreaFontSize(f);
+    }
+
     // Handle specifically new line
     if (eventIsNewLine(e))
       this._onNewLine(e);
@@ -397,12 +404,6 @@ export class Text extends Shape<TextConfig> {
    * @param e
    */
   private _onRemoveText(e: KeyboardEvent): void {
-    // Check if text can be resized to fit container
-    if (this.expandToFit() === true) {
-      const f = this.fitContainer();
-      this._setTextAreaFontSize(f);
-    }
-
     // Resize if dimensions are not locked
     if (this.lockSize() === true) return;
 
@@ -452,7 +453,6 @@ export class Text extends Shape<TextConfig> {
 
     // Sync current text. If it is removed, all calculations of text height will be incorrect
     this.text(this._textArea.value + e.key);
-    this.fitContainer();
   }
 
   /**
