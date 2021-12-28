@@ -9,8 +9,8 @@
  * Description:
  */
 
-import { Util } from '../Util';
-import { Factory } from '../Factory';
+import { Util }               from '../Util';
+import { Factory }            from '../Factory';
 import { Shape, ShapeConfig } from '../Shape';
 import { Pamela }             from '../Global';
 import {
@@ -19,9 +19,30 @@ import {
   getNumberOrAutoValidator,
   getBooleanValidator,
 }                             from '../Validators';
-import { _registerNode } from '../Global';
+import { _registerNode }      from '../Global';
 
-import { GetSet } from '../types';
+import { GetSet }           from '../types';
+import { KonvaEventObject } from '../Node';
+import {
+  Size2D
+}                           from '../common/Size2D';
+import { cli }              from 'cypress';
+import {
+  eventIsExit,
+  eventIsNewLine,
+  eventAddsText,
+  eventRemovesText,
+  removeSlice,
+  isDeleteForward,
+  isSimplePushPop,
+  popBefore,
+  popAfter, cursorIsAtEndOfInput, cursorIsAtStartOfInput
+}                           from './utils';
+
+/**
+ * Minimum font size
+ */
+export const MIN_FONT_SIZE = 6;
 
 export function stringToArray(string: string) {
   // we need to use `Array.from` because it can split unicode string correctly
@@ -45,6 +66,37 @@ export interface TextConfig extends ShapeConfig {
   letterSpacing?: number;
   wrap?: string;
   ellipsis?: boolean;
+
+  /**
+   * Indicates if this text is editable or not
+   * (using inline textarea)
+   */
+  editable?: boolean;
+
+  /**
+   * Indicates if boundaries of this text can increase when in editing mode.
+   * If it is disabled, font size will became dynamic. This means that text overflowing fixed
+   * boundaries will cause font size decrease until 6px.
+   */
+  lockSize?: boolean;
+  autoFontSize?: boolean;
+
+  /**
+   * Enables / disables spellcheck while editing text
+   */
+  spellcheckOnEdit?: boolean;
+
+  /**
+   * If set to true, new line will be added using Shift + Enter shortcut,
+   * otherwise it will be impossible to create custom line breaks.
+   */
+  enableNewLine?: boolean;
+
+  /**
+   * When this option is true, font size will be also recalculated to make text fit the container boundaries.
+   * This calculation is triggered at every input
+   */
+  expandToFit?: boolean;
 }
 
 // constants
@@ -94,9 +146,9 @@ function normalizeFontFamily(fontFamily: string) {
     .map((family) => {
       family = family.trim();
       const hasSpace = family.indexOf(' ') >= 0;
-      const hasQuotes = family.indexOf('"') >= 0 || family.indexOf("'") >= 0;
+      const hasQuotes = family.indexOf('"') >= 0 || family.indexOf('\'') >= 0;
       if (hasSpace && !hasQuotes) {
-        family = `"${family}"`;
+        family = `"${ family }"`;
       }
       return family;
     })
@@ -104,6 +156,7 @@ function normalizeFontFamily(fontFamily: string) {
 }
 
 var dummyContext;
+
 function getDummyContext() {
   if (dummyContext) {
     return dummyContext;
@@ -115,6 +168,7 @@ function getDummyContext() {
 function _fillFunc(context) {
   context.fillText(this._partialText, this._partialTextX, this._partialTextY);
 }
+
 function _strokeFunc(context) {
   context.strokeText(this._partialText, this._partialTextX, this._partialTextY);
 }
@@ -168,9 +222,23 @@ export class Text extends Shape<TextConfig> {
   _partialText: string;
   _partialTextX = 0;
   _partialTextY = 0;
+  _inputBlocked = false;
+  _editing = false;
+  _textArea: HTMLTextAreaElement;
 
   textWidth: number;
   textHeight: number;
+
+  editable: GetSet<boolean, this>;
+  lockSize: GetSet<boolean, this>;
+  autoFontSize: GetSet<boolean, this>;
+  spellcheckOnEdit: GetSet<boolean, this>;
+  enableNewLine: GetSet<boolean, this>;
+  expandToFit: GetSet<boolean, this>;
+
+  /**
+   * Creates a new Text shape
+   */
   constructor(config?: TextConfig) {
     super(checkDefaultFill(config));
     // update text data for certain attr changes
@@ -178,8 +246,352 @@ export class Text extends Shape<TextConfig> {
       this.on(ATTR_CHANGE_LIST[n] + CHANGE_KONVA, this._setTextData);
     }
     this._setTextData();
+
+    // Editing listeners
+    this.on('dblclick', (e) => this._onEditingStart(e));
+    // Create text area
+    // create textarea and style it
+    this._textArea = document.createElement('textarea');
+    this._textArea.style.visibility = 'hidden';
+    document.body.appendChild(this._textArea);
+
+    if (this.expandToFit()) this.fitContainer();
   }
 
+  /**
+   * Called when user starts editing this text
+   * @param event Event fired
+   */
+  private _onEditingStart(event: KonvaEventObject<MouseEvent>): void {
+    if (!this.editable()) return;
+
+    this.hide();
+    this._showTextArea();
+    this._editing = true;
+    this._inputBlocked = false;
+
+    // at first lets find position of text node relative to the stage:
+    var textPosition = this.absolutePosition();
+
+    // so position of textarea will be the sum of positions above:
+    var areaPosition = {
+      x: this.getStage().container().offsetLeft + textPosition.x + 2,
+      y: this.getStage().container().offsetTop + textPosition.y + 2,
+    };
+
+    // apply many styles to match text on canvas as close as possible
+    // remember that text rendering on canvas and on the textarea can be different
+    // and sometimes it is hard to make it 100% the same. But we will try...
+    this._textArea.value = this.text();
+    this._textArea.style.position = 'absolute';
+    this._textArea.style.top = areaPosition.y + 'px';
+    this._textArea.style.left = areaPosition.x + 'px';
+    this._textArea.style.width = this.width() + 'px';
+    this._textArea.style.fontSize = this.fontSize() + 'px';
+    this._textArea.style.border = 'none';
+    this._textArea.style.padding = '0px';
+    this._textArea.style.margin = '0px';
+    this._textArea.style.overflow = 'hidden';
+    this._textArea.style.background = 'none';
+    this._textArea.style.outline = 'none';
+    this._textArea.style.resize = 'none';
+    this._textArea.style.lineHeight = this.lineHeight().toString();
+    this._textArea.style.fontFamily = this.fontFamily();
+    this._textArea.style.transformOrigin = 'left top';
+    this._textArea.style.textAlign = this.align();
+    this._textArea.style.color = this.fill();
+    let rotation = this.rotation();
+    let transform = '';
+    if (rotation) {
+      transform += 'rotateZ(' + rotation + 'deg)';
+    }
+
+    // var px = 0;
+    // // also we need to slightly move this._textArea on firefox
+    // // because it jumps a bit
+    // var isFirefox =
+    //   navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+    // if (isFirefox) {
+    //   px += 2 + Math.round(this.fontSize() / 20);
+    // }
+    // transform += 'translateY(-' + px + 'px)';
+
+    this._textArea.style.transform = transform;
+
+    this._textArea.spellcheck = this.spellcheckOnEdit() || false;
+    // Set text area height
+    this._textArea.style.height = this.height() + 'px';
+    // Focus this text area
+    this._textArea.focus();
+
+    // Event listener for keydown events
+    this._textArea.addEventListener('keydown', (e) => this._onInputKeyDown(e));
+  }
+
+  /**
+   * Basic event dispatcher (based on event type or key, calls other event managers
+   * for specific behaviors)
+   * @param e
+   */
+  private _onInputKeyDown(e: KeyboardEvent): void {
+    const tmp = this.text();
+
+    // Handle specifically new line
+    if (eventIsNewLine(e))
+      this._onNewLine(e);
+
+    // In case of add text when input is blocked, block event and replace original text
+    if (eventAddsText(e, this._textArea) && this._inputBlocked) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      this._textArea.value = tmp;
+      this.text(tmp);
+      return;
+    } else if (eventAddsText(e, this._textArea) && !this._inputBlocked)
+      this._onAddText(e);
+    else if (eventRemovesText(e, this._textArea))
+      this._onRemoveText(e);
+
+    // Check for exiting events
+    else if (eventIsExit(e))
+      this._onExitInput(e);
+
+    // Stop propagation from other listeners
+    e.stopImmediatePropagation();
+  }
+
+  /**
+   * Calculates font size to make text fit into the given rectangle.
+   * @param size Rectangle size
+   * @returns true is it can be contained, false otherwise.
+   */
+  canFitRect(size: Size2D): boolean {
+    const newFontSize = Math.floor(Math.sqrt((size.getWidth() * size.getHeight()) / this.text().length));
+
+    if (newFontSize < MIN_FONT_SIZE) return false;
+    this.fontSize(newFontSize);
+    return true;
+  }
+
+  /**
+   * Called when user presses something to exit editing mode
+   * (enter or outside press) Closes editing mode and saves edited text
+   * @param e
+   */
+  private _onExitInput(e: KeyboardEvent): void {
+    this.text(this._textArea.value);
+    this._hideTextArea();
+    this._onEditingEnd(this);
+  }
+
+  /**
+   * Sets text area font size
+   * @param ft
+   * @private
+   */
+  private _setTextAreaFontSize(ft: number): void {
+    this._textArea.style.fontSize = `${ ft }px`;
+  }
+
+  /**
+   * Called when an input removes some text from the editor
+   * @param e
+   */
+  private _onRemoveText(e: KeyboardEvent): void {
+    // Check if text can be resized to fit container
+    if (this.expandToFit() === true) {
+      const f = this.fitContainer();
+      this._setTextAreaFontSize(f);
+    }
+
+    // Resize if dimensions are not locked
+    if (this.lockSize() === true) return;
+
+    this.height(this.measureTextHeight());
+  }
+
+  /**
+   * Called when new line is inserted
+   * @param e
+   */
+  private _onNewLine(e: KeyboardEvent): void {
+    if (this.enableNewLine() === true) return;
+
+    // Block new line event
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+  }
+
+  /**
+   * Called when there is a new input char (not an exit one) that
+   * adds new text into the container
+   * @param e
+   */
+  private _onAddText(e: KeyboardEvent): void {
+    let scale = this.getAbsoluteScale().x;
+
+    // Block text area width
+    this._resizeTextAreaWidth(this.width() * scale);
+
+    // Let size grow if allowed
+    if (this.lockSize() === false && this.measureTextHeight() + this.fontSize() > this.height()) {
+      // Resize height of shape and also of text area
+      this.height(this.measureTextHeight() + this.fontSize());
+      this._textArea.style.height = this.height() + 'px';
+    }
+
+    // Check for possibility of font decrease when in lockSize mode
+    if (!this._decreaseFontSizeToFit())
+      // Block only add-text actions
+      this._inputBlocked = true;
+
+
+    // Sync current text. If it is removed, all calculations of text height will be incorrect
+    this.text(this._textArea.value + e.key);
+  }
+
+  /**
+   * Decreases font size to make text fit container
+   * @private
+   */
+  private _decreaseFontSizeToFit(): boolean {
+    if(this.lockSize() === false) return true;
+
+    while (this.measureTextHeight() + this.fontSize() > this.height()) {
+      if (this.fontSize() < 7) return false;
+
+      this.fontSize(this.fontSize() - 1);
+      this._textArea.style.fontSize = `${ this.fontSize() }px`;
+      console.log("Pass to ", this.fontSize());
+    }
+    return true;
+  }
+
+  /**
+   * Calculates a new fontsize to perfectly fit container size
+   * (shape width and height)
+   */
+  public fitContainer(): number {
+    let ft = this.fontSize();
+    let ftr = this._fontSizeFits(ft);
+    // Check if current fontsize can fit
+    while (ftr !== 0) {
+      // Increment or decrement font size
+      if (ftr === -1)
+        ft++;
+      else ft--;
+      // Update ftr
+      this.fontSize(ft);
+      ftr = this._fontSizeFits(ft);
+    }
+
+    return ft;
+  }
+
+  /**
+   * Checks if a fontsize can be contained into this shape
+   * @param fontSize
+   * @returns 0 when this fontsize fits leaving no space free
+   * @returns -1 when this fontsize leaves free space (al least fot 1 row)
+   * @returns 1 when this fontsize exceeds space
+   * @private
+   */
+  private _fontSizeFits(fontSize: number): -1 | 1 | 0 {
+    const h = this.measureTextHeightByFontSize(fontSize);
+
+    if (h <= this.height() && h > this.height() - this.fontSize()) return 0;
+    else if (h > this.height()) return 1;
+    else return -1;
+  }
+
+  /**
+   * Get width of a specific line
+   * @param index
+   */
+  getLineWidth(index: number): number {
+    return this.textArr[index].width;
+  }
+
+  /**
+   * Get text of a specific line
+   * @param index
+   */
+  getLineText(index: number): string {
+    return this.textArr[index].text;
+  }
+
+  /**
+   * Measures current text height based
+   * on fontsize, lineHeight and padding
+   */
+  measureTextHeight(): number {
+    return (this.fontSize() * this.textArr.length * this.lineHeight()) +
+           this.padding() * 2;
+  }
+
+  /**
+   * Measures text height based on a specific fontsize specified as parameter
+   * @param fontSize
+   */
+  measureTextHeightByFontSize(fontSize: number): number {
+    return (fontSize * this.textArr.length * this.lineHeight()) +
+           this.padding() * 2;
+  }
+
+  /**
+   * Hides text editing area
+   */
+  private _hideTextArea(): void {
+    this._textArea.style.visibility = 'hidden';
+  }
+
+  /**
+   * Shows text editing area
+   */
+  private _showTextArea(): void {
+    this._textArea.style.visibility = 'visible';
+  }
+
+  /**
+   * Resizes text area width
+   * @param newWidth New width to set
+   */
+  private _resizeTextAreaWidth(newWidth: number): void {
+    if (!newWidth) {
+      // set width for placeholder
+      newWidth = this._textArea.placeholder.length * this.fontSize();
+    }
+    // some extra fixes on different browsers
+    var isSafari = /^((?!chrome|android).)*safari/i.test(
+      navigator.userAgent
+    );
+    var isFirefox =
+      navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+    if (isSafari || isFirefox) {
+      newWidth = Math.ceil(newWidth);
+    }
+
+    this._textArea.style.width = newWidth + 'px';
+  }
+
+  /**
+   * Called when text editing ends
+   * @param me Pointer to this
+   */
+  private _onEditingEnd(me: Text): void {
+    // Set status variables
+    this._editing = false;
+    me.show();
+
+    me._textArea.style.width = '0px';
+    me._textArea.style.height = '0px';
+  }
+
+  /**
+   * Drawing function
+   * @param context
+   */
   _sceneFunc(context) {
     var textArr = this.textArr,
       textArrLen = textArr.length;
@@ -255,8 +667,8 @@ export class Text extends Shape<TextConfig> {
         oneWord = spacesNumber === 0;
         lineWidth =
           align === JUSTIFY && lastLine && !oneWord
-            ? totalWidth - padding * 2
-            : width;
+          ? totalWidth - padding * 2
+          : width;
         context.lineTo(
           lineTranslateX + Math.round(lineWidth),
           translateY + lineTranslateY + Math.round(fontSize / 2)
@@ -277,8 +689,8 @@ export class Text extends Shape<TextConfig> {
         oneWord = spacesNumber === 0;
         lineWidth =
           align === JUSTIFY && lastLine && !oneWord
-            ? totalWidth - padding * 2
-            : width;
+          ? totalWidth - padding * 2
+          : width;
         context.lineTo(
           lineTranslateX + Math.round(lineWidth),
           translateY + lineTranslateY
@@ -321,6 +733,7 @@ export class Text extends Shape<TextConfig> {
       }
     }
   }
+
   _hitFunc(context) {
     var width = this.getWidth(),
       height = this.getHeight();
@@ -330,26 +743,34 @@ export class Text extends Shape<TextConfig> {
     context.closePath();
     context.fillStrokeShape(this);
   }
+
+  /**
+   * Sets text of this shape
+   * @param text
+   */
   setText(text) {
     var str = Util._isString(text)
-      ? text
-      : text === null || text === undefined
-      ? ''
-      : text + '';
+              ? text
+              : text === null || text === undefined
+                ? ''
+                : text + '';
     this._setAttr(TEXT, str);
     return this;
   }
+
   getWidth() {
     var isAuto = this.attrs.width === AUTO || this.attrs.width === undefined;
     return isAuto ? this.getTextWidth() + this.padding() * 2 : this.attrs.width;
   }
+
   getHeight() {
     var isAuto = this.attrs.height === AUTO || this.attrs.height === undefined;
     return isAuto
-      ? this.fontSize() * this.textArr.length * this.lineHeight() +
-          this.padding() * 2
-      : this.attrs.height;
+           ? this.fontSize() * this.textArr.length * this.lineHeight() +
+             this.padding() * 2
+           : this.attrs.height;
   }
+
   /**
    * get pure text width without padding
    * @method
@@ -359,6 +780,7 @@ export class Text extends Shape<TextConfig> {
   getTextWidth() {
     return this.textWidth;
   }
+
   getTextHeight() {
     Util.warn(
       'text.getTextHeight() method is deprecated. Use text.height() - for full height and text.fontSize() - for one line height.'
@@ -389,6 +811,7 @@ export class Text extends Shape<TextConfig> {
       height: fontSize,
     };
   }
+
   _getContextFont() {
     return (
       this.fontStyle() +
@@ -400,6 +823,7 @@ export class Text extends Shape<TextConfig> {
       normalizeFontFamily(this.fontFamily())
     );
   }
+
   _addTextLine(line) {
     if (this.align() === JUSTIFY) {
       line = line.trim();
@@ -407,6 +831,7 @@ export class Text extends Shape<TextConfig> {
     var width = this._getTextWidth(line);
     return this.textArr.push({ text: line, width: width });
   }
+
   _getTextWidth(text) {
     var letterSpacing = this.letterSpacing();
     var length = text.length;
@@ -415,6 +840,7 @@ export class Text extends Shape<TextConfig> {
       (length ? letterSpacing * (length - 1) : 0)
     );
   }
+
   _setTextData() {
     var lines = this.text().split('\n'),
       fontSize = +this.fontSize(),
@@ -847,3 +1273,33 @@ Factory.addGetterSetter(Text, 'text', '', getStringValidator());
  */
 
 Factory.addGetterSetter(Text, 'textDecoration', '');
+
+/**
+ * Enable/disable editing possibility to this text
+ */
+Factory.addGetterSetter(Text, 'editable', false);
+
+/**
+ * Enable/disable boundaries lock
+ */
+Factory.addGetterSetter(Text, 'lockSize', false);
+
+/**
+ * Enable/disable auto font size
+ */
+Factory.addGetterSetter(Text, 'autoFontSize', false);
+
+/**
+ * Enable/disable spell checking on editing text area
+ */
+Factory.addGetterSetter(Text, 'spellcheckOnEdit', false);
+
+/**
+ * Enable / disable new line insert
+ */
+Factory.addGetterSetter(Text, 'enableNewLine', false);
+
+/**
+ * Enable / disable automatic fontsize grow to fit container
+ */
+Factory.addGetterSetter(Text, 'expandToFit', false);

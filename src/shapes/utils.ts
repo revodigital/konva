@@ -92,3 +92,60 @@ export const toInitialUpper = (txt: string): string => {
     return '';
   }
 };
+
+/**
+ * Checks if an event is a printable character
+ * @param e
+ */
+export const eventAddsText = (e: KeyboardEvent, textArea: HTMLTextAreaElement): boolean => {
+  return e.key !== undefined && e.key.length === 1 && textArea.selectionStart === textArea.selectionEnd;
+};
+
+export const eventRemovesText = (e: KeyboardEvent, textArea: HTMLTextAreaElement): boolean => {
+  return e.key === 'Delete' || e.key === 'Backspace' || textArea.selectionStart !== textArea.selectionEnd;
+};
+
+export function removeSlice(arr: string, start: number, end: number) {
+  if (end > start)
+    return arr.slice(0, start) + arr.slice(end);
+
+  else if (end === arr.length)
+    return arr.substring(0, arr.length - 1);
+}
+
+export const popAfter = (arr: string, index: number): string => {
+  if (arr.length > index + 1)
+    return arr.substring(0, index) + arr.substring(index + 1);
+  return arr;
+};
+
+export const cursorIsAtEndOfInput = (textArea: HTMLTextAreaElement, text: string): boolean => {
+  return textArea.selectionStart === text.length;
+}
+
+export const cursorIsAtStartOfInput = (textArea: HTMLTextAreaElement, text: string): boolean => {
+  return textArea.selectionStart === 0;
+}
+export const popBefore = (arr: string, index: number): string => {
+  return arr.substring(0, index - 1) + arr.substring(index + 1);
+};
+
+export const isSimplePushPop = (textArea: HTMLTextAreaElement): boolean => {
+  return textArea.selectionStart === textArea.selectionEnd;
+};
+
+export const isDeleteForward = (e: KeyboardEvent): boolean => {
+  return e.key === 'Backspace';
+};
+
+/**
+ * Checks if an event is an exit char for an input text area
+ * @param e
+ */
+export const eventIsExit = (e: KeyboardEvent): boolean => {
+  return (e.code === 'Enter' && !e.shiftKey);
+};
+
+export const eventIsNewLine = (e: KeyboardEvent): boolean => {
+  return (e.key === 'Enter' && e.shiftKey === true);
+};
