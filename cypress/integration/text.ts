@@ -38,8 +38,8 @@ it('Should make this text write', () => {
     const text = new Text({
       draggable: true,
       text: 'hellow',
-      width: 100,
-      height: 100,
+      width: 300,
+      height: 300,
       editable: true,
       fontSize: 15,
       lockSize: true,
@@ -47,12 +47,12 @@ it('Should make this text write', () => {
     });
     l.add(text);
 
-    l.add(new Rect({
-      x: 200,
-      width: 200,
-      height: 200,
-      fill: 'red'
-    }));
+    // l.add(new Rect({
+    //   x: 200,
+    //   width: 200,
+    //   height: 200,
+    //   fill: 'red'
+    // }));
 
     const t = new Transformer({
       nodes: [text]
