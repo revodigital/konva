@@ -67,11 +67,36 @@ export interface TextConfig extends ShapeConfig {
   wrap?: string;
   ellipsis?: boolean;
 
+  /**
+   * Indicates if this text is editable or not
+   * (using inline textarea)
+   */
   editable?: boolean;
+
+  /**
+   * Indicates if boundaries of this text can increase when in editing mode.
+   * If it is disabled, font size will became dynamic. This means that text overflowing fixed
+   * boundaries will cause font size decrease until 6px.
+   */
   lockSize?: boolean;
   autoFontSize?: boolean;
+
+  /**
+   * Enables / disables spellcheck while editing text
+   */
   spellcheckOnEdit?: boolean;
+
+  /**
+   * If set to true, new line will be added using Shift + Enter shortcut,
+   * otherwise it will be impossible to create custom line breaks.
+   */
   enableNewLine?: boolean;
+
+  /**
+   * When this option is true, font size will be also recalculated to make text fit the container boundaries.
+   * This calculation is triggered at every input
+   */
+  expandToFit?: boolean;
 }
 
 // constants
@@ -209,6 +234,7 @@ export class Text extends Shape<TextConfig> {
   autoFontSize: GetSet<boolean, this>;
   spellcheckOnEdit: GetSet<boolean, this>;
   enableNewLine: GetSet<boolean, this>;
+  expandToFit: GetSet<boolean, this>;
 
   /**
    * Creates a new Text shape
@@ -228,6 +254,8 @@ export class Text extends Shape<TextConfig> {
     this._textArea = document.createElement('textarea');
     this._textArea.style.visibility = 'hidden';
     document.body.appendChild(this._textArea);
+
+    if(this.expandToFit()) this.fitContainer();
   }
 
   /**
@@ -318,8 +346,7 @@ export class Text extends Shape<TextConfig> {
       this._textArea.value = tmp;
       this.text(tmp);
       return;
-    }
-    else if (eventAddsText(e, this._textArea) && !this._inputBlocked)
+    } else if (eventAddsText(e, this._textArea) && !this._inputBlocked)
       this._onAddText(e);
     else if (eventRemovesText(e, this._textArea))
       this._onRemoveText(e);
@@ -357,12 +384,27 @@ export class Text extends Shape<TextConfig> {
   }
 
   /**
+   * Sets text area font size
+   * @param ft
+   * @private
+   */
+  private _setTextAreaFontSize(ft: number): void {
+    this._textArea.style.fontSize = `${ ft }px`;
+  }
+
+  /**
    * Called when an input removes some text from the editor
    * @param e
    */
   private _onRemoveText(e: KeyboardEvent): void {
+    // Check if text can be resized to fit container
+    if (this.expandToFit() === true) {
+      const f = this.fitContainer();
+      this._setTextAreaFontSize(f);
+    }
+
     // Resize if dimensions are not locked
-    if(this.lockSize() === true) return;
+    if (this.lockSize() === true) return;
 
     this.height(this.measureTextHeight());
   }
@@ -410,6 +452,44 @@ export class Text extends Shape<TextConfig> {
 
     // Sync current text. If it is removed, all calculations of text height will be incorrect
     this.text(this._textArea.value + e.key);
+    this.fitContainer();
+  }
+
+  /**
+   * Calculates a new fontsize to perfectly fit container size
+   * (shape width and height)
+   */
+  public fitContainer(): number {
+    let ft = this.fontSize();
+    let ftr = this._fontSizeFits(ft);
+    // Check if current fontsize can fit
+    while (ftr !== 0) {
+      // Increment or decrement font size
+      if (ftr === -1)
+        ft++;
+      else ft--;
+      // Update ftr
+      this.fontSize(ft);
+      ftr = this._fontSizeFits(ft);
+    }
+
+    return ft;
+  }
+
+  /**
+   * Checks if a fontsize can be contained into this shape
+   * @param fontSize
+   * @returns 0 when this fontsize fits leaving no space free
+   * @returns -1 when this fontsize leaves free space (al least fot 1 row)
+   * @returns 1 when this fontsize exceeds space
+   * @private
+   */
+  private _fontSizeFits(fontSize: number): -1 | 1 | 0 {
+    const h = this.measureTextHeightByFontSize(fontSize);
+
+    if (h <= this.height() && h > this.height() - this.fontSize()) return 0;
+    else if (h > this.height()) return 1;
+    else return -1;
   }
 
   /**
@@ -434,6 +514,15 @@ export class Text extends Shape<TextConfig> {
    */
   measureTextHeight(): number {
     return (this.fontSize() * this.textArr.length * this.lineHeight()) +
+           this.padding() * 2;
+  }
+
+  /**
+   * Measures text height based on a specific fontsize specified as parameter
+   * @param fontSize
+   */
+  measureTextHeightByFontSize(fontSize: number): number {
+    return (fontSize * this.textArr.length * this.lineHeight()) +
            this.padding() * 2;
   }
 
@@ -1196,3 +1285,8 @@ Factory.addGetterSetter(Text, 'spellcheckOnEdit', false);
  * Enable / disable new line insert
  */
 Factory.addGetterSetter(Text, 'enableNewLine', false);
+
+/**
+ * Enable / disable automatic fontsize grow to fit container
+ */
+Factory.addGetterSetter(Text, 'expandToFit', false);
