@@ -369,6 +369,9 @@ export class Text extends Shape<TextConfig> {
         this._inputBlocked = true;
       }
     }
+
+    // This is not the correct text, but it is useful for calculation purposes
+    this.text(this._textArea.value + e.key);
   }
 
   measureTextHeight(): number {
