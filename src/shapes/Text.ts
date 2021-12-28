@@ -368,14 +368,14 @@ export class Text extends Shape<TextConfig> {
     this._resizeTextAreaWidth(this.width() * scale);
 
     // Let size grow if allowed
-    if (this.lockSize() === false && this.measureTextHeight() >= (this.height() - this.fontSize())) {
+    if (this.lockSize() === false && this.measureTextHeight() + this.fontSize() > this.height()) {
       // Resize height of shape and also of text area
       this.height(this.measureTextHeight() + this.fontSize());
       this._textArea.style.height = this.height() + 'px';
     }
 
     // Check for possibility of font decrease
-    if (this.lockSize() === true && this.measureTextHeight() >= (this.height() - this.fontSize())) {
+    if (this.lockSize() === true && this.measureTextHeight() + this.fontSize() > this.height()) {
       if (this.fontSize() >= 7) {
         this.fontSize(this.fontSize() - 1);
         this._textArea.style.fontSize = `${ this.fontSize() }px`;
