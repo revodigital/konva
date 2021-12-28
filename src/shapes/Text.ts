@@ -389,6 +389,33 @@ export class Text extends Shape<TextConfig> {
     this.text(this._textArea.value + e.key);
   }
 
+  // TODO: Implement this function
+  _getCurrentEditingLine(charIndex: number): number {
+    return undefined;
+  }
+
+  allLinesAreFull(): boolean {
+    if (!this.textArr || this.textArr.length === 0) return false;
+    const s = Math.ceil(this.textArr[0].width);
+
+    console.log('\nSpace');
+    console.log("Base is ", s);
+    for (let i of this.textArr) {
+      console.log(i);
+      if (i.width < s - 1 || i.width > s + 1) return false;
+    }
+
+    return true;
+  }
+
+  getLineWidth(index: number): number {
+    return this.textArr[index].width;
+  }
+
+  getLineText(index: number): string {
+    return this.textArr[index].text;
+  }
+
   measureTextHeight(): number {
     return (this.fontSize() * this.textArr.length * this.lineHeight()) +
            this.padding() * 2;
