@@ -210,6 +210,9 @@ export class Text extends Shape<TextConfig> {
   spellcheckOnEdit: GetSet<boolean, this>;
   enableNewLine: GetSet<boolean, this>;
 
+  /**
+   * Creates a new Text shape
+   */
   constructor(config?: TextConfig) {
     super(checkDefaultFill(config));
     // update text data for certain attr changes
@@ -231,7 +234,7 @@ export class Text extends Shape<TextConfig> {
    * Called when user starts editing this text
    * @param event Event fired
    */
-  _onEditingStart(event: KonvaEventObject<MouseEvent>): void {
+  private _onEditingStart(event: KonvaEventObject<MouseEvent>): void {
     if (!this.editable()) return;
 
     this.hide();
@@ -241,8 +244,6 @@ export class Text extends Shape<TextConfig> {
 
     // at first lets find position of text node relative to the stage:
     var textPosition = this.absolutePosition();
-    let node = this;
-    let editingEnd = this._onEditingEnd;
 
     // so position of textarea will be the sum of positions above:
     var areaPosition = {
@@ -277,7 +278,7 @@ export class Text extends Shape<TextConfig> {
       transform += 'rotateZ(' + rotation + 'deg)';
     }
 
-    var px = 0;
+    // var px = 0;
     // // also we need to slightly move this._textArea on firefox
     // // because it jumps a bit
     // var isFirefox =
@@ -289,33 +290,43 @@ export class Text extends Shape<TextConfig> {
 
     this._textArea.style.transform = transform;
 
-    // reset height
     this._textArea.spellcheck = this.spellcheckOnEdit() || false;
-    // after browsers resized it we can set actual value
+    // Set text area height
     this._textArea.style.height = this.height() + 'px';
+    // Focus this text area
     this._textArea.focus();
 
-    // Event listener for unprintable chars
+    // Event listener for keydown events
     this._textArea.addEventListener('keydown', (e) => this._onInputKeyDown(e));
   }
 
   /**
-   * Basic event dispatcher
+   * Basic event dispatcher (based on event type or key, calls other event managers
+   * for specific behaviors)
    * @param e
    */
-  _onInputKeyDown(e: KeyboardEvent): void {
+  private _onInputKeyDown(e: KeyboardEvent): void {
+    const tmp = this.text();
     // Handle specifically new line
     if (eventIsNewLine(e))
       this._onNewLine(e);
 
-    // Intercept add text events
+    // In case of add text when input is blocked, block event and replace original text
+    if (eventAddsText(e, this._textArea) && this._inputBlocked) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      this._textArea.value = tmp;
+      this.text(tmp);
+      return;
+    }
     else if (eventAddsText(e, this._textArea) && !this._inputBlocked)
       this._onAddText(e);
+    else if (eventRemovesText(e, this._textArea))
+      this._onRemoveText(e);
 
     // Check for exiting events
-    else if (eventIsExit(e)) {
+    else if (eventIsExit(e))
       this._onExitInput(e);
-    }
 
     // Stop propagation from other listeners
     e.stopImmediatePropagation();
@@ -339,29 +350,42 @@ export class Text extends Shape<TextConfig> {
    * (enter or outside press) Closes editing mode and saves edited text
    * @param e
    */
-  _onExitInput(e: KeyboardEvent): void {
+  private _onExitInput(e: KeyboardEvent): void {
     this.text(this._textArea.value);
     this._hideTextArea();
     this._onEditingEnd(this);
   }
 
   /**
+   * Called when an input removes some text from the editor
+   * @param e
+   */
+  private _onRemoveText(e: KeyboardEvent): void {
+    // Resize if dimensions are not locked
+    if(this.lockSize() === true) return;
+
+    this.height(this.measureTextHeight());
+  }
+
+  /**
    * Called when new line is inserted
    * @param e
    */
-  _onNewLine(e: KeyboardEvent): void {
+  private _onNewLine(e: KeyboardEvent): void {
     if (this.enableNewLine() === true) return;
 
+    // Block new line event
     e.preventDefault();
     e.stopPropagation();
     e.stopImmediatePropagation();
   }
 
   /**
-   * Called when there is a new input char (not an exit one)
+   * Called when there is a new input char (not an exit one) that
+   * adds new text into the container
    * @param e
    */
-  _onAddText(e: KeyboardEvent): void {
+  private _onAddText(e: KeyboardEvent): void {
     let scale = this.getAbsoluteScale().x;
 
     // Block text area width
@@ -374,62 +398,64 @@ export class Text extends Shape<TextConfig> {
       this._textArea.style.height = this.height() + 'px';
     }
 
-    // Check for possibility of font decrease
+    // Check for possibility of font decrease when in lockSize mode
     if (this.lockSize() === true && this.measureTextHeight() + this.fontSize() > this.height()) {
       if (this.fontSize() >= 7) {
         this.fontSize(this.fontSize() - 1);
         this._textArea.style.fontSize = `${ this.fontSize() }px`;
-      } else {
-        // Completely block input (only add-text actions)
+      } else
+        // Block only add-text actions
         this._inputBlocked = true;
-      }
     }
 
-    // This is not the correct text, but it is useful for calculation purposes
+    // Sync current text. If it is removed, all calculations of text height will be incorrect
     this.text(this._textArea.value + e.key);
   }
 
-  // TODO: Implement this function
-  _getCurrentEditingLine(charIndex: number): number {
-    return undefined;
-  }
-
-  allLinesAreFull(): boolean {
-    if (!this.textArr || this.textArr.length === 0) return false;
-    const s = Math.ceil(this.textArr[0].width);
-
-    console.log('\nSpace');
-    console.log("Base is ", s);
-    for (let i of this.textArr) {
-      console.log(i);
-      if (i.width < s - 1 || i.width > s + 1) return false;
-    }
-
-    return true;
-  }
-
+  /**
+   * Get width of a specific line
+   * @param index
+   */
   getLineWidth(index: number): number {
     return this.textArr[index].width;
   }
 
+  /**
+   * Get text of a specific line
+   * @param index
+   */
   getLineText(index: number): string {
     return this.textArr[index].text;
   }
 
+  /**
+   * Measures current text height based
+   * on fontsize, lineHeight and padding
+   */
   measureTextHeight(): number {
     return (this.fontSize() * this.textArr.length * this.lineHeight()) +
            this.padding() * 2;
   }
 
-  _hideTextArea(): void {
+  /**
+   * Hides text editing area
+   */
+  private _hideTextArea(): void {
     this._textArea.style.visibility = 'hidden';
   }
 
-  _showTextArea(): void {
+  /**
+   * Shows text editing area
+   */
+  private _showTextArea(): void {
     this._textArea.style.visibility = 'visible';
   }
 
-  _resizeTextAreaWidth(newWidth: number): void {
+  /**
+   * Resizes text area width
+   * @param newWidth New width to set
+   */
+  private _resizeTextAreaWidth(newWidth: number): void {
     if (!newWidth) {
       // set width for placeholder
       newWidth = this._textArea.placeholder.length * this.fontSize();
@@ -447,26 +473,23 @@ export class Text extends Shape<TextConfig> {
     this._textArea.style.width = newWidth + 'px';
   }
 
-  _onEditingEnd(me: Text): void {
+  /**
+   * Called when text editing ends
+   * @param me Pointer to this
+   */
+  private _onEditingEnd(me: Text): void {
     // Set status variables
     this._editing = false;
     me.show();
-    // Sync hidden text area if boundaries are locked
-    const clientSize = new Size2D();
-    clientSize.setWidth(parseInt(me._textArea.style.width.replace('px', '')));
-    clientSize.setHeight(parseInt(me._textArea.style.height.replace('px', '')));
-
-    // Let size grow if allowed
-    if (me.lockSize() === false && clientSize.overflows(Size2D.fromBounds(me.width(),
-      me.height()))) {
-      me.width(clientSize.getWidth());
-      me.height(clientSize.getHeight());
-    }
 
     me._textArea.style.width = '0px';
     me._textArea.style.height = '0px';
   }
 
+  /**
+   * Drawing function
+   * @param context
+   */
   _sceneFunc(context) {
     var textArr = this.textArr,
       textArrLen = textArr.length;
@@ -619,6 +642,10 @@ export class Text extends Shape<TextConfig> {
     context.fillStrokeShape(this);
   }
 
+  /**
+   * Sets text of this shape
+   * @param text
+   */
   setText(text) {
     var str = Util._isString(text)
               ? text

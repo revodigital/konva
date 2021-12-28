@@ -42,7 +42,7 @@ it('Should make this text write', () => {
       height: 100,
       editable: true,
       fontSize: 15,
-      lockSize: true,
+      lockSize: false,
     });
     l.add(text);
 
