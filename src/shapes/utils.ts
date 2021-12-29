@@ -149,3 +149,7 @@ export const eventIsExit = (e: KeyboardEvent): boolean => {
 export const eventIsNewLine = (e: KeyboardEvent): boolean => {
   return (e.key === 'Enter' && e.shiftKey === true);
 };
+
+export const rangeOf = (a: number, b: number, num: number): boolean => {
+  return num >= a && num <= b;
+}

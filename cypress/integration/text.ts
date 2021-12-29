@@ -12,8 +12,7 @@
 import { TEST_ELEMENT_ID } from '../global/global-defs';
 import { Stage }           from '../../src/Stage';
 import { Layer }           from '../../src/Layer';
-import { Text }            from '../../src/shapes/Text';
-import { Rect }            from '../../src/shapes/Rect';
+import { GrowMode, Text }  from '../../src/shapes/Text';
 import { Transformer }     from '../../src/shapes/Transformer';
 
 before(() => {
@@ -43,7 +42,7 @@ it('Should make this text write', () => {
       editable: true,
       fontSize: 15,
       lockSize: true,
-      expandToFit: true,
+      growPolicy: GrowMode.GrowHeight
     });
     l.add(text);
 
