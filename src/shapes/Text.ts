@@ -440,6 +440,8 @@ export class Text extends Shape<TextConfig> {
       this.width(this.getTextWidth() + this.padding());
       this._resizeTextAreaWidth(this.width());
     }
+
+    this.text(this._textArea.value);
   }
 
   /**
