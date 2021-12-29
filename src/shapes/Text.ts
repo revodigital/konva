@@ -36,8 +36,8 @@ import {
   isDeleteForward,
   isSimplePushPop,
   popBefore,
-  popAfter, cursorIsAtEndOfInput, cursorIsAtStartOfInput, rangeOf
-}                           from './utils';
+  popAfter, cursorIsAtEndOfInput, cursorIsAtStartOfInput, rangeOf, pixel
+} from './utils';
 
 /**
  * Minimum font size
@@ -318,10 +318,11 @@ export class Text extends Shape<TextConfig> {
     this._textArea.style.position = 'absolute';
     this._textArea.style.top = areaPosition.y + 'px';
     this._textArea.style.left = areaPosition.x + 'px';
-    this._textArea.style.width = this.width() + 'px';
-    this._textArea.style.fontSize = this.fontSize() + 'px';
+    this._textArea.style.width = pixel(this.getPaddedWidth());
+    this._textArea.style.height = pixel(this.getPaddedHeight());
+    this._textArea.style.fontSize = pixel(this.fontSize());
     this._textArea.style.border = 'none';
-    this._textArea.style.padding = '0px';
+    this._textArea.style.padding = pixel(this.padding());
     this._textArea.style.margin = '0px';
     this._textArea.style.overflow = 'hidden';
     this._textArea.style.background = 'none';
@@ -330,17 +331,19 @@ export class Text extends Shape<TextConfig> {
     this._textArea.style.lineHeight = this.lineHeight().toString();
     this._textArea.style.fontFamily = this.fontFamily();
     this._textArea.style.transformOrigin = 'left top';
-    this._textArea.style.textAlign = this.align();
 
+    this._textArea.style.textAlign = this.align();
     // Justify also needs whiteSpace = normal to work
-    if(this.align() === 'justify')
+    if(this.align() === 'justify') {
       this._textArea.style.whiteSpace = 'normal';
 
+    }
     this._textArea.style.color = this.fill();
     let rotation = this.rotation();
     let transform = '';
     if (rotation) {
       transform += 'rotateZ(' + rotation + 'deg)';
+
     }
 
     // var px = 0;
@@ -352,16 +355,22 @@ export class Text extends Shape<TextConfig> {
     //   px += 2 + Math.round(this.fontSize() / 20);
     // }
     // transform += 'translateY(-' + px + 'px)';
-
     this._textArea.style.transform = transform;
     this._textArea.spellcheck = this.spellcheckOnEdit() || false;
     // Set text area height
-    this._textArea.style.height = this.height() + 'px';
     // Focus this text area
     this._textArea.focus();
 
     // Event listener for keydown events
     this._textArea.addEventListener('keydown', (e) => this._onInputKeyDown(e));
+  }
+
+  getPaddedWidth(): number {
+    return this.width() - (this.padding() * 2)
+  }
+
+  getPaddedHeight(): number {
+    return this.height() - (this.padding() * 2);
   }
 
   /**
@@ -444,7 +453,7 @@ export class Text extends Shape<TextConfig> {
     if (this.lockSize() === false) {
       if (this.growPolicy() === GrowMode.GrowHeight) {
         this.height(this.measureTextHeight());
-        this._textArea.style.height = `${this.height()}px`;
+        this._resizeTextAreaHeight(this.height());
       } else {
         this.width(this.getTextWidth() + this.padding());
         this._resizeTextAreaWidth(this.width());
@@ -481,17 +490,16 @@ export class Text extends Shape<TextConfig> {
 
     // Let size grow if allowed
     if (this.lockSize() === false) {
-
       // Let height grow if allowed
       if (this.measureTextHeight() + this.fontSize() > this.height() && this.growPolicy() === GrowMode.GrowHeight) {
         // Resize height of shape and also of text area
         this.height(this.measureTextHeight() + this.fontSize());
-        this._textArea.style.height = this.height() + 'px';
+        this._resizeTextAreaHeight(this.height());
       }
 
       // Check for grow width
-      if (rangeOf(this.width() - this.fontSize(),
-        this.width(),
+      if (rangeOf(this.width() - this.fontSize() - (this.padding() * 2),
+        this.width() - (this.padding() * 2),
         this.getTextWidth()) && this.growPolicy() === GrowMode.GrowWidth) {
         this.width(this.width() + this.fontSize());
         this._resizeTextAreaWidth(this.width());
@@ -627,10 +635,10 @@ export class Text extends Shape<TextConfig> {
       newWidth = Math.ceil(newWidth);
     }
 
-    this._textArea.style.width = newWidth + 'px';
+    this._textArea.style.width = pixel(newWidth - (this.padding() * 2));
   }
 
-  private _resizeTextareaHeight(newHeight: number): void {
+  private _resizeTextAreaHeight(newHeight: number): void {
     if (!newHeight) {
       // set width for placeholder
       newHeight = this._textArea.placeholder.length * this.fontSize();
@@ -645,7 +653,7 @@ export class Text extends Shape<TextConfig> {
       newHeight = Math.ceil(newHeight);
     }
 
-    this._textArea.style.height = newHeight + 'px';
+    this._textArea.style.height = pixel(newHeight - (this.padding() * 2));
   }
 
   /**

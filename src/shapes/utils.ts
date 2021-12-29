@@ -121,11 +121,11 @@ export const popAfter = (arr: string, index: number): string => {
 
 export const cursorIsAtEndOfInput = (textArea: HTMLTextAreaElement, text: string): boolean => {
   return textArea.selectionStart === text.length;
-}
+};
 
 export const cursorIsAtStartOfInput = (textArea: HTMLTextAreaElement, text: string): boolean => {
   return textArea.selectionStart === 0;
-}
+};
 export const popBefore = (arr: string, index: number): string => {
   return arr.substring(0, index - 1) + arr.substring(index + 1);
 };
@@ -152,4 +152,10 @@ export const eventIsNewLine = (e: KeyboardEvent): boolean => {
 
 export const rangeOf = (a: number, b: number, num: number): boolean => {
   return num >= a && num <= b;
-}
+};
+
+export const pixel = (val: number): string => {
+  if (val >= 0)
+    return `${ val }px`;
+  return '0px';
+};
