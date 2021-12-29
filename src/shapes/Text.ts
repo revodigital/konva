@@ -281,10 +281,10 @@ export class Text extends Shape<TextConfig> {
     if (!this.growPolicy())
       this.growPolicy(GrowMode.GrowWidth);
 
-    if(!this.lockSize())
+    if(this.lockSize() === undefined)
       this.lockSize(false);
 
-    if (!this.expandToFit())
+    if (this.expandToFit() === undefined)
       this.expandToFit(true);
 
     if (this.expandToFit()) this.fitContainer();
