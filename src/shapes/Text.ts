@@ -36,7 +36,7 @@ import {
   isDeleteForward,
   isSimplePushPop,
   popBefore,
-  popAfter, cursorIsAtEndOfInput, cursorIsAtStartOfInput
+  popAfter, cursorIsAtEndOfInput, cursorIsAtStartOfInput, rangeOf
 }                           from './utils';
 
 /**
@@ -50,6 +50,21 @@ export function stringToArray(string: string) {
   // https://github.com/lodash/lodash/blob/fb1f99d9d90ad177560d771bc5953a435b2dc119/lodash.toarray/index.js#L256
   // but I decided it is too much code for that small fix
   return Array.from(string);
+}
+
+/**
+ * Represents how textbox boundaries should grow
+ * and witch of them should remain fixed
+ */
+export enum GrowMode {
+  /**
+   * Fixed height and dynamic width
+   */
+  GrowWidth,
+  /**
+   * Fixed width and dynamic height
+   */
+  GrowHeight
 }
 
 export interface TextConfig extends ShapeConfig {
@@ -97,6 +112,13 @@ export interface TextConfig extends ShapeConfig {
    * This calculation is triggered at every input
    */
   expandToFit?: boolean;
+
+  /**
+   * Represents how textbox boundaries should grow while in
+   * editing mode
+   * and witch of them should remain fixed
+   */
+  growPolicy?: GrowMode;
 }
 
 // constants
@@ -235,6 +257,7 @@ export class Text extends Shape<TextConfig> {
   spellcheckOnEdit: GetSet<boolean, this>;
   enableNewLine: GetSet<boolean, this>;
   expandToFit: GetSet<boolean, this>;
+  growPolicy: GetSet<GrowMode, this>;
 
   /**
    * Creates a new Text shape
@@ -254,6 +277,9 @@ export class Text extends Shape<TextConfig> {
     this._textArea = document.createElement('textarea');
     this._textArea.style.visibility = 'hidden';
     document.body.appendChild(this._textArea);
+
+    if (!this.growPolicy())
+      this.growPolicy(GrowMode.GrowWidth);
 
     if (this.expandToFit()) this.fitContainer();
   }
@@ -407,7 +433,13 @@ export class Text extends Shape<TextConfig> {
     // Resize if dimensions are not locked
     if (this.lockSize() === true) return;
 
-    this.height(this.measureTextHeight());
+    if (this.growPolicy() === GrowMode.GrowHeight) {
+      this.height(this.measureTextHeight());
+      this._textArea.style.height = `${this.height()}px`;
+    } else {
+      this.width(this.getTextWidth() + this.padding());
+      this._resizeTextAreaWidth(this.width());
+    }
   }
 
   /**
@@ -431,14 +463,26 @@ export class Text extends Shape<TextConfig> {
   private _onAddText(e: KeyboardEvent): void {
     let scale = this.getAbsoluteScale().x;
 
-    // Block text area width
+    // Apply current height and width using also scale
     this._resizeTextAreaWidth(this.width() * scale);
 
     // Let size grow if allowed
-    if (this.lockSize() === false && this.measureTextHeight() + this.fontSize() > this.height()) {
-      // Resize height of shape and also of text area
-      this.height(this.measureTextHeight() + this.fontSize());
-      this._textArea.style.height = this.height() + 'px';
+    if (this.lockSize() === false) {
+
+      // Let height grow if allowed
+      if (this.measureTextHeight() + this.fontSize() > this.height() && this.growPolicy() === GrowMode.GrowHeight) {
+        // Resize height of shape and also of text area
+        this.height(this.measureTextHeight() + this.fontSize());
+        this._textArea.style.height = this.height() + 'px';
+      }
+
+      // Check for grow width
+      if (rangeOf(this.width() - this.fontSize(),
+        this.width(),
+        this.getTextWidth()) && this.growPolicy() === GrowMode.GrowWidth) {
+        this.width(this.width() + this.fontSize());
+        this._resizeTextAreaWidth(this.width());
+      }
     }
 
     // Check for possibility of font decrease when in lockSize mode
@@ -446,9 +490,9 @@ export class Text extends Shape<TextConfig> {
       // Block only add-text actions
       this._inputBlocked = true;
 
-
     // Sync current text. If it is removed, all calculations of text height will be incorrect
     this.text(this._textArea.value + e.key);
+    console.log(this._textArea.offsetWidth);
   }
 
   /**
@@ -456,14 +500,13 @@ export class Text extends Shape<TextConfig> {
    * @private
    */
   private _decreaseFontSizeToFit(): boolean {
-    if(this.lockSize() === false) return true;
+    if (this.lockSize() === false) return true;
 
     while (this.measureTextHeight() + this.fontSize() > this.height()) {
       if (this.fontSize() < 7) return false;
 
       this.fontSize(this.fontSize() - 1);
       this._textArea.style.fontSize = `${ this.fontSize() }px`;
-      console.log("Pass to ", this.fontSize());
     }
     return true;
   }
@@ -573,6 +616,24 @@ export class Text extends Shape<TextConfig> {
     }
 
     this._textArea.style.width = newWidth + 'px';
+  }
+
+  private _resizeTextareaHeight(newHeight: number): void {
+    if (!newHeight) {
+      // set width for placeholder
+      newHeight = this._textArea.placeholder.length * this.fontSize();
+    }
+    // some extra fixes on different browsers
+    var isSafari = /^((?!chrome|android).)*safari/i.test(
+      navigator.userAgent
+    );
+    var isFirefox =
+      navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+    if (isSafari || isFirefox) {
+      newHeight = Math.ceil(newHeight);
+    }
+
+    this._textArea.style.height = newHeight + 'px';
   }
 
   /**
@@ -1303,3 +1364,5 @@ Factory.addGetterSetter(Text, 'enableNewLine', false);
  * Enable / disable automatic fontsize grow to fit container
  */
 Factory.addGetterSetter(Text, 'expandToFit', false);
+
+Factory.addGetterSetter(Text, 'growPolicy', GrowMode.GrowHeight);
