@@ -431,16 +431,17 @@ export class Text extends Shape<TextConfig> {
     }
 
     // Resize if dimensions are not locked
-    if (this.lockSize() === true) return;
-
-    if (this.growPolicy() === GrowMode.GrowHeight) {
-      this.height(this.measureTextHeight());
-      this._textArea.style.height = `${this.height()}px`;
-    } else {
-      this.width(this.getTextWidth() + this.padding());
-      this._resizeTextAreaWidth(this.width());
+    if (this.lockSize() === false) {
+      if (this.growPolicy() === GrowMode.GrowHeight) {
+        this.height(this.measureTextHeight());
+        this._textArea.style.height = `${this.height()}px`;
+      } else {
+        this.width(this.getTextWidth() + this.padding());
+        this._resizeTextAreaWidth(this.width());
+      }
     }
 
+    // Update text
     this.text(this._textArea.value);
   }
 

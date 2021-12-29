@@ -41,7 +41,7 @@ it('Should make this text write', () => {
       height: 300,
       editable: true,
       fontSize: 15,
-      lockSize: false,
+      lockSize: true,
       expandToFit: true,
       growPolicy: GrowMode.GrowHeight
     });
