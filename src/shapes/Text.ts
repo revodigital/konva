@@ -36,8 +36,13 @@ import {
   isDeleteForward,
   isSimplePushPop,
   popBefore,
-  popAfter, cursorIsAtEndOfInput, cursorIsAtStartOfInput, rangeOf, pixel
-} from './utils';
+  popAfter,
+  cursorIsAtEndOfInput,
+  cursorIsAtStartOfInput,
+  rangeOf,
+  pixel,
+  eventIsPaste
+}                           from './utils';
 
 /**
  * Minimum font size
@@ -259,6 +264,8 @@ export class Text extends Shape<TextConfig> {
   expandToFit: GetSet<boolean, this>;
   growPolicy: GetSet<GrowMode, this>;
 
+  _afterPaste: boolean;
+
   /**
    * Creates a new Text shape
    */
@@ -274,11 +281,12 @@ export class Text extends Shape<TextConfig> {
     this.on('dblclick', (e) => this._onEditingStart(e));
 
     this._textArea = undefined;
+    this._afterPaste = false;
 
     if (!this.growPolicy())
       this.growPolicy(GrowMode.GrowWidth);
 
-    if(this.lockSize() === undefined)
+    if (this.lockSize() === undefined)
       this.lockSize(false);
 
     if (this.expandToFit() === undefined)
@@ -337,7 +345,7 @@ export class Text extends Shape<TextConfig> {
 
     this._textArea.style.textAlign = this.align();
     // Justify also needs whiteSpace = normal to work
-    if(this.align() === 'justify') {
+    if (this.align() === 'justify') {
       this._textArea.style.whiteSpace = 'normal';
 
     }
@@ -366,10 +374,11 @@ export class Text extends Shape<TextConfig> {
 
     // Event listener for keydown events
     this._textArea.addEventListener('keydown', (e) => this._onInputKeyDown(e));
+    this._textArea.addEventListener('paste', (e) => this._onClipboardPaste(e));
   }
 
   getPaddedWidth(): number {
-    return this.width() - (this.padding() * 2)
+    return this.width() - (this.padding() * 2);
   }
 
   getPaddedHeight(): number {
@@ -419,6 +428,23 @@ export class Text extends Shape<TextConfig> {
     if (newFontSize < MIN_FONT_SIZE) return false;
     this.fontSize(newFontSize);
     return true;
+  }
+
+  /**
+   * Called before clipboard paste
+   * @param e
+   * @private
+   */
+  private _onClipboardPaste(e: ClipboardEvent): void {
+    // Triggers resizing after text paste
+    const handleTextResize = () => {
+      this._handleResize();
+      // Auto remove me
+      this._textArea.removeEventListener('change', handleTextResize);
+    };
+
+    // Add resizing callback
+    this._textArea.addEventListener('change', handleTextResize);
   }
 
   /**
@@ -488,6 +514,17 @@ export class Text extends Shape<TextConfig> {
    * @param e
    */
   private _onAddText(e: KeyboardEvent): void {
+    this._handleResize();
+
+    // Sync current text. If it is removed, all calculations of text height will be incorrect
+    this.text(this._textArea.value + e.key);
+  }
+
+  /**
+   * Handles resize of text while editing
+   * @private
+   */
+  private _handleResize(): void {
     let scale = this.getAbsoluteScale().x;
 
     // Apply current height and width using also scale
@@ -515,9 +552,6 @@ export class Text extends Shape<TextConfig> {
     if (!this._decreaseFontSizeToFit())
       // Block only add-text actions
       this._inputBlocked = true;
-
-    // Sync current text. If it is removed, all calculations of text height will be incorrect
-    this.text(this._textArea.value + e.key);
   }
 
   /**

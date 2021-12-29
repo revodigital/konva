@@ -98,8 +98,12 @@ export const toInitialUpper = (txt: string): string => {
  * @param e
  */
 export const eventAddsText = (e: KeyboardEvent, textArea: HTMLTextAreaElement): boolean => {
-  return e.key !== undefined && e.key.length === 1 && textArea.selectionStart === textArea.selectionEnd;
+  return e.key !== undefined && e.key.length === 1 && textArea.selectionStart === textArea.selectionEnd && e.ctrlKey === false;
 };
+
+export const eventIsPaste = (e: KeyboardEvent): boolean => {
+  return e.key === 'v' && e.ctrlKey === true;
+}
 
 export const eventRemovesText = (e: KeyboardEvent, textArea: HTMLTextAreaElement): boolean => {
   return e.key === 'Delete' || e.key === 'Backspace' || textArea.selectionStart !== textArea.selectionEnd;
