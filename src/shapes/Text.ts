@@ -451,11 +451,13 @@ export class Text extends Shape<TextConfig> {
 
     // Resize if dimensions are not locked
     if (this.lockSize() === false) {
+      // Resize height
       if (this.growPolicy() === GrowMode.GrowHeight) {
         this.height(this.measureTextHeight());
         this._resizeTextAreaHeight(this.height());
       } else {
-        this.width(this.getTextWidth() + this.padding());
+        // Resize width
+        this.width(this.getTextWidth() + (this.padding() * 2));
         this._resizeTextAreaWidth(this.width());
       }
     }
