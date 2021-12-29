@@ -491,17 +491,17 @@ export class Text extends Shape<TextConfig> {
     // Let size grow if allowed
     if (this.lockSize() === false) {
       // Let height grow if allowed
-      if (this.measureTextHeight() + this.fontSize() > this.height() && this.growPolicy() === GrowMode.GrowHeight) {
+      if (this.measureTextHeight() + (this.fontSize() * this.lineHeight()) > this.height() && this.growPolicy() === GrowMode.GrowHeight) {
         // Resize height of shape and also of text area
-        this.height(this.measureTextHeight() + this.fontSize());
+        this.height(this.measureTextHeight() + (this.fontSize() * this.lineHeight()));
         this._resizeTextAreaHeight(this.height());
       }
 
       // Check for grow width
-      if (rangeOf(this.width() - this.fontSize() - (this.padding() * 2),
+      if (rangeOf(this.width() - (this.fontSize() * this.lineHeight()) - (this.padding() * 2),
         this.width() - (this.padding() * 2),
         this.getTextWidth()) && this.growPolicy() === GrowMode.GrowWidth) {
-        this.width(this.width() + this.fontSize());
+        this.width(this.width() + (this.fontSize() * this.lineHeight()));
         this._resizeTextAreaWidth(this.width());
       }
     }
@@ -522,7 +522,7 @@ export class Text extends Shape<TextConfig> {
   private _decreaseFontSizeToFit(): boolean {
     if (this.lockSize() === false) return true;
 
-    while (this.measureTextHeight() + this.fontSize() > this.height()) {
+    while (this.measureTextHeight() + (this.fontSize() * this.lineHeight()) > this.height()) {
       if (this.fontSize() < 7) return false;
 
       this.fontSize(this.fontSize() - 1);
@@ -563,7 +563,7 @@ export class Text extends Shape<TextConfig> {
   private _fontSizeFits(fontSize: number): -1 | 1 | 0 {
     const h = this.measureTextHeightByFontSize(fontSize);
 
-    if (h <= this.height() && h > this.height() - this.fontSize()) return 0;
+    if (h <= this.height() && h > this.height() - (this.fontSize() * this.lineHeight())) return 0;
     else if (h > this.height()) return 1;
     else return -1;
   }

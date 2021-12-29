@@ -42,8 +42,7 @@ it('Should make this text write', () => {
       editable: true,
       lockSize: true,
       padding: 10,
-      fontSize: 15,
-      growPolicy: GrowMode.GrowWidth
+      fontSize: 20,
     });
     l.add(text);
 
