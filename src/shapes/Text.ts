@@ -272,11 +272,8 @@ export class Text extends Shape<TextConfig> {
 
     // Editing listeners
     this.on('dblclick', (e) => this._onEditingStart(e));
-    // Create text area
-    // create textarea and style it
-    this._textArea = document.createElement('textarea');
-    this._textArea.style.visibility = 'hidden';
-    document.body.appendChild(this._textArea);
+
+    this._textArea = undefined;
 
     if (!this.growPolicy())
       this.growPolicy(GrowMode.GrowWidth);
@@ -296,6 +293,12 @@ export class Text extends Shape<TextConfig> {
    */
   private _onEditingStart(event: KonvaEventObject<MouseEvent>): void {
     if (!this.editable()) return;
+
+    // Create text area
+    // create textarea and style it
+    this._textArea = document.createElement('textarea');
+    this._textArea.style.visibility = 'hidden';
+    document.body.appendChild(this._textArea);
 
     this.hide();
     this._showTextArea();
@@ -667,8 +670,8 @@ export class Text extends Shape<TextConfig> {
     this._editing = false;
     me.show();
 
-    me._textArea.style.width = '0px';
-    me._textArea.style.height = '0px';
+    // Remove text area
+    this._textArea.parentNode.removeChild(this._textArea);
   }
 
   /**
