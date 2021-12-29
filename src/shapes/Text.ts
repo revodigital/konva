@@ -281,6 +281,12 @@ export class Text extends Shape<TextConfig> {
     if (!this.growPolicy())
       this.growPolicy(GrowMode.GrowWidth);
 
+    if(!this.lockSize())
+      this.lockSize(false);
+
+    if (!this.expandToFit())
+      this.expandToFit(true);
+
     if (this.expandToFit()) this.fitContainer();
   }
 
@@ -325,6 +331,11 @@ export class Text extends Shape<TextConfig> {
     this._textArea.style.fontFamily = this.fontFamily();
     this._textArea.style.transformOrigin = 'left top';
     this._textArea.style.textAlign = this.align();
+
+    // Justify also needs whiteSpace = normal to work
+    if(this.align() === 'justify')
+      this._textArea.style.whiteSpace = 'normal';
+
     this._textArea.style.color = this.fill();
     let rotation = this.rotation();
     let transform = '';
@@ -343,7 +354,6 @@ export class Text extends Shape<TextConfig> {
     // transform += 'translateY(-' + px + 'px)';
 
     this._textArea.style.transform = transform;
-
     this._textArea.spellcheck = this.spellcheckOnEdit() || false;
     // Set text area height
     this._textArea.style.height = this.height() + 'px';
@@ -495,7 +505,6 @@ export class Text extends Shape<TextConfig> {
 
     // Sync current text. If it is removed, all calculations of text height will be incorrect
     this.text(this._textArea.value + e.key);
-    console.log(this._textArea.offsetWidth);
   }
 
   /**
