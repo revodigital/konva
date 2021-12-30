@@ -449,8 +449,10 @@ export class Text extends Shape<TextConfig> {
 
       if(textSize.overflows(boxSize)) {
         // Decrease font size while it fits
-
-      } else console.log("Can be contained");
+        if(!this._decreaseFontSizeToFit(measurementHelper, boxSize)) {
+          this.makeGrow(textSize);
+        }
+      }
     }
   }
 
