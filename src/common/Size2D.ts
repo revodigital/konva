@@ -9,6 +9,10 @@
  * Description:
  */
 
+export const sizeOf = (width: number, height: number): Size2D  =>{
+  return Size2D.fromBounds(width, height);
+}
+
 export interface ISize2D {
   width: number;
   height: number;
@@ -43,7 +47,7 @@ export class Size2D {
   }
 
   public overflows(size: Size2D): boolean {
-    return (this.getWidth() >= size.getWidth() || this.getHeight() >= size.getHeight())
+    return (this.getWidth() > size.getWidth() || this.getHeight() > size.getHeight())
   }
 
   public overflowsHeight(height: number): boolean {

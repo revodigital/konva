@@ -21,8 +21,8 @@ import {
 }                                from '../Validators';
 
 import { GetSet }              from '../types';
-import { KonvaEventObject }    from '../Node';
-import { Size2D }              from '../common/Size2D';
+import { KonvaEventObject } from '../Node';
+import { Size2D, sizeOf }   from '../common/Size2D';
 import {
   eventAddsText,
   eventIsExit,
@@ -30,9 +30,14 @@ import {
   eventRemovesText,
   pixel,
   rangeOf
-}                              from './utils';
-import { normalizeFontFamily }     from '../TextUtils';
-import { LineMetric, TextMetrics } from '../TextMeasurement';
+}                           from './utils';
+import { normalizeFontFamily }                        from '../TextUtils';
+import {
+  LineMetric,
+  TextMeasurementHelper,
+  TextMetrics,
+  TextMetricsHelper
+} from '../TextMeasurement';
 
 /**
  * Minimum font size
@@ -427,19 +432,30 @@ export class Text extends Shape<TextConfig> {
    * @private
    */
   private _afterClipboardPaste(): void {
+    const measurementHelper = this.getMeasurementHelper();
     // Calculate layout of this shape
     if (!this.lockSize()) {
+      // Resize box to make text fit
       if (this.growPolicy() === GrowPolicy.GrowHeight) {
-        const metrics = this.measureComplexText(
+        const metrics = measurementHelper.measureComplexText(
           Size2D.fromBounds(this.width(), 30000));
 
-        console.log(metrics);
         this.height(metrics.height);
       }
       else {
-        this.measureComplexText(Size2D.fromBounds(30000, this.height()));
-        this.width(this.getTextWidth());
+        const metrics = measurementHelper.measureComplexText(Size2D.fromBounds(30000, this.height()));
+        this.width(metrics.maxWidth);
       }
+    } else {
+      // Decrease font size to fit
+      const metrics = measurementHelper.measureComplexText(sizeOf(this.width(), 30000));
+      const metricsHelper = TextMetricsHelper.construct(metrics);
+      const textSize = metricsHelper.toSize();
+      const boxSize = this.getSizeRect();
+
+      if(textSize.overflows(boxSize)) {
+        console.log("Can not be contained");
+      } else console.log("Can be contained");
     }
   }
 
@@ -1062,18 +1078,9 @@ export class Text extends Shape<TextConfig> {
   }
 
   /**
-   * Add a text line into a metrics array, calculating its width
-   * @param arr
-   * @param line
+   * Measures text width (single line)
+   * @param text Text to measure
    */
-  private _addTxtLineToArr(arr: LineMetric[], line: string) {
-    if (this.align() === JUSTIFY) {
-      line = line.trim();
-    }
-    var width = this._getTextWidth(line);
-    return arr.push({ text: line, width: width });
-  }
-
   _getTextWidth(text) {
     var letterSpacing = this.letterSpacing();
     var length = text.length;
@@ -1087,7 +1094,6 @@ export class Text extends Shape<TextConfig> {
    * Sets data for correctly rendering text
    */
   _setTextData() {
-    console.log('Called split on text ', this.text());
     var lines = this.text().split('\n'),
       fontSize = +this.fontSize(),
       textWidth = 0,
@@ -1235,167 +1241,35 @@ export class Text extends Shape<TextConfig> {
     this.textWidth = textWidth;
   }
 
-  /**
-   * Measures complex text metrics, splitting on multiple lines to make space
-   * fit correctly. Returns metrics measurement
-   * @param size
-   */
-  measureComplexText(size: Size2D): TextMetrics {
-    var lines = this.text().split('\n'),
-      fontSize = +this.fontSize(),
-      textWidth = 0,
-      lineHeightPx = this.lineHeight() * fontSize,
-      width = size.getWidth() as any,
-      height = size.getHeight() as any,
-      fixedWidth = width !== AUTO && width !== undefined,
-      fixedHeight = height !== AUTO && height !== undefined,
-      padding = this.padding(),
-      maxWidth = width - padding * 2,
-      maxHeightPx = height - padding * 2,
-      currentHeightPx = 0,
-      wrap = this.wrap(),
-      // align = this.align(),
-      shouldWrap = wrap !== NONE,
-      wrapAtWord = wrap !== CHAR && shouldWrap,
-      shouldAddEllipsis = this.ellipsis();
-
-    let textArr: LineMetric[] = [];
-    getDummyContext().font = this._getContextFont();
-    var additionalWidth = shouldAddEllipsis ? this._getTextWidth(ELLIPSIS) : 0;
-    for (var i = 0, max = lines.length; i < max; ++i) {
-      var line = lines[i];
-
-      var lineWidth = this._getTextWidth(line);
-      if (fixedWidth && lineWidth > maxWidth) {
-        /*
-         * if width is fixed and line does not fit entirely
-         * break the line into multiple fitting lines
-         */
-        while (line.length > 0) {
-          /*
-           * use binary search to find the longest substring that
-           * that would fit in the specified width
-           */
-          var low = 0,
-            high = line.length,
-            match = '',
-            matchWidth = 0;
-          while (low < high) {
-            var mid = (low + high) >>> 1,
-              substr = line.slice(0, mid + 1),
-              substrWidth = this._getTextWidth(substr) + additionalWidth;
-            if (substrWidth <= maxWidth) {
-              low = mid + 1;
-              match = substr;
-              matchWidth = substrWidth;
-            } else {
-              high = mid;
-            }
-          }
-          /*
-           * 'low' is now the index of the substring end
-           * 'match' is the substring
-           * 'matchWidth' is the substring width in px
-           */
-          if (match) {
-            // a fitting substring was found
-            if (wrapAtWord) {
-              // try to find a space or dash where wrapping could be done
-              var wrapIndex;
-              var nextChar = line[match.length];
-              var nextIsSpaceOrDash = nextChar === SPACE || nextChar === DASH;
-              if (nextIsSpaceOrDash && matchWidth <= maxWidth) {
-                wrapIndex = match.length;
-              } else {
-                wrapIndex =
-                  Math.max(match.lastIndexOf(SPACE), match.lastIndexOf(DASH)) +
-                  1;
-              }
-              if (wrapIndex > 0) {
-                // re-cut the substring found at the space/dash position
-                low = wrapIndex;
-                match = match.slice(0, low);
-                matchWidth = this._getTextWidth(match);
-              }
-            }
-            // if (align === 'right') {
-            match = match.trimRight();
-            // }
-            this._addTxtLineToArr(textArr, match);
-            textWidth = Math.max(textWidth, matchWidth);
-            currentHeightPx += lineHeightPx;
-            if (
-              !shouldWrap ||
-              (fixedHeight && currentHeightPx + lineHeightPx > maxHeightPx)
-            ) {
-              var lastLine = textArr[textArr.length - 1];
-              if (lastLine) {
-                if (shouldAddEllipsis) {
-                  var haveSpace =
-                    this._getTextWidth(lastLine.text + ELLIPSIS) < maxWidth;
-                  if (!haveSpace) {
-                    lastLine.text = lastLine.text.slice(
-                      0,
-                      lastLine.text.length - 3
-                    );
-                  }
-
-                  textArr.splice(textArr.length - 1, 1);
-                  this._addTxtLineToArr(textArr, lastLine.text + ELLIPSIS);
-                }
-              }
-
-              /*
-               * stop wrapping if wrapping is disabled or if adding
-               * one more line would overflow the fixed height
-               */
-              break;
-            }
-            line = line.slice(low);
-            line = line.trimLeft();
-            if (line.length > 0) {
-              // Check if the remaining text would fit on one line
-              lineWidth = this._getTextWidth(line);
-              if (lineWidth <= maxWidth) {
-                // if it does, add the line and break out of the loop
-                this._addTxtLineToArr(textArr, line);
-                currentHeightPx += lineHeightPx;
-                textWidth = Math.max(textWidth, lineWidth);
-                break;
-              }
-            }
-          } else {
-            // not even one character could fit in the element, abort
-            break;
-          }
-        }
-      } else {
-        // element width is automatically adjusted to max line width
-        this._addTxtLineToArr(textArr, line);
-        currentHeightPx += lineHeightPx;
-        textWidth = Math.max(textWidth, lineWidth);
-      }
-      // if element height is fixed, abort if adding one more line would overflow
-      if (fixedHeight && currentHeightPx + lineHeightPx > maxHeightPx) {
-        break;
-      }
-    }
-
-    // Return various useful metrics
-    return {
-      lines: textArr,
-      maxWidth: textWidth,
-      height: currentHeightPx + (this.fontSize() * this.lineHeight()),
-      linesCount: textArr.length,
-      charsCount: this.text().length,
-      emptyLines: 0,
-    }
-  }
-
   // for text we can't disable stroke scaling
   // if we do, the result will be unexpected
   getStrokeScaleEnabled() {
     return true;
+  }
+
+  /**
+   * Creates a new measurement helper to perform measurements
+   */
+  getMeasurementHelper(): TextMeasurementHelper {
+    return new TextMeasurementHelper(this.extractConfiguration(), getDummyContext());
+  }
+
+  extractConfiguration(): TextConfig {
+    return {
+      fontSize: this.fontSize(),
+      fontFamily: this.fontFamily(),
+      fontStyle: this.fontStyle(),
+      fontVariant: this.fontVariant(),
+      align: this.align(),
+      letterSpacing: this.letterSpacing(),
+      verticalAlign: this.verticalAlign(),
+      padding: this.padding(),
+      lineHeight: this.lineHeight(),
+      textDecoration: this.textDecoration(),
+      text: this.text(),
+      wrap: this.wrap(),
+      ellipsis: this.ellipsis()
+    }
   }
 
   fontFamily: GetSet<string, this>;
