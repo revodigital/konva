@@ -9,46 +9,76 @@
  * Description:
  */
 
-import { Util }               from '../Util';
-import { Factory }            from '../Factory';
-import { Shape, ShapeConfig } from '../Shape';
-import { Pamela }             from '../Global';
+import { Util }                  from '../Util';
+import { Factory }               from '../Factory';
+import { Shape, ShapeConfig }    from '../Shape';
+import { _registerNode, Pamela } from '../Global';
 import {
+  getBooleanValidator,
+  getNumberOrAutoValidator,
   getNumberValidator,
   getStringValidator,
-  getNumberOrAutoValidator,
-  getBooleanValidator,
-}                             from '../Validators';
-import { _registerNode }      from '../Global';
+}                                from '../Validators';
 
-import { GetSet }           from '../types';
-import { KonvaEventObject } from '../Node';
+import { GetSet }              from '../types';
+import { KonvaEventObject }    from '../Node';
+import { Size2D }              from '../common/Size2D';
 import {
-  Size2D
-}                           from '../common/Size2D';
-import { cli }              from 'cypress';
-import {
+  eventAddsText,
   eventIsExit,
   eventIsNewLine,
-  eventAddsText,
   eventRemovesText,
-  removeSlice,
-  isDeleteForward,
-  isSimplePushPop,
-  popBefore,
-  popAfter,
-  cursorIsAtEndOfInput,
-  cursorIsAtStartOfInput,
-  rangeOf,
   pixel,
-  eventIsPaste
-}                           from './utils';
-import { Context }          from '../Context';
+  rangeOf
+}                              from './utils';
+import { normalizeFontFamily }     from '../TextUtils';
+import { LineMetric, TextMetrics } from '../TextMeasurement';
 
 /**
  * Minimum font size
  */
 export const MIN_FONT_SIZE = 6;
+
+// constants
+export const AUTO = 'auto',
+  //CANVAS = 'canvas',
+  CENTER = 'center',
+  JUSTIFY = 'justify',
+  CHANGE_KONVA = 'Change.konva',
+  CONTEXT_2D = '2d',
+  DASH = '-',
+  LEFT = 'left',
+  TEXT = 'text',
+  TEXT_UPPER = 'Text',
+  TOP = 'top',
+  BOTTOM = 'bottom',
+  MIDDLE = 'middle',
+  NORMAL = 'normal',
+  PX_SPACE = 'px ',
+  SPACE = ' ',
+  RIGHT = 'right',
+  WORD = 'word',
+  CHAR = 'char',
+  NONE = 'none',
+  ELLIPSIS = '…',
+  ATTR_CHANGE_LIST = [
+    'fontFamily',
+    'fontSize',
+    'fontStyle',
+    'fontVariant',
+    'padding',
+    'align',
+    'verticalAlign',
+    'lineHeight',
+    'text',
+    'width',
+    'height',
+    'wrap',
+    'ellipsis',
+    'letterSpacing',
+  ],
+  // cached variables
+  attrChangeListLen = ATTR_CHANGE_LIST.length;
 
 export function stringToArray(string: string) {
   // we need to use `Array.from` because it can split unicode string correctly
@@ -124,62 +154,6 @@ export interface TextConfig extends ShapeConfig {
    * and witch of them should remain fixed
    */
   growPolicy?: GrowPolicy;
-}
-
-// constants
-var AUTO = 'auto',
-  //CANVAS = 'canvas',
-  CENTER = 'center',
-  JUSTIFY = 'justify',
-  CHANGE_KONVA = 'Change.konva',
-  CONTEXT_2D = '2d',
-  DASH = '-',
-  LEFT = 'left',
-  TEXT = 'text',
-  TEXT_UPPER = 'Text',
-  TOP = 'top',
-  BOTTOM = 'bottom',
-  MIDDLE = 'middle',
-  NORMAL = 'normal',
-  PX_SPACE = 'px ',
-  SPACE = ' ',
-  RIGHT = 'right',
-  WORD = 'word',
-  CHAR = 'char',
-  NONE = 'none',
-  ELLIPSIS = '…',
-  ATTR_CHANGE_LIST = [
-    'fontFamily',
-    'fontSize',
-    'fontStyle',
-    'fontVariant',
-    'padding',
-    'align',
-    'verticalAlign',
-    'lineHeight',
-    'text',
-    'width',
-    'height',
-    'wrap',
-    'ellipsis',
-    'letterSpacing',
-  ],
-  // cached variables
-  attrChangeListLen = ATTR_CHANGE_LIST.length;
-
-function normalizeFontFamily(fontFamily: string) {
-  return fontFamily
-    .split(',')
-    .map((family) => {
-      family = family.trim();
-      const hasSpace = family.indexOf(' ') >= 0;
-      const hasQuotes = family.indexOf('"') >= 0 || family.indexOf('\'') >= 0;
-      if (hasSpace && !hasQuotes) {
-        family = `"${ family }"`;
-      }
-      return family;
-    })
-    .join(', ');
 }
 
 var dummyContext;
@@ -456,12 +430,14 @@ export class Text extends Shape<TextConfig> {
     // Calculate layout of this shape
     if (!this.lockSize()) {
       if (this.growPolicy() === GrowPolicy.GrowHeight) {
-        this._calculateTextDataOnSize(
+        const metrics = this.measureComplexText(
           Size2D.fromBounds(this.width(), 30000));
-        this.height(this.measureTextHeight());
+
+        console.log(metrics);
+        this.height(metrics.height);
       }
       else {
-        this._calculateTextDataOnSize(Size2D.fromBounds(30000, this.height()));
+        this.measureComplexText(Size2D.fromBounds(30000, this.height()));
         this.width(this.getTextWidth());
       }
     }
@@ -1069,12 +1045,24 @@ export class Text extends Shape<TextConfig> {
     );
   }
 
+  /**
+   *
+   * @param line
+   */
   _addTextLine(line) {
     if (this.align() === JUSTIFY) {
       line = line.trim();
     }
     var width = this._getTextWidth(line);
     return this.textArr.push({ text: line, width: width });
+  }
+
+  _addTxtLineToArr(arr: LineMetric[], line: string) {
+    if (this.align() === JUSTIFY) {
+      line = line.trim();
+    }
+    var width = this._getTextWidth(line);
+    return arr.push({ text: line, width: width });
   }
 
   _getTextWidth(text) {
@@ -1238,8 +1226,12 @@ export class Text extends Shape<TextConfig> {
     this.textWidth = textWidth;
   }
 
-  _calculateTextDataOnSize(size: Size2D) {
-    console.log('Called split on text ', this.text());
+  /**
+   * Measures complex text metrics, splitting on multiple lines to make space
+   * fit correctly. Returns metrics measurement
+   * @param size
+   */
+  measureComplexText(size: Size2D): TextMetrics {
     var lines = this.text().split('\n'),
       fontSize = +this.fontSize(),
       textWidth = 0,
@@ -1258,7 +1250,7 @@ export class Text extends Shape<TextConfig> {
       wrapAtWord = wrap !== CHAR && shouldWrap,
       shouldAddEllipsis = this.ellipsis();
 
-    this.textArr = [];
+    let textArr: LineMetric[] = [];
     getDummyContext().font = this._getContextFont();
     var additionalWidth = shouldAddEllipsis ? this._getTextWidth(ELLIPSIS) : 0;
     for (var i = 0, max = lines.length; i < max; ++i) {
@@ -1320,14 +1312,14 @@ export class Text extends Shape<TextConfig> {
             // if (align === 'right') {
             match = match.trimRight();
             // }
-            this._addTextLine(match);
+            this._addTxtLineToArr(textArr, match);
             textWidth = Math.max(textWidth, matchWidth);
             currentHeightPx += lineHeightPx;
             if (
               !shouldWrap ||
               (fixedHeight && currentHeightPx + lineHeightPx > maxHeightPx)
             ) {
-              var lastLine = this.textArr[this.textArr.length - 1];
+              var lastLine = textArr[textArr.length - 1];
               if (lastLine) {
                 if (shouldAddEllipsis) {
                   var haveSpace =
@@ -1339,8 +1331,8 @@ export class Text extends Shape<TextConfig> {
                     );
                   }
 
-                  this.textArr.splice(this.textArr.length - 1, 1);
-                  this._addTextLine(lastLine.text + ELLIPSIS);
+                  textArr.splice(textArr.length - 1, 1);
+                  this._addTxtLineToArr(textArr, lastLine.text + ELLIPSIS);
                 }
               }
 
@@ -1357,7 +1349,7 @@ export class Text extends Shape<TextConfig> {
               lineWidth = this._getTextWidth(line);
               if (lineWidth <= maxWidth) {
                 // if it does, add the line and break out of the loop
-                this._addTextLine(line);
+                this._addTxtLineToArr(textArr, line);
                 currentHeightPx += lineHeightPx;
                 textWidth = Math.max(textWidth, lineWidth);
                 break;
@@ -1370,7 +1362,7 @@ export class Text extends Shape<TextConfig> {
         }
       } else {
         // element width is automatically adjusted to max line width
-        this._addTextLine(line);
+        this._addTxtLineToArr(textArr, line);
         currentHeightPx += lineHeightPx;
         textWidth = Math.max(textWidth, lineWidth);
       }
@@ -1379,12 +1371,16 @@ export class Text extends Shape<TextConfig> {
         break;
       }
     }
-    this.textHeight = fontSize;
-    // var maxTextWidth = 0;
-    // for(var j = 0; j < this.textArr.length; j++) {
-    //     maxTextWidth = Math.max(maxTextWidth, this.textArr[j].width);
-    // }
-    this.textWidth = textWidth;
+
+    // Return various useful metrics
+    return {
+      lines: textArr,
+      maxWidth: textWidth,
+      height: currentHeightPx + (this.fontSize() * this.lineHeight()),
+      linesCount: textArr.length,
+      charsCount: this.text().length,
+      emptyLines: 0,
+    }
   }
 
   // for text we can't disable stroke scaling
