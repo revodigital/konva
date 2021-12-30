@@ -11,9 +11,9 @@
 
 import { TEST_ELEMENT_ID } from '../global/global-defs';
 import { Stage }           from '../../src/Stage';
-import { Layer }           from '../../src/Layer';
-import { GrowMode, Text }  from '../../src/shapes/Text';
-import { Transformer }     from '../../src/shapes/Transformer';
+import { Layer }            from '../../src/Layer';
+import { GrowPolicy, Text } from '../../src/shapes/Text';
+import { Transformer }      from '../../src/shapes/Transformer';
 
 before(() => {
   const el = document.createElement('div');
@@ -42,7 +42,7 @@ it('Should make this text write', () => {
       editable: true,
       padding: 10,
       fontSize: 20,
-      growPolicy: GrowMode.GrowWidth,
+      growPolicy: GrowPolicy.GrowWidth,
       lockSize: true,
     });
     l.add(text);

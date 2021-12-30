@@ -61,7 +61,7 @@ export function stringToArray(string: string) {
  * Represents how textbox boundaries should grow
  * and witch of them should remain fixed
  */
-export enum GrowMode {
+export enum GrowPolicy {
   /**
    * Fixed height and dynamic width
    */
@@ -99,7 +99,6 @@ export interface TextConfig extends ShapeConfig {
    * boundaries will cause font size decrease until 6px.
    */
   lockSize?: boolean;
-  autoFontSize?: boolean;
 
   /**
    * Enables / disables spellcheck while editing text
@@ -123,7 +122,7 @@ export interface TextConfig extends ShapeConfig {
    * editing mode
    * and witch of them should remain fixed
    */
-  growPolicy?: GrowMode;
+  growPolicy?: GrowPolicy;
 }
 
 // constants
@@ -262,7 +261,7 @@ export class Text extends Shape<TextConfig> {
   spellcheckOnEdit: GetSet<boolean, this>;
   enableNewLine: GetSet<boolean, this>;
   expandToFit: GetSet<boolean, this>;
-  growPolicy: GetSet<GrowMode, this>;
+  growPolicy: GetSet<GrowPolicy, this>;
 
   _afterPaste: boolean;
 
@@ -284,7 +283,7 @@ export class Text extends Shape<TextConfig> {
     this._afterPaste = false;
 
     if (!this.growPolicy())
-      this.growPolicy(GrowMode.GrowWidth);
+      this.growPolicy(GrowPolicy.GrowWidth);
 
     if (this.lockSize() === undefined)
       this.lockSize(false);
@@ -439,6 +438,7 @@ export class Text extends Shape<TextConfig> {
     // Triggers resizing after text paste
     const handleTextResize = () => {
       this._handleResize();
+      this._textArea.style.fontSize = pixel(this.fontSize());
       // Auto remove me
       this._textArea.removeEventListener('change', handleTextResize);
     };
@@ -481,7 +481,7 @@ export class Text extends Shape<TextConfig> {
     // Resize if dimensions are not locked
     if (this.lockSize() === false) {
       // Resize height
-      if (this.growPolicy() === GrowMode.GrowHeight) {
+      if (this.growPolicy() === GrowPolicy.GrowHeight) {
         this.height(this.measureTextHeight());
         this._resizeTextAreaHeight(this.height());
       } else {
@@ -533,7 +533,7 @@ export class Text extends Shape<TextConfig> {
     // Let size grow if allowed
     if (this.lockSize() === false) {
       // Let height grow if allowed
-      if (this.measureTextHeight() + (this.fontSize() * this.lineHeight()) > this.height() && this.growPolicy() === GrowMode.GrowHeight) {
+      if (this.measureTextHeight() + (this.fontSize() * this.lineHeight()) > this.height() && this.growPolicy() === GrowPolicy.GrowHeight) {
         // Resize height of shape and also of text area
         this.height(this.measureTextHeight() + (this.fontSize() * this.lineHeight()));
         this._resizeTextAreaHeight(this.height());
@@ -542,7 +542,7 @@ export class Text extends Shape<TextConfig> {
       // Check for grow width
       if (rangeOf(this.width() - (this.fontSize() * this.lineHeight()) - (this.padding() * 2),
         this.width() - (this.padding() * 2),
-        this.getTextWidth()) && this.growPolicy() === GrowMode.GrowWidth) {
+        this.getTextWidth()) && this.growPolicy() === GrowPolicy.GrowWidth) {
         this.width(this.width() + (this.fontSize() * this.lineHeight()));
         this._resizeTextAreaWidth(this.width());
       }
@@ -1405,11 +1405,6 @@ Factory.addGetterSetter(Text, 'editable', false);
 Factory.addGetterSetter(Text, 'lockSize', false);
 
 /**
- * Enable/disable auto font size
- */
-Factory.addGetterSetter(Text, 'autoFontSize', false);
-
-/**
  * Enable/disable spell checking on editing text area
  */
 Factory.addGetterSetter(Text, 'spellcheckOnEdit', false);
@@ -1424,4 +1419,4 @@ Factory.addGetterSetter(Text, 'enableNewLine', false);
  */
 Factory.addGetterSetter(Text, 'expandToFit', false);
 
-Factory.addGetterSetter(Text, 'growPolicy', GrowMode.GrowHeight);
+Factory.addGetterSetter(Text, 'growPolicy', GrowPolicy.GrowHeight);
