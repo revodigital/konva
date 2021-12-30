@@ -43,6 +43,7 @@ import {
   pixel,
   eventIsPaste
 }                           from './utils';
+import { Context }          from '../Context';
 
 /**
  * Minimum font size
@@ -437,14 +438,33 @@ export class Text extends Shape<TextConfig> {
   private _onClipboardPaste(e: ClipboardEvent): void {
     // Triggers resizing after text paste
     const handleTextResize = () => {
-      this._handleResize();
-      this._textArea.style.fontSize = pixel(this.fontSize());
-      // Auto remove me
-      this._textArea.removeEventListener('change', handleTextResize);
+      this.text(this._textArea.value);
+      this._afterClipboardPaste();
+      // Remove this listener
+      this._textArea.removeEventListener('input', handleTextResize);
     };
 
     // Add resizing callback
-    this._textArea.addEventListener('change', handleTextResize);
+    this._textArea.addEventListener('input', handleTextResize);
+  }
+
+  /**
+   * Called after clipboard paste (textarea text has already been changed)
+   * @private
+   */
+  private _afterClipboardPaste(): void {
+    // Calculate layout of this shape
+    if (!this.lockSize()) {
+      if (this.growPolicy() === GrowPolicy.GrowHeight) {
+        this._calculateTextDataOnSize(
+          Size2D.fromBounds(this.width(), 30000));
+        this.height(this.measureTextHeight());
+      }
+      else {
+        this._calculateTextDataOnSize(Size2D.fromBounds(30000, this.height()));
+        this.width(this.getTextWidth());
+      }
+    }
   }
 
   /**
@@ -709,6 +729,110 @@ export class Text extends Shape<TextConfig> {
   }
 
   /**
+   * Calculates layout of this shape updating textArr for future uses
+   * @private
+   */
+  private _calculateLayout(): void {
+    var textArr = this.textArr,
+      textArrLen = textArr.length;
+
+    if (!this.text()) {
+      return;
+    }
+
+    var padding = this.padding(),
+      fontSize = this.fontSize(),
+      lineHeightPx = this.lineHeight() * fontSize,
+      verticalAlign = this.verticalAlign(),
+      alignY = 0,
+      align = this.align(),
+      totalWidth = this.getWidth(),
+      letterSpacing = this.letterSpacing(),
+      fill = this.fill(),
+      textDecoration = this.textDecoration(),
+      shouldUnderline = textDecoration.indexOf('underline') !== -1,
+      shouldLineThrough = textDecoration.indexOf('line-through') !== -1,
+      n;
+
+    var translateY = 0;
+    var translateY = lineHeightPx / 2;
+
+    var lineTranslateX = 0;
+    var lineTranslateY = 0;
+
+    // handle vertical alignment
+    if (verticalAlign === MIDDLE) {
+      alignY = (this.getHeight() - textArrLen * lineHeightPx - padding * 2) / 2;
+    } else if (verticalAlign === BOTTOM) {
+      alignY = this.getHeight() - textArrLen * lineHeightPx - padding * 2;
+    }
+
+    for (n = 0; n < textArrLen; n++) {
+      var lineTranslateX = 0;
+      var lineTranslateY = 0;
+      var obj = textArr[n],
+        text = obj.text,
+        width = obj.width,
+        lastLine = n !== textArrLen - 1,
+        spacesNumber,
+        oneWord,
+        lineWidth;
+
+      // horizontal alignment
+      if (align === RIGHT) {
+        lineTranslateX += totalWidth - width - padding * 2;
+      } else if (align === CENTER) {
+        lineTranslateX += (totalWidth - width - padding * 2) / 2;
+      }
+
+      if (shouldUnderline) {
+
+        spacesNumber = text.split(' ').length - 1;
+        oneWord = spacesNumber === 0;
+        lineWidth =
+          align === JUSTIFY && lastLine && !oneWord
+          ? totalWidth - padding * 2
+          : width;
+      }
+      if (shouldLineThrough) {
+        spacesNumber = text.split(' ').length - 1;
+        oneWord = spacesNumber === 0;
+        lineWidth =
+          align === JUSTIFY && lastLine && !oneWord
+          ? totalWidth - padding * 2
+          : width;
+      }
+      if (letterSpacing !== 0 || align === JUSTIFY) {
+        //   var words = text.split(' ');
+        spacesNumber = text.split(' ').length - 1;
+        var array = stringToArray(text);
+        for (var li = 0; li < array.length; li++) {
+          var letter = array[li];
+          // skip justify for the last line
+          if (letter === ' ' && n !== textArrLen - 1 && align === JUSTIFY) {
+            lineTranslateX += (totalWidth - padding * 2 - width) / spacesNumber;
+            // context.translate(
+            //   Math.floor((totalWidth - padding * 2 - width) / spacesNumber),
+            //   0
+            // );
+          }
+          this._partialTextX = lineTranslateX;
+          this._partialTextY = translateY + lineTranslateY;
+          this._partialText = letter;
+          lineTranslateX += this.measureSize(letter).width + letterSpacing;
+        }
+      } else {
+        this._partialTextX = lineTranslateX;
+        this._partialTextY = translateY + lineTranslateY;
+        this._partialText = text;
+      }
+      if (textArrLen > 1) {
+        translateY += lineHeightPx;
+      }
+    }
+  }
+
+  /**
    * Drawing function
    * @param context
    */
@@ -716,6 +840,7 @@ export class Text extends Shape<TextConfig> {
     var textArr = this.textArr,
       textArrLen = textArr.length;
 
+    // TODO: Implement placeholder
     if (!this.text()) {
       return;
     }
@@ -961,13 +1086,166 @@ export class Text extends Shape<TextConfig> {
     );
   }
 
+  /**
+   * Sets data for correctly rendering text
+   */
   _setTextData() {
+    console.log('Called split on text ', this.text());
     var lines = this.text().split('\n'),
       fontSize = +this.fontSize(),
       textWidth = 0,
       lineHeightPx = this.lineHeight() * fontSize,
       width = this.attrs.width,
       height = this.attrs.height,
+      fixedWidth = width !== AUTO && width !== undefined,
+      fixedHeight = height !== AUTO && height !== undefined,
+      padding = this.padding(),
+      maxWidth = width - padding * 2,
+      maxHeightPx = height - padding * 2,
+      currentHeightPx = 0,
+      wrap = this.wrap(),
+      // align = this.align(),
+      shouldWrap = wrap !== NONE,
+      wrapAtWord = wrap !== CHAR && shouldWrap,
+      shouldAddEllipsis = this.ellipsis();
+
+    this.textArr = [];
+    getDummyContext().font = this._getContextFont();
+    var additionalWidth = shouldAddEllipsis ? this._getTextWidth(ELLIPSIS) : 0;
+    for (var i = 0, max = lines.length; i < max; ++i) {
+      var line = lines[i];
+
+      var lineWidth = this._getTextWidth(line);
+      if (fixedWidth && lineWidth > maxWidth) {
+        /*
+         * if width is fixed and line does not fit entirely
+         * break the line into multiple fitting lines
+         */
+        while (line.length > 0) {
+          /*
+           * use binary search to find the longest substring that
+           * that would fit in the specified width
+           */
+          var low = 0,
+            high = line.length,
+            match = '',
+            matchWidth = 0;
+          while (low < high) {
+            var mid = (low + high) >>> 1,
+              substr = line.slice(0, mid + 1),
+              substrWidth = this._getTextWidth(substr) + additionalWidth;
+            if (substrWidth <= maxWidth) {
+              low = mid + 1;
+              match = substr;
+              matchWidth = substrWidth;
+            } else {
+              high = mid;
+            }
+          }
+          /*
+           * 'low' is now the index of the substring end
+           * 'match' is the substring
+           * 'matchWidth' is the substring width in px
+           */
+          if (match) {
+            // a fitting substring was found
+            if (wrapAtWord) {
+              // try to find a space or dash where wrapping could be done
+              var wrapIndex;
+              var nextChar = line[match.length];
+              var nextIsSpaceOrDash = nextChar === SPACE || nextChar === DASH;
+              if (nextIsSpaceOrDash && matchWidth <= maxWidth) {
+                wrapIndex = match.length;
+              } else {
+                wrapIndex =
+                  Math.max(match.lastIndexOf(SPACE), match.lastIndexOf(DASH)) +
+                  1;
+              }
+              if (wrapIndex > 0) {
+                // re-cut the substring found at the space/dash position
+                low = wrapIndex;
+                match = match.slice(0, low);
+                matchWidth = this._getTextWidth(match);
+              }
+            }
+            // if (align === 'right') {
+            match = match.trimRight();
+            // }
+            this._addTextLine(match);
+            textWidth = Math.max(textWidth, matchWidth);
+            currentHeightPx += lineHeightPx;
+            if (
+              !shouldWrap ||
+              (fixedHeight && currentHeightPx + lineHeightPx > maxHeightPx)
+            ) {
+              var lastLine = this.textArr[this.textArr.length - 1];
+              if (lastLine) {
+                if (shouldAddEllipsis) {
+                  var haveSpace =
+                    this._getTextWidth(lastLine.text + ELLIPSIS) < maxWidth;
+                  if (!haveSpace) {
+                    lastLine.text = lastLine.text.slice(
+                      0,
+                      lastLine.text.length - 3
+                    );
+                  }
+
+                  this.textArr.splice(this.textArr.length - 1, 1);
+                  this._addTextLine(lastLine.text + ELLIPSIS);
+                }
+              }
+
+              /*
+               * stop wrapping if wrapping is disabled or if adding
+               * one more line would overflow the fixed height
+               */
+              break;
+            }
+            line = line.slice(low);
+            line = line.trimLeft();
+            if (line.length > 0) {
+              // Check if the remaining text would fit on one line
+              lineWidth = this._getTextWidth(line);
+              if (lineWidth <= maxWidth) {
+                // if it does, add the line and break out of the loop
+                this._addTextLine(line);
+                currentHeightPx += lineHeightPx;
+                textWidth = Math.max(textWidth, lineWidth);
+                break;
+              }
+            }
+          } else {
+            // not even one character could fit in the element, abort
+            break;
+          }
+        }
+      } else {
+        // element width is automatically adjusted to max line width
+        this._addTextLine(line);
+        currentHeightPx += lineHeightPx;
+        textWidth = Math.max(textWidth, lineWidth);
+      }
+      // if element height is fixed, abort if adding one more line would overflow
+      if (fixedHeight && currentHeightPx + lineHeightPx > maxHeightPx) {
+        break;
+      }
+    }
+    this.textHeight = fontSize;
+    // var maxTextWidth = 0;
+    // for(var j = 0; j < this.textArr.length; j++) {
+    //     maxTextWidth = Math.max(maxTextWidth, this.textArr[j].width);
+    // }
+    this.textWidth = textWidth;
+  }
+
+  _calculateTextDataOnSize(size: Size2D) {
+    console.log('Called split on text ', this.text());
+    var lines = this.text().split('\n'),
+      fontSize = +this.fontSize(),
+      textWidth = 0,
+      lineHeightPx = this.lineHeight() * fontSize,
+      width = size.getWidth() as any,
+      height = size.getHeight() as any,
       fixedWidth = width !== AUTO && width !== undefined,
       fixedHeight = height !== AUTO && height !== undefined,
       padding = this.padding(),

@@ -43,7 +43,7 @@ export class Size2D {
   }
 
   public overflows(size: Size2D): boolean {
-    return (this.getWidth() > size.getWidth() || this.getHeight() > size.getHeight())
+    return (this.getWidth() >= size.getWidth() || this.getHeight() >= size.getHeight())
   }
 
   public overflowsHeight(height: number): boolean {
