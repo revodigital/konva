@@ -544,8 +544,10 @@ export class Text extends Shape<TextConfig> {
 
     // Height of ipotethic new line (added in case of overflow)
     const newLineHeight = this.fontSize() * this.lineHeight();
+    const newCharWidth = this.fontSize() * this.lineHeight();
+
     // True if this text is overflowing on height
-    const overflowsHeight: boolean = textMetrics.height + newLineHeight > this.height();
+    const overflowsHeight: boolean = textMetrics.height + newLineHeight > this.height() - this.padding();
     // True if this text is overflowing on width
     const overflowsWidth: boolean = rangeOf(this.width() - (this.fontSize() * this.lineHeight()) - (this.padding() * 2),
       this.width() - (this.padding() * 2),
@@ -556,15 +558,21 @@ export class Text extends Shape<TextConfig> {
       // Let height grow if allowed
       if (overflowsHeight && this.growPolicy() === GrowPolicy.GrowHeight) {
         // Resize height of shape and also of text area
-        this.height(this.measureTextHeight() + (this.fontSize() * this.lineHeight()));
+        this.height(textMetrics.height + newLineHeight);
         this._resizeTextAreaHeight(this.height());
       }
 
       // Check for grow width
       if (overflowsWidth && this.growPolicy() === GrowPolicy.GrowWidth) {
         // Add some space left
-        this.width(this.width() + (this.fontSize() * this.lineHeight()));
+        this.width(this.width() + newCharWidth);
         this._resizeTextAreaWidth(this.width());
+      }
+    } else if(overflowsHeight && this.lockSize()) {
+      // If unable to decrease font (fontSize < 6pt) resize following
+      // Grow policy.
+      if(!this._decreaseFontSizeToFit(measurementHelp, this.getSizeRect())) {
+        this.makeGrow(this.getSizeRect().increase(newLineHeight, newLineHeight))
       }
     }
 
@@ -573,18 +581,34 @@ export class Text extends Shape<TextConfig> {
       this.fitContainer();
   }
 
+  makeGrow(newSize: Size2D): void {
+    if(this.growPolicy() === GrowPolicy.GrowHeight) {
+      this._resizeTextAreaHeight(newSize.getHeight());
+      this.height(newSize.getHeight());
+    } else {
+      this._resizeTextAreaHeight(newSize.getWidth());
+      this.width(newSize.getWidth());
+    }
+  }
+
   /**
    * Decreases font size to make text fit container
    * @private
    */
   private _decreaseFontSizeToFit(measurement: TextMeasurementHelper, box: Size2D): boolean {
-    const metrics = measurement.measureComplexText(box);
+    let metrics = measurement.measureComplexText(box);
+    let fontSize = this.fontSize();
 
-    while (metrics.height + (this.fontSize() * this.lineHeight()) > this.height()) {
-      if (this.fontSize() < 7) return false;
+    while (metrics.height + (fontSize * this.lineHeight()) > this.height() - this.padding()) {
+      if (fontSize < 7) return false;
 
-      this.fontSize(this.fontSize() - 1);
+      fontSize --;
+      // Recalculate all
+
+      measurement.fontSize = fontSize;
+      metrics = measurement.measureComplexText(box);
       this._textArea.style.fontSize = `${ this.fontSize() }px`;
+      this.fontSize(fontSize)
     }
     return true;
   }

@@ -37,12 +37,14 @@ it('Should make this text write', () => {
     const text = new Text({
       draggable: true,
       text: 'hellow',
-      width: 300,
-      height: 300,
+      width: 100,
+      height: 100,
       editable: true,
       padding: 10,
       fontSize: 20,
-      growPolicy: GrowPolicy.GrowWidth,
+      growPolicy: GrowPolicy.GrowHeight,
+      lockSize: true,
+      expandToFit: true,
     });
     l.add(text);
 

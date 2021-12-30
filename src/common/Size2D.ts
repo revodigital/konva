@@ -54,6 +54,13 @@ export class Size2D {
     return this.getHeight() > height;
   }
 
+  public increase(a: number, b: number): Size2D {
+    this.width += a;
+    this.height += b;
+
+    return this;
+  }
+
   public toISize(): ISize2D {
     return {
       width: this.width,
