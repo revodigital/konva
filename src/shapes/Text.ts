@@ -549,7 +549,7 @@ export class Text extends Shape<TextConfig> {
     const newCharWidth = this.fontSize() * this.lineHeight();
 
     // True if this text is overflowing on height
-    const overflowsHeight: boolean = textMetrics.height + newLineHeight > this.height() - this.padding();
+    const overflowsHeight: boolean = textMetrics.height + newLineHeight > this.height() - (this.padding() * 2);
     // True if this text is overflowing on width
     const overflowsWidth: boolean = rangeOf(this.width() - (this.fontSize() * this.lineHeight()) - (this.padding() * 2),
       this.width() - (this.padding() * 2),
@@ -560,7 +560,7 @@ export class Text extends Shape<TextConfig> {
       // Let height grow if allowed
       if (overflowsHeight && this.growPolicy() === GrowPolicy.GrowHeight) {
         // Resize height of shape and also of text area
-        this.height(textMetrics.height + newLineHeight);
+        this.height(this.height() + newLineHeight);
         this._resizeTextAreaHeight(this.height());
       }
 
@@ -606,9 +606,10 @@ export class Text extends Shape<TextConfig> {
 
       fontSize --;
       // Recalculate all
-
       measurement.fontSize = fontSize;
       metrics = measurement.measureComplexText(box);
+
+      // Set fontsize to shape and textarea
       this._textArea.style.fontSize = `${ fontSize }px`;
       this.fontSize(fontSize);
     }
