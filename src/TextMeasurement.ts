@@ -66,6 +66,22 @@ export class TextMetricsHelper implements TextMetrics{
   }
 
   /**
+   * Get width of a specific line
+   * @param index
+   */
+  getLineWidth(index: number): number {
+    return this.lines[index].width;
+  }
+
+  /**
+   * Get text of a specific line
+   * @param index
+   */
+  getLineText(index: number): string {
+    return this.lines[index].text;
+  }
+
+  /**
    * Returns complete text of this measure
    * */
   getCompleteText(): string {

@@ -230,38 +230,40 @@ export class Text extends Shape<TextConfig> {
   _partialTextY = 0;
   _inputBlocked = false;
   _editing = false;
+
   _textArea: HTMLTextAreaElement;
-
   textWidth: number;
-  textHeight: number;
 
+  textHeight: number;
   editable: GetSet<boolean, this>;
   lockSize: GetSet<boolean, this>;
   autoFontSize: GetSet<boolean, this>;
   spellcheckOnEdit: GetSet<boolean, this>;
   enableNewLine: GetSet<boolean, this>;
   expandToFit: GetSet<boolean, this>;
-  growPolicy: GetSet<GrowPolicy, this>;
 
-  _afterPaste: boolean;
+  growPolicy: GetSet<GrowPolicy, this>;
 
   /**
    * Creates a new Text shape
    */
   constructor(config?: TextConfig) {
     super(checkDefaultFill(config));
+
+    // Set textarea to undefined ( will be created only when editing will start)
+    this._textArea = undefined;
     // update text data for certain attr changes
     for (var n = 0; n < attrChangeListLen; n++) {
       this.on(ATTR_CHANGE_LIST[n] + CHANGE_KONVA, this._setTextData);
     }
+
+    // Init text data and measurements
     this._setTextData();
 
     // Editing listeners
     this.on('dblclick', (e) => this._onEditingStart(e));
 
-    this._textArea = undefined;
-    this._afterPaste = false;
-
+    // Default values
     if (!this.growPolicy())
       this.growPolicy(GrowPolicy.GrowWidth);
 
@@ -271,6 +273,7 @@ export class Text extends Shape<TextConfig> {
     if (this.expandToFit() === undefined)
       this.expandToFit(true);
 
+    // Initial text expanding
     if (this.expandToFit()) this.fitContainer();
   }
 
@@ -336,15 +339,6 @@ export class Text extends Shape<TextConfig> {
 
     }
 
-    // var px = 0;
-    // // also we need to slightly move this._textArea on firefox
-    // // because it jumps a bit
-    // var isFirefox =
-    //   navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
-    // if (isFirefox) {
-    //   px += 2 + Math.round(this.fontSize() / 20);
-    // }
-    // transform += 'translateY(-' + px + 'px)';
     this._textArea.style.transform = transform;
     this._textArea.spellcheck = this.spellcheckOnEdit() || false;
     // Set text area height
@@ -353,7 +347,7 @@ export class Text extends Shape<TextConfig> {
 
     // Event listener for keydown events
     this._textArea.addEventListener('keydown', (e) => this._onInputKeyDown(e));
-    this._textArea.addEventListener('paste', (e) => this._onClipboardPaste(e));
+    this._textArea.addEventListener('paste', (e) => this._beforeClipboardPaste(e));
   }
 
   getPaddedWidth(): number {
@@ -414,7 +408,7 @@ export class Text extends Shape<TextConfig> {
    * @param e
    * @private
    */
-  private _onClipboardPaste(e: ClipboardEvent): void {
+  private _beforeClipboardPaste(e: ClipboardEvent): void {
     // Triggers resizing after text paste
     const handleTextResize = () => {
       this.text(this._textArea.value);
@@ -467,7 +461,7 @@ export class Text extends Shape<TextConfig> {
   private _onExitInput(e: KeyboardEvent): void {
     this.text(this._textArea.value);
     this._hideTextArea();
-    this._onEditingEnd(this);
+    this._onEditingEnd();
   }
 
   /**
@@ -620,22 +614,6 @@ export class Text extends Shape<TextConfig> {
   }
 
   /**
-   * Get width of a specific line
-   * @param index
-   */
-  getLineWidth(index: number): number {
-    return this.textArr[index].width;
-  }
-
-  /**
-   * Get text of a specific line
-   * @param index
-   */
-  getLineText(index: number): string {
-    return this.textArr[index].text;
-  }
-
-  /**
    * Measures current text height based
    * on fontsize, lineHeight and padding
    */
@@ -709,119 +687,14 @@ export class Text extends Shape<TextConfig> {
 
   /**
    * Called when text editing ends
-   * @param me Pointer to this
    */
-  private _onEditingEnd(me: Text): void {
+  private _onEditingEnd(): void {
     // Set status variables
     this._editing = false;
-    me.show();
+    this.show();
 
     // Remove text area
     this._textArea.parentNode.removeChild(this._textArea);
-  }
-
-  /**
-   * Calculates layout of this shape updating textArr for future uses
-   * @private
-   */
-  private _calculateLayout(): void {
-    var textArr = this.textArr,
-      textArrLen = textArr.length;
-
-    if (!this.text()) {
-      return;
-    }
-
-    var padding = this.padding(),
-      fontSize = this.fontSize(),
-      lineHeightPx = this.lineHeight() * fontSize,
-      verticalAlign = this.verticalAlign(),
-      alignY = 0,
-      align = this.align(),
-      totalWidth = this.getWidth(),
-      letterSpacing = this.letterSpacing(),
-      fill = this.fill(),
-      textDecoration = this.textDecoration(),
-      shouldUnderline = textDecoration.indexOf('underline') !== -1,
-      shouldLineThrough = textDecoration.indexOf('line-through') !== -1,
-      n;
-
-    var translateY = 0;
-    var translateY = lineHeightPx / 2;
-
-    var lineTranslateX = 0;
-    var lineTranslateY = 0;
-
-    // handle vertical alignment
-    if (verticalAlign === MIDDLE) {
-      alignY = (this.getHeight() - textArrLen * lineHeightPx - padding * 2) / 2;
-    } else if (verticalAlign === BOTTOM) {
-      alignY = this.getHeight() - textArrLen * lineHeightPx - padding * 2;
-    }
-
-    for (n = 0; n < textArrLen; n++) {
-      var lineTranslateX = 0;
-      var lineTranslateY = 0;
-      var obj = textArr[n],
-        text = obj.text,
-        width = obj.width,
-        lastLine = n !== textArrLen - 1,
-        spacesNumber,
-        oneWord,
-        lineWidth;
-
-      // horizontal alignment
-      if (align === RIGHT) {
-        lineTranslateX += totalWidth - width - padding * 2;
-      } else if (align === CENTER) {
-        lineTranslateX += (totalWidth - width - padding * 2) / 2;
-      }
-
-      if (shouldUnderline) {
-
-        spacesNumber = text.split(' ').length - 1;
-        oneWord = spacesNumber === 0;
-        lineWidth =
-          align === JUSTIFY && lastLine && !oneWord
-          ? totalWidth - padding * 2
-          : width;
-      }
-      if (shouldLineThrough) {
-        spacesNumber = text.split(' ').length - 1;
-        oneWord = spacesNumber === 0;
-        lineWidth =
-          align === JUSTIFY && lastLine && !oneWord
-          ? totalWidth - padding * 2
-          : width;
-      }
-      if (letterSpacing !== 0 || align === JUSTIFY) {
-        //   var words = text.split(' ');
-        spacesNumber = text.split(' ').length - 1;
-        var array = stringToArray(text);
-        for (var li = 0; li < array.length; li++) {
-          var letter = array[li];
-          // skip justify for the last line
-          if (letter === ' ' && n !== textArrLen - 1 && align === JUSTIFY) {
-            lineTranslateX += (totalWidth - padding * 2 - width) / spacesNumber;
-            // context.translate(
-            //   Math.floor((totalWidth - padding * 2 - width) / spacesNumber),
-            //   0
-            // );
-          }
-          this._partialTextX = lineTranslateX;
-          this._partialTextY = translateY + lineTranslateY;
-          this._partialText = letter;
-          lineTranslateX += this.measureSize(letter).width + letterSpacing;
-        }
-      } else {
-        this._partialTextX = lineTranslateX;
-        this._partialTextY = translateY + lineTranslateY;
-        this._partialText = text;
-      }
-      if (textArrLen > 1) {
-        translateY += lineHeightPx;
-      }
-    }
   }
 
   /**
