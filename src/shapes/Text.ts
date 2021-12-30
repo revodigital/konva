@@ -609,8 +609,8 @@ export class Text extends Shape<TextConfig> {
 
       measurement.fontSize = fontSize;
       metrics = measurement.measureComplexText(box);
-      this._textArea.style.fontSize = `${ this.fontSize() }px`;
-      this.fontSize(fontSize)
+      this._textArea.style.fontSize = `${ fontSize }px`;
+      this.fontSize(fontSize);
     }
     return true;
   }
