@@ -1033,7 +1033,11 @@ export class Text extends Shape<TextConfig> {
     };
   }
 
-  _getContextFont() {
+  /**
+   * Returns the font string
+   * formatted properly
+   */
+  _getContextFont(): string {
     return (
       this.fontStyle() +
       SPACE +
@@ -1046,10 +1050,10 @@ export class Text extends Shape<TextConfig> {
   }
 
   /**
-   *
+   * Add a line into the text
    * @param line
    */
-  _addTextLine(line) {
+  private _addTextLine(line) {
     if (this.align() === JUSTIFY) {
       line = line.trim();
     }
@@ -1057,7 +1061,12 @@ export class Text extends Shape<TextConfig> {
     return this.textArr.push({ text: line, width: width });
   }
 
-  _addTxtLineToArr(arr: LineMetric[], line: string) {
+  /**
+   * Add a text line into a metrics array, calculating its width
+   * @param arr
+   * @param line
+   */
+  private _addTxtLineToArr(arr: LineMetric[], line: string) {
     if (this.align() === JUSTIFY) {
       line = line.trim();
     }
