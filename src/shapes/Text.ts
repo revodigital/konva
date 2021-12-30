@@ -448,7 +448,8 @@ export class Text extends Shape<TextConfig> {
       const boxSize = this.getSizeRect();
 
       if(textSize.overflows(boxSize)) {
-        console.log("Can not be contained");
+        // Decrease font size while it fits
+
       } else console.log("Can be contained");
     }
   }
@@ -536,38 +537,50 @@ export class Text extends Shape<TextConfig> {
     // Apply current height and width using also scale
     this._resizeTextAreaWidth(this.width() * scale);
 
+    // Create measurement helper
+    const measurementHelp = this.getMeasurementHelper();
+    // Measure current text metrics
+    const textMetrics: TextMetricsHelper = measurementHelp.measureComplexText(this.getSizeRect());
+
+    // Height of ipotethic new line (added in case of overflow)
+    const newLineHeight = this.fontSize() * this.lineHeight();
+    // True if this text is overflowing on height
+    const overflowsHeight: boolean = textMetrics.height + newLineHeight > this.height();
+    // True if this text is overflowing on width
+    const overflowsWidth: boolean = rangeOf(this.width() - (this.fontSize() * this.lineHeight()) - (this.padding() * 2),
+      this.width() - (this.padding() * 2),
+      textMetrics.maxWidth);
+
     // Let size grow if allowed
-    if (this.lockSize() === false) {
+    if (!this.lockSize()) {
       // Let height grow if allowed
-      if (this.measureTextHeight() + (this.fontSize() * this.lineHeight()) > this.height() && this.growPolicy() === GrowPolicy.GrowHeight) {
+      if (overflowsHeight && this.growPolicy() === GrowPolicy.GrowHeight) {
         // Resize height of shape and also of text area
         this.height(this.measureTextHeight() + (this.fontSize() * this.lineHeight()));
         this._resizeTextAreaHeight(this.height());
       }
 
       // Check for grow width
-      if (rangeOf(this.width() - (this.fontSize() * this.lineHeight()) - (this.padding() * 2),
-        this.width() - (this.padding() * 2),
-        this.getTextWidth()) && this.growPolicy() === GrowPolicy.GrowWidth) {
+      if (overflowsWidth && this.growPolicy() === GrowPolicy.GrowWidth) {
+        // Add some space left
         this.width(this.width() + (this.fontSize() * this.lineHeight()));
         this._resizeTextAreaWidth(this.width());
       }
     }
 
     // Check for possibility of font decrease when in lockSize mode
-    if (!this._decreaseFontSizeToFit())
-      // Block only add-text actions
-      this._inputBlocked = true;
+    if(this.expandToFit())
+      this.fitContainer();
   }
 
   /**
    * Decreases font size to make text fit container
    * @private
    */
-  private _decreaseFontSizeToFit(): boolean {
-    if (this.lockSize() === false) return true;
+  private _decreaseFontSizeToFit(measurement: TextMeasurementHelper, box: Size2D): boolean {
+    const metrics = measurement.measureComplexText(box);
 
-    while (this.measureTextHeight() + (this.fontSize() * this.lineHeight()) > this.height()) {
+    while (metrics.height + (this.fontSize() * this.lineHeight()) > this.height()) {
       if (this.fontSize() < 7) return false;
 
       this.fontSize(this.fontSize() - 1);
@@ -667,6 +680,11 @@ export class Text extends Shape<TextConfig> {
     this._textArea.style.width = pixel(newWidth - (this.padding() * 2));
   }
 
+  /**
+   * Resizes text area height
+   * @param newHeight
+   * @private
+   */
   private _resizeTextAreaHeight(newHeight: number): void {
     if (!newHeight) {
       // set width for placeholder

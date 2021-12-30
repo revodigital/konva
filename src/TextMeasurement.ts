@@ -160,7 +160,7 @@ export class TextMeasurementHelper {
    * fit correctly. Returns metrics measurement
    * @param size Box size to apply
    */
-  measureComplexText(size: Size2D): TextMetrics {
+  measureComplexText(size: Size2D): TextMetricsHelper {
     // Empty measurement text array
     this.textArr = [];
     // Extract configuration parameters
@@ -304,14 +304,14 @@ export class TextMeasurementHelper {
     }
 
     // Return various useful metrics
-    return {
+    return TextMetricsHelper.construct({
       lines: this.textArr,
       maxWidth: textWidth,
       height: currentHeightPx + (this.fontSize * this.lineHeight),
       linesCount: this.textArr.length,
       charsCount: this.text.length,
       emptyLines: 0,
-    }
+    })
   }
 
   /**
