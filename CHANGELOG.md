@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.2.2 (3/1/2022)
+Corrects exception when no borderRadius is provided and adds useful **BorderRadius** apis to create them, like:
+```javascript
+// Creates a border radius diagonally
+let cornerRadius = borderRadiusDg(5, 7);
+// Border radius with all set to 0
+let nullBorderRadius = borderRadiusEm();
+```
+
+## 1.2.1 (3/1/2022)
+**Implements** borders for **Text**.  
+Includes options for customizing
+border width, color, visibility and more advanced stuff like
+border radius (specific for each corner), line dash configuration
+(to create dashed border) and line cap control.  
+**Exposes** new apis to manage border radiuses and line dashes 
+configurations.  
+Adds advanced border configuration to **Table**, providing the same
+interface as **Text**.
+
 ## 1.2.0 (3/1/2022)
 Implements complete text editing, providing inline textarea for editing text.
 Adds controls for dynamic font size, fixed size textboxes, resizing policies and more.
