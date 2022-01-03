@@ -341,10 +341,11 @@ export class Text extends Shape<TextConfig> {
     this._textArea = document.createElement('textarea');
     document.body.appendChild(this._textArea);
     // By default it is hidden, will be visible only after complete style
-    this._textArea.style.visibility = 'hidden';
+    this._textArea.style.visibility = 'visible';
     this._editing = true;
     this._inputBlocked = false;
-    // at first lets find position of text node relative to the stage:
+
+    // Set textarea position
     var textPosition = this.absolutePosition();
     // so position of textarea
     var areaPosition = {
@@ -372,16 +373,16 @@ export class Text extends Shape<TextConfig> {
     this._textArea.style.textAlign = this.align();
 
     // Justify also needs whiteSpace = normal to work
-    if (this.align() === 'justify') {
+    if (this.align() === 'justify')
       this._textArea.style.whiteSpace = 'normal';
-    }
+
     this._textArea.style.color = this.fill();
     let rotation = this.rotation();
     // Set textarea transform
     let transform = '';
-    if (rotation) {
+    if (rotation)
       transform += 'rotateZ(' + rotation + 'deg)';
-    }
+
     this._textArea.style.transform = transform;
     // Inherit also spell checking
     this._textArea.spellcheck = this.spellcheckOnEdit() || false;
@@ -392,16 +393,21 @@ export class Text extends Shape<TextConfig> {
     this._textArea.addEventListener('keydown', (e) => this._onInputKeyDown(e));
     this._textArea.addEventListener('paste',
       (e) => this._beforeClipboardPaste(e));
-
-    // Show text area
-    this._showTextArea();
   }
 
-  getPaddedWidth(): number {
+  /**
+   * Get availabled width without padding
+   * @private
+   */
+  private getPaddedWidth(): number {
     return this.width() - (this.padding() * 2);
   }
 
-  getPaddedHeight(): number {
+  /**
+   * Get available height without padding
+   * @private
+   */
+  private getPaddedHeight(): number {
     return this.height() - (this.padding() * 2);
   }
 
@@ -511,14 +517,16 @@ export class Text extends Shape<TextConfig> {
    * @param e
    */
   private _onExitInput(e: KeyboardEvent): void {
+    // Sync shape text with textarea
     this.text(this._textArea.value);
     this._hideTextArea();
+    // Dispatch to editing end
     this._onEditingEnd();
   }
 
   /**
    * Sets text area font size
-   * @param ft
+   * @param ft Font size to set
    * @private
    */
   private _setTextAreaFontSize(ft: number): void {
@@ -634,6 +642,11 @@ export class Text extends Shape<TextConfig> {
       this.fitContainer();
   }
 
+  /**
+   * Resizes this shape to make it fit the new rectangle, following
+   * growpolicy
+   * @param newSize New size rectangle
+   */
   makeGrow(newSize: Size2D): void {
     if (this.growPolicy() === GrowPolicy.GrowHeight) {
       this._resizeTextAreaHeight(newSize.getHeight());
@@ -807,7 +820,7 @@ export class Text extends Shape<TextConfig> {
    */
   _sceneFunc(context: SceneContext) {
     // Draw shape fill
-    this._drawFill(context);
+    this._drawBackground(context);
 
     // Draw shape borders
     this._drawBorders(context);
@@ -825,34 +838,31 @@ export class Text extends Shape<TextConfig> {
     // Do not rendere anything if there is no text!
     if (!this.text() || this.text().length === 0) return;
 
-    var textArr = this.textArr,
-      textArrLen = textArr.length;
+    // Text array containing text splitted into lines
+    let textArr = this.textArr;
+    // Text array length
+    let textArrLen = textArr.length;
 
     // Extract options into separated variables
-    var padding = this.padding(),
-      fontSize = this.fontSize(),
-      lineHeightPx = this.lineHeight() * fontSize,
-      verticalAlign = this.verticalAlign(),
-      alignY = 0,
-      align = this.align(),
-      totalWidth = this.getWidth(),
-      letterSpacing = this.letterSpacing(),
-      fill = this.fill(),
-      textDecoration = this.textDecoration(),
-      shouldUnderline = textDecoration.indexOf('underline') !== -1,
-      shouldLineThrough = textDecoration.indexOf('line-through') !== -1,
-      n;
-
-    var translateY = 0;
-    var translateY = lineHeightPx / 2;
-
-    var lineTranslateX = 0;
-    var lineTranslateY = 0;
+    let padding = this.padding();
+    let fontSize = this.fontSize();
+    let lineHeightPx = this.lineHeight() * fontSize;
+    let verticalAlign = this.verticalAlign();
+    let alignY = 0;
+    let align = this.align();
+    let totalWidth = this.getWidth();
+    let letterSpacing = this.letterSpacing();
+    let fill = this.fill();
+    let textDecoration = this.textDecoration();
+    let shouldUnderline = textDecoration.indexOf('underline') !== -1;
+    let shouldLineThrough = textDecoration.indexOf('line-through') !== -1;
+    let n;
+    let translateY = lineHeightPx / 2;
+    let lineTranslateX = 0;
+    let lineTranslateY = 0;
 
     context.setAttr('font', this._getContextFont());
-
     context.setAttr('textBaseline', MIDDLE);
-
     context.setAttr('textAlign', LEFT);
 
     // handle vertical alignment
@@ -866,8 +876,8 @@ export class Text extends Shape<TextConfig> {
 
     // draw text lines
     for (n = 0; n < textArrLen; n++) {
-      var lineTranslateX = 0;
-      var lineTranslateY = 0;
+      lineTranslateX = 0;
+      lineTranslateY = 0;
       var obj = textArr[n],
         text = obj.text,
         width = obj.width,
@@ -963,6 +973,11 @@ export class Text extends Shape<TextConfig> {
     }
   }
 
+  /**
+   * Draws text box borders
+   * @param context Context
+   * @private
+   */
   private _drawBorders(context: SceneContext) {
     // Check if borders are enabled
     if (!this.bordered()) return;
@@ -979,7 +994,12 @@ export class Text extends Shape<TextConfig> {
       this.borderRadius() || borderRadiusAll(0));
   }
 
-  private _drawFill(context: SceneContext): void {
+  /**
+   * Draws background
+   * @param context
+   * @private
+   */
+  private _drawBackground(context: SceneContext): void {
     if (!this.backgroundColor()) return;
 
     context._context.fillStyle = this.backgroundColor();
@@ -1096,7 +1116,7 @@ export class Text extends Shape<TextConfig> {
    * Measures text width (single line)
    * @param text Text to measure
    */
-  _getTextWidth(text) {
+  private _getTextWidth(text) {
     var letterSpacing = this.letterSpacing();
     var length = text.length;
     return (
@@ -1108,7 +1128,7 @@ export class Text extends Shape<TextConfig> {
   /**
    * Sets data for correctly rendering text
    */
-  _setTextData() {
+  private _setTextData() {
     var lines = this.text().split('\n'),
       fontSize = +this.fontSize(),
       textWidth = 0,

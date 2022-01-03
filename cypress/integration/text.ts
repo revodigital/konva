@@ -90,7 +90,7 @@ it('Should draw a text with a red border of 2 px, dashed', () => {
       y: 10,
       width: 200,
       height: 200,
-      editable: false,
+      editable: true,
       bordered: true,
       fontSize: 20,
       borderWidth: 2,
