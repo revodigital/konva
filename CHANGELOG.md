@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.2.0 (3/1/2022)
+Implements complete text editing, providing inline textarea for editing text.
+Adds controls for dynamic font size, fixed size textboxes, resizing policies and more.
+Fixes several text problems like measurements and more. 
+
 ## 1.0.21
 Fixes targeting problems
 
