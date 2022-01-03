@@ -195,6 +195,12 @@ export interface TextConfig extends ShapeConfig {
    * Text background color
    */
   backgroundColor?: string;
+
+  /**
+   * Placeholder text to display when no text is provided
+   * (also in textarea)
+   */
+  placeholder?: string;
 }
 
 var dummyContext;
@@ -297,6 +303,7 @@ export class Text extends Shape<TextConfig> {
   text: GetSet<string, this>;
   wrap: GetSet<string, this>;
   ellipsis: GetSet<boolean, this>;
+  placeholder: GetSet<string, this>;
 
   /**
    * Creates a new Text shape
@@ -360,6 +367,7 @@ export class Text extends Shape<TextConfig> {
     };
     // Apply styles
     this._textArea.value = this.text();
+    this._textArea.placeholder = this.placeholder() || 'Inserire del testo';
     this._textArea.style.position = 'absolute';
     this._textArea.style.top = areaPosition.y + 'px';
     this._textArea.style.left = areaPosition.x + 'px';
@@ -1624,6 +1632,11 @@ Factory.addGetterSetter(Text, 'growPolicy', GrowPolicy.GrowHeight);
  * Background color for this text
  */
 Factory.addGetterSetter(Text, 'backgroundColor', 'transparent');
+
+/**
+ * Placeholder text
+ */
+Factory.addGetterSetter(Text, 'placeholder', 'Insert some text');
 
 // Add border configuration
 addBorderConfigToClass(Text);
