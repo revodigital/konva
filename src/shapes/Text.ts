@@ -21,8 +21,8 @@ import {
 }                                from '../Validators';
 
 import { GetSet }              from '../types';
-import { KonvaEventObject } from '../Node';
-import { Size2D, sizeOf }   from '../common/Size2D';
+import { KonvaEventObject }    from '../Node';
+import { Size2D, sizeOf }      from '../common/Size2D';
 import {
   eventAddsText,
   eventIsExit,
@@ -30,14 +30,14 @@ import {
   eventRemovesText,
   pixel,
   rangeOf
-}                           from './utils';
-import { normalizeFontFamily }                        from '../TextUtils';
+}                              from './utils';
+import { normalizeFontFamily } from '../TextUtils';
 import {
   LineMetric,
   TextMeasurementHelper,
   TextMetrics,
   TextMetricsHelper
-} from '../TextMeasurement';
+}                              from '../TextMeasurement';
 
 /**
  * Minimum font size
@@ -347,7 +347,8 @@ export class Text extends Shape<TextConfig> {
 
     // Event listener for keydown events
     this._textArea.addEventListener('keydown', (e) => this._onInputKeyDown(e));
-    this._textArea.addEventListener('paste', (e) => this._beforeClipboardPaste(e));
+    this._textArea.addEventListener('paste',
+      (e) => this._beforeClipboardPaste(e));
   }
 
   getPaddedWidth(): number {
@@ -434,22 +435,24 @@ export class Text extends Shape<TextConfig> {
         const metrics = measurementHelper.measureComplexText(
           Size2D.fromBounds(this.width(), 30000));
 
-        this.height(metrics.height);
-      }
-      else {
-        const metrics = measurementHelper.measureComplexText(Size2D.fromBounds(30000, this.height()));
-        this.width(metrics.maxWidth);
+        this.height(metrics.height + (this.padding() * 2));
+      } else {
+        const metrics = measurementHelper.measureComplexText(Size2D.fromBounds(
+          30000,
+          this.height()));
+        this.width(metrics.maxWidth + (this.padding() * 2));
       }
     } else {
       // Decrease font size to fit
-      const metrics = measurementHelper.measureComplexText(sizeOf(this.width(), 30000));
+      const metrics = measurementHelper.measureComplexText(sizeOf(this.width(),
+        30000));
       const metricsHelper = TextMetricsHelper.construct(metrics);
       const textSize = metricsHelper.toSize();
       const boxSize = this.getSizeRect();
 
-      if(textSize.overflows(boxSize)) {
+      if (textSize.overflows(boxSize)) {
         // Decrease font size while it fits
-        if(!this._decreaseFontSizeToFit(measurementHelper, boxSize)) {
+        if (!this._decreaseFontSizeToFit(measurementHelper, boxSize)) {
           this.makeGrow(textSize);
         }
       }
@@ -491,7 +494,7 @@ export class Text extends Shape<TextConfig> {
     if (this.lockSize() === false) {
       // Resize height
       if (this.growPolicy() === GrowPolicy.GrowHeight) {
-        this.height(this.measureTextHeight());
+        this.height(this.measureTextHeight() + (this.padding() * 2));
         this._resizeTextAreaHeight(this.height());
       } else {
         // Resize width
@@ -542,7 +545,8 @@ export class Text extends Shape<TextConfig> {
     // Create measurement helper
     const measurementHelp = this.getMeasurementHelper();
     // Measure current text metrics
-    const textMetrics: TextMetricsHelper = measurementHelp.measureComplexText(this.getSizeRect());
+    const textMetrics: TextMetricsHelper = measurementHelp.measureComplexText(
+      this.getSizeRect());
 
     // Height of ipotethic new line (added in case of overflow)
     const newLineHeight = this.fontSize() * this.lineHeight();
@@ -570,21 +574,22 @@ export class Text extends Shape<TextConfig> {
         this.width(this.width() + newCharWidth);
         this._resizeTextAreaWidth(this.width());
       }
-    } else if(overflowsHeight && this.lockSize()) {
+    } else if (overflowsHeight && this.lockSize()) {
       // If unable to decrease font (fontSize < 6pt) resize following
       // Grow policy.
-      if(!this._decreaseFontSizeToFit(measurementHelp, this.getSizeRect())) {
-        this.makeGrow(this.getSizeRect().increase(newLineHeight, newLineHeight))
+      if (!this._decreaseFontSizeToFit(measurementHelp, this.getSizeRect())) {
+        this.makeGrow(this.getSizeRect().increase(newLineHeight,
+          newLineHeight));
       }
     }
 
     // Check for possibility of font decrease when in lockSize mode
-    if(this.expandToFit())
+    if (this.expandToFit())
       this.fitContainer();
   }
 
   makeGrow(newSize: Size2D): void {
-    if(this.growPolicy() === GrowPolicy.GrowHeight) {
+    if (this.growPolicy() === GrowPolicy.GrowHeight) {
       this._resizeTextAreaHeight(newSize.getHeight());
       this.height(newSize.getHeight());
     } else {
@@ -604,13 +609,15 @@ export class Text extends Shape<TextConfig> {
     while (metrics.height + (fontSize * this.lineHeight()) > this.height() - this.padding()) {
       if (fontSize < 7) return false;
 
-      fontSize --;
+      fontSize--;
       // Recalculate all
       measurement.fontSize = fontSize;
       metrics = measurement.measureComplexText(box);
 
       // Set fontsize to shape and textarea
-      this._textArea.style.fontSize = `${ fontSize }px`;
+      if (this._textArea)
+        this._textArea.style.fontSize = `${ fontSize }px`;
+
       this.fontSize(fontSize);
     }
     return true;
@@ -631,6 +638,11 @@ export class Text extends Shape<TextConfig> {
       else ft--;
       // Update ftr
       this.fontSize(ft);
+
+      // Sync also textarea font
+      if (this._textArea)
+        this._textArea.style.fontSize = pixel(ft);
+
       ftr = this._fontSizeFits(ft);
     }
 
@@ -1169,7 +1181,8 @@ export class Text extends Shape<TextConfig> {
    * Creates a new measurement helper to perform measurements
    */
   getMeasurementHelper(): TextMeasurementHelper {
-    return new TextMeasurementHelper(this.extractConfiguration(), getDummyContext());
+    return new TextMeasurementHelper(this.extractConfiguration(),
+      getDummyContext());
   }
 
   extractConfiguration(): TextConfig {
@@ -1187,7 +1200,7 @@ export class Text extends Shape<TextConfig> {
       text: this.text(),
       wrap: this.wrap(),
       ellipsis: this.ellipsis()
-    }
+    };
   }
 
   fontFamily: GetSet<string, this>;

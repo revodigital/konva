@@ -40,6 +40,7 @@ it('Should make this text write', () => {
       width: 100,
       height: 100,
       editable: true,
+      expandToFit: true,
       padding: 20,
       fontSize: 20,
       growPolicy: GrowPolicy.GrowHeight,
