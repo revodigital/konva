@@ -16,6 +16,7 @@ import { TEST_ELEMENT_ID }     from '../global/global-defs';
 import { HorizontalAlignment } from '../../src/configuration/Alignment';
 import { Row }                 from '../../src/shapes/Row';
 import { Verse }               from '../../src/shapes/Verse';
+import { LineDash }            from '../../src/configuration/LineDash';
 
 before(() => {
   const el = document.createElement('div');
@@ -68,14 +69,15 @@ describe('All tests about tables', () => {
         x: 20,
         y: 30,
         externalBorder: {
-          width: 5,
-          color: 'black',
-          visible: true,
+          borderWidth: 2,
+          bordered: true,
+          borderColor: 'black',
+          borderDash: LineDash.SOLID
         },
         internalBorder: {
-          width: 3,
-          color: 'gray',
-          visible: true
+          borderWidth: 3,
+          bordered: true,
+          borderColor: 'black'
         },
         headerText: {
           fontSize: 30,
@@ -125,59 +127,59 @@ describe('All tests about tables', () => {
       l.draw();
     });
   });
-
-  it('Should correctly draw a dynamic table', () => {
-    cy.document().get('#root').then((root) => {
-      expect(root).to.not.be.undefined;
-
-      const s = new Stage({
-        container: root.get()[0] as any,
-        width: 800,
-        height: 800
-      });
-
-      const l = new Layer();
-      const m = new Table({
-        headerHeight: 20,
-        width: 600,
-        height: 300,
-        x: 20,
-        y: 30,
-        headerFill: 'orange',
-        header: [
-          {
-            width: 30,
-            text: 'First column',
-          },
-          {
-            width: 'auto',
-            text: 'Second column',
-          }
-        ],
-        rows: [
-          {
-            height: 80,
-            data: ['first cell'],
-            textAlign: HorizontalAlignment.Right,
-            padding: 10,
-            fontSize: 20,
-            fill: 'white'
-          },
-          {
-            height: 'auto',
-            data: ['second cell'],
-            textAlign: HorizontalAlignment.Right,
-            padding: 10,
-            fontSize: 20,
-            fill: 'white'
-          }
-        ]
-      });
-
-      l.add(m);
-
-      s.add(l);
-      l.draw();
-    });
-  })
+  //
+  // it('Should correctly draw a dynamic table', () => {
+  //   cy.document().get('#root').then((root) => {
+  //     expect(root).to.not.be.undefined;
+  //
+  //     const s = new Stage({
+  //       container: root.get()[0] as any,
+  //       width: 800,
+  //       height: 800
+  //     });
+  //
+  //     const l = new Layer();
+  //     const m = new Table({
+  //       headerHeight: 20,
+  //       width: 600,
+  //       height: 300,
+  //       x: 20,
+  //       y: 30,
+  //       headerFill: 'orange',
+  //       header: [
+  //         {
+  //           width: 30,
+  //           text: 'First column',
+  //         },
+  //         {
+  //           width: 'auto',
+  //           text: 'Second column',
+  //         }
+  //       ],
+  //       rows: [
+  //         {
+  //           height: 80,
+  //           data: ['first cell'],
+  //           textAlign: HorizontalAlignment.Right,
+  //           padding: 10,
+  //           fontSize: 20,
+  //           fill: 'white'
+  //         },
+  //         {
+  //           height: 'auto',
+  //           data: ['second cell'],
+  //           textAlign: HorizontalAlignment.Right,
+  //           padding: 10,
+  //           fontSize: 20,
+  //           fill: 'white'
+  //         }
+  //       ]
+  //     });
+  //
+  //     l.add(m);
+  //
+  //     s.add(l);
+  //     l.draw();
+  //   });
+  // })
 });

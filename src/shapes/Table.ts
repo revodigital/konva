@@ -158,6 +158,7 @@ export class Table extends Shape<TableConfig> {
   }
 
   private _renderTableBorders(layout: TableLayout, ctx: CanvasRenderingContext2D): void {
+    if(!this.externalBorder() || !this.externalBorder().bordered) return;
     // Draw table borders
     ctx.beginPath();
     ctx.moveTo(0,

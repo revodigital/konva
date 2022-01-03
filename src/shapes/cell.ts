@@ -91,7 +91,7 @@ export class Cell extends TextConfiguration {
 
     this._renderText(ctx);
 
-    if (this.border.bordered) this._renderBorders(ctx);
+    if (this.border && this.border.bordered) this._renderBorders(ctx);
   }
 
   /**
@@ -150,8 +150,15 @@ export class Cell extends TextConfiguration {
    * @private
    */
   private _renderBorders(ctx: CanvasRenderingContext2D): void {
+    if(!this.border) return;
+    if(!this.border.bordered) return;
+
+    ctx.lineCap = this.border.borderCap;
     ctx.strokeStyle = this.border.borderColor;
     ctx.lineWidth = this.border.borderWidth;
+
+    if(this.border.borderDash)
+      ctx.setLineDash(this.border.borderDash);
     ctx.closePath();
 
     // Bottom border
