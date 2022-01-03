@@ -190,6 +190,11 @@ export interface TextConfig extends ShapeConfig {
    * and witch of them should remain fixed
    */
   growPolicy?: GrowPolicy;
+
+  /**
+   * Text background color
+   */
+  backgroundColor?: string;
 }
 
 var dummyContext;
@@ -283,11 +288,14 @@ export class Text extends Shape<TextConfig> {
 
   growPolicy: GetSet<GrowPolicy, this>;
 
+  backgroundColor: GetSet<string, this>;
+
   /**
    * Creates a new Text shape
    */
   constructor(config?: TextConfig) {
     super(checkDefaultFill(config));
+    //super();
 
     // Set textarea to undefined ( will be created only when editing will start)
     this._textArea = undefined;
@@ -824,6 +832,9 @@ export class Text extends Shape<TextConfig> {
       shouldLineThrough = textDecoration.indexOf('line-through') !== -1,
       n;
 
+    // Draw shape fill
+    this._drawFill(context);
+
     // Draw shape borders
     this._drawBorders(context);
 
@@ -957,6 +968,14 @@ export class Text extends Shape<TextConfig> {
     if (this.borderDash())
       context.setLineDash(this.borderDash());
     context.roundRect(0, 0, this.width(), this.height(), this.borderRadius() || borderRadiusAll(0));
+  }
+
+  private _drawFill(context: SceneContext): void {
+    if(!this.backgroundColor()) return;
+    console.log(this.backgroundColor());
+
+    context._context.fillStyle = this.backgroundColor();
+    context.fillRect(0, 0, this.width(), this.height());
   }
 
   private _hitFunc(context) {
@@ -1566,6 +1585,11 @@ Factory.addGetterSetter(Text, 'enableNewLine', false);
 Factory.addGetterSetter(Text, 'expandToFit', false);
 
 Factory.addGetterSetter(Text, 'growPolicy', GrowPolicy.GrowHeight);
+
+/**
+ * Background color for this text
+ */
+Factory.addGetterSetter(Text, 'backgroundColor', 'transparent');
 
 // Add border configuration
 addBorderConfigToClass(Text);

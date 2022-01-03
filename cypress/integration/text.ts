@@ -97,7 +97,8 @@ it('Should draw a text with a red border of 2 px, dashed', () => {
       borderColor: 'red',
       text: 'hello',
       padding: 20,
-      borderDash: LineDash.DASHED
+      borderDash: LineDash.DASHED,
+      backgroundColor: 'blue'
     }));
 
     s.add(l);
