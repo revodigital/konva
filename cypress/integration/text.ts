@@ -49,13 +49,6 @@ it('Should make this text write', () => {
     });
     l.add(text);
 
-    // l.add(new Rect({
-    //   x: 200,
-    //   width: 200,
-    //   height: 200,
-    //   fill: 'red'
-    // }));
-
     const t = new Transformer({
       nodes: [text]
     });
@@ -99,7 +92,6 @@ it('Should draw a text with a red border of 2 px, dashed', () => {
       height: 200,
       editable: false,
       bordered: true,
-      borderRadius: borderRadiusAll(10),
       fontSize: 20,
       borderWidth: 2,
       borderColor: 'red',
