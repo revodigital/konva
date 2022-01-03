@@ -54,6 +54,14 @@ export interface BorderRadius {
   bottomRight: number;
 }
 
+export const BORDER_OPTIONS = [
+  'borderWidth',
+  'borderColor',
+  'bordered',
+  'borderRadius',
+  'borderDash',
+];
+
 /**
  * Construct a border radius with every corner with the same
  * radius
@@ -86,7 +94,7 @@ export const borderRadiusSym = (top: number, bottom: number): BorderRadius => {
  * @param cls
  */
 export const addBorderConfigToClass = (cls: any) => {
-  for(let i of Object.keys(BorderOptions)) {
+  for (let i of BORDER_OPTIONS) {
     Factory.addGetterSetter(cls, i);
   }
-}
+};

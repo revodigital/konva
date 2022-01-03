@@ -9,11 +9,13 @@
  * Description:
  */
 
-import { TEST_ELEMENT_ID } from '../global/global-defs';
-import { Stage }           from '../../src/Stage';
+import { TEST_ELEMENT_ID }  from '../global/global-defs';
+import { Stage }            from '../../src/Stage';
 import { Layer }            from '../../src/Layer';
 import { GrowPolicy, Text } from '../../src/shapes/Text';
 import { Transformer }      from '../../src/shapes/Transformer';
+import { borderRadiusAll }  from '../../src/configuration/BorderOptions';
+import { LineDash }         from '../../src/configuration/LineDash';
 
 before(() => {
   const el = document.createElement('div');
@@ -62,4 +64,19 @@ it('Should make this text write', () => {
     s.add(l);
     l.draw();
   });
+});
+
+it('Should correctly store border options', () => {
+  const text = new Text({
+    bordered: true,
+    borderRadius: borderRadiusAll(4),
+    borderDash: LineDash.DASHED
+  });
+
+  expect(text.bordered()).to.eq(true);
+  expect(text.borderRadius()).to.have.property('topLeft', 4);
+  expect(text.borderRadius()).to.have.property('topRight', 4);
+  expect(text.borderRadius()).to.have.property('bottomLeft', 4);
+  expect(text.borderRadius()).to.have.property('bottomRight', 4);
+  expect(text.borderDash()).to.eq(LineDash.DASHED);
 });
