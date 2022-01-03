@@ -809,13 +809,27 @@ export class Text extends Shape<TextConfig> {
    * @param context
    */
   _sceneFunc(context: SceneContext) {
+    // Draw shape fill
+    this._drawFill(context);
+
+    // Draw shape borders
+    this._drawBorders(context);
+
+    // Draw text
+    this._drawText(context);
+  }
+
+  /**
+   * Draw effective text
+   * @param context
+   * @private
+   */
+  private _drawText(context: SceneContext) {
+    // Do not rendere anything if there is no text!
+    if(!this.text() || this.text().length === 0) return;
+
     var textArr = this.textArr,
       textArrLen = textArr.length;
-
-    // TODO: Implement placeholder
-    if (!this.text()) {
-      return;
-    }
 
     // Extract options into separated variables
     var padding = this.padding(),
@@ -831,12 +845,6 @@ export class Text extends Shape<TextConfig> {
       shouldUnderline = textDecoration.indexOf('underline') !== -1,
       shouldLineThrough = textDecoration.indexOf('line-through') !== -1,
       n;
-
-    // Draw shape fill
-    this._drawFill(context);
-
-    // Draw shape borders
-    this._drawBorders(context);
 
     var translateY = 0;
     var translateY = lineHeightPx / 2;
