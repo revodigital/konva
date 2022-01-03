@@ -20,9 +20,9 @@ import {
   getStringValidator,
 }                                from '../Validators';
 
-import { GetSet }                from '../types';
-import { KonvaEventObject }      from '../Node';
-import { Size2D, sizeOf }        from '../common/Size2D';
+import { GetSet }                                   from '../types';
+import { KonvaEventObject }                         from '../Node';
+import { Size2D, sizeOf }                           from '../common/Size2D';
 import {
   eventAddsText,
   eventIsExit,
@@ -30,22 +30,20 @@ import {
   eventRemovesText,
   pixel,
   rangeOf
-}                                from './utils';
-import { normalizeFontFamily }   from '../TextUtils';
-import {
-  LineMetric,
-  TextMeasurementHelper,
-  TextMetrics,
-  TextMetricsHelper
-}                                from '../TextMeasurement';
+}                                                   from './utils';
+import { normalizeFontFamily }                      from '../TextUtils';
+import { TextMeasurementHelper, TextMetricsHelper } from '../TextMeasurement';
 import {
   addBorderConfigToClass,
-  BorderConfig,
-  BorderRadius
-}                                from '../configuration/BorderOptions';
-import { Context, SceneContext } from '../Context';
-import { LineDashConfiguration } from '../configuration/LineDash';
-import { LineCap }               from '../configuration/LineCap';
+  BorderRadius, borderRadiusAll
+} from '../configuration/BorderOptions';
+import { SceneContext }                             from '../Context';
+import {
+  LineDashConfiguration
+}                                                   from '../configuration/LineDash';
+import {
+  LineCap
+}                                                   from '../configuration/LineCap';
 
 /**
  * Minimum font size
@@ -953,12 +951,12 @@ export class Text extends Shape<TextConfig> {
     // Check if borders are enabled
     if (!this.bordered()) return;
 
-    context._context.lineWidth = this.borderWidth();
-    context._context.lineCap = this.borderCap();
-    context._context.strokeStyle = this.borderColor();
+    context._context.lineWidth = this.borderWidth() || 1;
+    context._context.lineCap = this.borderCap() || LineCap.Butt;
+    context._context.strokeStyle = this.borderColor() || 'black';
     if (this.borderDash())
       context.setLineDash(this.borderDash());
-    context.roundRect(0, 0, this.width(), this.height(), this.borderRadius());
+    context.roundRect(0, 0, this.width(), this.height(), this.borderRadius() || borderRadiusAll(0));
   }
 
   private _hitFunc(context) {

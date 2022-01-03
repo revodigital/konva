@@ -11,7 +11,6 @@
 
 import { LineDashConfiguration } from './LineDash';
 import { Factory }               from '../Factory';
-import { BorderOptions }         from '../../lib/configuration/BorderOptions';
 import { LineCap }               from './LineCap';
 
 /**
