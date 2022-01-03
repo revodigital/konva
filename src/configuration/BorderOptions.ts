@@ -53,9 +53,24 @@ export interface BorderConfig {
  * (all 4 corners)
  */
 export interface BorderRadius {
+  /**
+   * Top left corner radius
+   */
   topLeft: number;
+
+  /**
+   * Top right corner radius
+   */
   topRight: number;
+
+  /**
+   * Bottom left corner radius
+   */
   bottomLeft: number;
+
+  /**
+   * Bottom right corner radius
+   */
   bottomRight: number;
 }
 
@@ -94,6 +109,27 @@ export const borderRadiusSym = (top: number, bottom: number): BorderRadius => {
     bottomLeft: bottom
   };
 };
+
+/**
+ * Create a diagonal border radius
+ * @param tlbr Corner radius for topLeft and bottomRight
+ * @param trbl Corner radius for topRight and bottomLeft
+ */
+export const borderRadiusDg = (tlbr: number, trbl: number): BorderRadius => {
+  return {
+    topLeft: tlbr,
+    bottomRight: tlbr,
+    topRight: trbl,
+    bottomLeft: trbl
+  }
+}
+
+/**
+ * Shortcut for creating rectangular border radius
+ */
+export const borderRadiusEm = (): BorderRadius => {
+  return borderRadiusAll(0);
+}
 
 /**
  * Adds border configuration to class
