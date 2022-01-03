@@ -36,7 +36,7 @@ import { TextMeasurementHelper, TextMetricsHelper } from '../TextMeasurement';
 import {
   addBorderConfigToClass,
   BorderRadius, borderRadiusAll
-} from '../configuration/BorderOptions';
+}                                                   from '../configuration/BorderOptions';
 import { SceneContext }                             from '../Context';
 import {
   LineDashConfiguration
@@ -334,29 +334,24 @@ export class Text extends Shape<TextConfig> {
   private _onEditingStart(event: KonvaEventObject<MouseEvent>): void {
     if (!this.editable()) return;
 
-    // Create text area
-    // create textarea and style it
-    this._textArea = document.createElement('textarea');
-    this._textArea.style.visibility = 'hidden';
-    document.body.appendChild(this._textArea);
-
+    // Hide this shape
     this.hide();
-    this._showTextArea();
+
+    // Create text area
+    this._textArea = document.createElement('textarea');
+    document.body.appendChild(this._textArea);
+    // By default it is hidden, will be visible only after complete style
+    this._textArea.style.visibility = 'hidden';
     this._editing = true;
     this._inputBlocked = false;
-
     // at first lets find position of text node relative to the stage:
     var textPosition = this.absolutePosition();
-
-    // so position of textarea will be the sum of positions above:
+    // so position of textarea
     var areaPosition = {
       x: this.getStage().container().offsetLeft + textPosition.x + 2,
       y: this.getStage().container().offsetTop + textPosition.y + 2,
     };
-
-    // apply many styles to match text on canvas as close as possible
-    // remember that text rendering on canvas and on the textarea can be different
-    // and sometimes it is hard to make it 100% the same. But we will try...
+    // Apply styles
     this._textArea.value = this.text();
     this._textArea.style.position = 'absolute';
     this._textArea.style.top = areaPosition.y + 'px';
@@ -368,30 +363,28 @@ export class Text extends Shape<TextConfig> {
     this._textArea.style.padding = pixel(this.padding());
     this._textArea.style.margin = '0px';
     this._textArea.style.overflow = 'hidden';
-    this._textArea.style.background = 'none';
+    this._textArea.style.background = this.backgroundColor();
     this._textArea.style.outline = 'none';
     this._textArea.style.resize = 'none';
     this._textArea.style.lineHeight = this.lineHeight().toString();
     this._textArea.style.fontFamily = this.fontFamily();
     this._textArea.style.transformOrigin = 'left top';
-
     this._textArea.style.textAlign = this.align();
+
     // Justify also needs whiteSpace = normal to work
     if (this.align() === 'justify') {
       this._textArea.style.whiteSpace = 'normal';
-
     }
     this._textArea.style.color = this.fill();
     let rotation = this.rotation();
+    // Set textarea transform
     let transform = '';
     if (rotation) {
       transform += 'rotateZ(' + rotation + 'deg)';
-
     }
-
     this._textArea.style.transform = transform;
+    // Inherit also spell checking
     this._textArea.spellcheck = this.spellcheckOnEdit() || false;
-    // Set text area height
     // Focus this text area
     this._textArea.focus();
 
@@ -399,6 +392,9 @@ export class Text extends Shape<TextConfig> {
     this._textArea.addEventListener('keydown', (e) => this._onInputKeyDown(e));
     this._textArea.addEventListener('paste',
       (e) => this._beforeClipboardPaste(e));
+
+    // Show text area
+    this._showTextArea();
   }
 
   getPaddedWidth(): number {
@@ -802,6 +798,7 @@ export class Text extends Shape<TextConfig> {
 
     // Remove text area
     this._textArea.parentNode.removeChild(this._textArea);
+    this._textArea = undefined;
   }
 
   /**
@@ -826,7 +823,7 @@ export class Text extends Shape<TextConfig> {
    */
   private _drawText(context: SceneContext) {
     // Do not rendere anything if there is no text!
-    if(!this.text() || this.text().length === 0) return;
+    if (!this.text() || this.text().length === 0) return;
 
     var textArr = this.textArr,
       textArrLen = textArr.length;
@@ -975,12 +972,15 @@ export class Text extends Shape<TextConfig> {
     context._context.strokeStyle = this.borderColor() || 'black';
     if (this.borderDash())
       context.setLineDash(this.borderDash());
-    context.roundRect(0, 0, this.width(), this.height(), this.borderRadius() || borderRadiusAll(0));
+    context.roundRect(0,
+      0,
+      this.width(),
+      this.height(),
+      this.borderRadius() || borderRadiusAll(0));
   }
 
   private _drawFill(context: SceneContext): void {
-    if(!this.backgroundColor()) return;
-    console.log(this.backgroundColor());
+    if (!this.backgroundColor()) return;
 
     context._context.fillStyle = this.backgroundColor();
     context.fillRect(0, 0, this.width(), this.height());
