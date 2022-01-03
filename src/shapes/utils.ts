@@ -98,8 +98,12 @@ export const toInitialUpper = (txt: string): string => {
  * @param e
  */
 export const eventAddsText = (e: KeyboardEvent, textArea: HTMLTextAreaElement): boolean => {
-  return e.key !== undefined && e.key.length === 1 && textArea.selectionStart === textArea.selectionEnd;
+  return e.key !== undefined && e.key.length === 1 && textArea.selectionStart === textArea.selectionEnd && e.ctrlKey === false;
 };
+
+export const eventIsPaste = (e: KeyboardEvent): boolean => {
+  return e.key === 'v' && e.ctrlKey === true;
+}
 
 export const eventRemovesText = (e: KeyboardEvent, textArea: HTMLTextAreaElement): boolean => {
   return e.key === 'Delete' || e.key === 'Backspace' || textArea.selectionStart !== textArea.selectionEnd;
@@ -121,11 +125,11 @@ export const popAfter = (arr: string, index: number): string => {
 
 export const cursorIsAtEndOfInput = (textArea: HTMLTextAreaElement, text: string): boolean => {
   return textArea.selectionStart === text.length;
-}
+};
 
 export const cursorIsAtStartOfInput = (textArea: HTMLTextAreaElement, text: string): boolean => {
   return textArea.selectionStart === 0;
-}
+};
 export const popBefore = (arr: string, index: number): string => {
   return arr.substring(0, index - 1) + arr.substring(index + 1);
 };
@@ -152,4 +156,10 @@ export const eventIsNewLine = (e: KeyboardEvent): boolean => {
 
 export const rangeOf = (a: number, b: number, num: number): boolean => {
   return num >= a && num <= b;
-}
+};
+
+export const pixel = (val: number): string => {
+  if (val >= 0)
+    return `${ val }px`;
+  return '0px';
+};

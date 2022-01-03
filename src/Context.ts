@@ -9,10 +9,11 @@
  * Description:
  */
 
-import { Util }   from './Util';
-import { Pamela } from './Global';
-import { Canvas } from './Canvas';
-import { Shape } from './Shape';
+import { Util }         from './Util';
+import { Pamela }       from './Global';
+import { Canvas }       from './Canvas';
+import { Shape }                         from './Shape';
+import { BorderRadius, borderRadiusAll } from './configuration/BorderOptions';
 
 function simplifyArray(arr: Array<any>) {
   var retArr = [],
@@ -100,6 +101,7 @@ var CONTEXT_PROPERTIES = [
 ];
 
 const traceArrMax = 100;
+
 /**
  * Konva wrapper around native 2d canvas context. It has almost the same API of 2d context with some additional functions.
  * With core Konva shapes you don't need to use this object. But you will use it if you want to create
@@ -152,6 +154,7 @@ export class Context {
   _fill(shape) {
     // abstract
   }
+
   /**
    * stroke shape
    * @method
@@ -232,6 +235,7 @@ export class Context {
   clearTrace() {
     this.traceArr = [];
   }
+
   _trace(str) {
     var traceArr = this.traceArr,
       len;
@@ -243,6 +247,7 @@ export class Context {
       traceArr.shift();
     }
   }
+
   /**
    * reset canvas context transform
    * @method
@@ -252,6 +257,7 @@ export class Context {
     var pixelRatio = this.getCanvas().getPixelRatio();
     this.setTransform(1 * pixelRatio, 0, 0, 1 * pixelRatio, 0, 0);
   }
+
   /**
    * get canvas wrapper
    * @method
@@ -261,6 +267,7 @@ export class Context {
   getCanvas() {
     return this.canvas;
   }
+
   /**
    * clear canvas
    * @method
@@ -290,18 +297,21 @@ export class Context {
       );
     }
   }
+
   _applyLineCap(shape) {
     var lineCap = shape.getLineCap();
     if (lineCap) {
       this.setAttr('lineCap', lineCap);
     }
   }
+
   _applyOpacity(shape) {
     var absOpacity = shape.getAbsoluteOpacity();
     if (absOpacity !== 1) {
       this.setAttr('globalAlpha', absOpacity);
     }
   }
+
   _applyLineJoin(shape: Shape) {
     var lineJoin = shape.attrs.lineJoin;
     if (lineJoin) {
@@ -321,6 +331,7 @@ export class Context {
   arc(a0, a1, a2, a3, a4, a5) {
     this._context.arc(a0, a1, a2, a3, a4, a5);
   }
+
   /**
    * arcTo function.
    * @method
@@ -329,6 +340,7 @@ export class Context {
   arcTo(a0, a1, a2, a3, a4) {
     this._context.arcTo(a0, a1, a2, a3, a4);
   }
+
   /**
    * beginPath function.
    * @method
@@ -337,6 +349,7 @@ export class Context {
   beginPath() {
     this._context.beginPath();
   }
+
   /**
    * bezierCurveTo function.
    * @method
@@ -345,6 +358,7 @@ export class Context {
   bezierCurveTo(a0, a1, a2, a3, a4, a5) {
     this._context.bezierCurveTo(a0, a1, a2, a3, a4, a5);
   }
+
   /**
    * clearRect function.
    * @method
@@ -353,6 +367,7 @@ export class Context {
   clearRect(a0, a1, a2, a3) {
     this._context.clearRect(a0, a1, a2, a3);
   }
+
   /**
    * clip function.
    * @method
@@ -361,6 +376,7 @@ export class Context {
   clip() {
     this._context.clip();
   }
+
   /**
    * closePath function.
    * @method
@@ -369,6 +385,7 @@ export class Context {
   closePath() {
     this._context.closePath();
   }
+
   /**
    * createImageData function.
    * @method
@@ -382,6 +399,7 @@ export class Context {
       return this._context.createImageData(a0);
     }
   }
+
   /**
    * createLinearGradient function.
    * @method
@@ -390,6 +408,7 @@ export class Context {
   createLinearGradient(a0, a1, a2, a3) {
     return this._context.createLinearGradient(a0, a1, a2, a3);
   }
+
   /**
    * createPattern function.
    * @method
@@ -398,6 +417,7 @@ export class Context {
   createPattern(a0, a1) {
     return this._context.createPattern(a0, a1);
   }
+
   /**
    * createRadialGradient function.
    * @method
@@ -406,6 +426,7 @@ export class Context {
   createRadialGradient(a0, a1, a2, a3, a4, a5) {
     return this._context.createRadialGradient(a0, a1, a2, a3, a4, a5);
   }
+
   /**
    * drawImage function.
    * @method
@@ -433,6 +454,7 @@ export class Context {
       _context.drawImage(a0, a1, a2, a3, a4, a5, a6, a7, a8);
     }
   }
+
   /**
    * ellipse function.
    * @method
@@ -450,6 +472,7 @@ export class Context {
   ) {
     this._context.ellipse(a0, a1, a2, a3, a4, a5, a6, a7);
   }
+
   /**
    * isPointInPath function.
    * @method
@@ -458,6 +481,7 @@ export class Context {
   isPointInPath(x, y) {
     return this._context.isPointInPath(x, y);
   }
+
   /**
    * fill function.
    * @method
@@ -470,6 +494,7 @@ export class Context {
       this._context.fill();
     }
   }
+
   /**
    * fillRect function.
    * @method
@@ -478,6 +503,7 @@ export class Context {
   fillRect(x, y, width, height) {
     this._context.fillRect(x, y, width, height);
   }
+
   /**
    * strokeRect function.
    * @method
@@ -486,6 +512,7 @@ export class Context {
   strokeRect(x, y, width, height) {
     this._context.strokeRect(x, y, width, height);
   }
+
   /**
    * fillText function.
    * @method
@@ -498,6 +525,7 @@ export class Context {
       this._context.fillText(text, x, y);
     }
   }
+
   /**
    * measureText function.
    * @method
@@ -506,6 +534,7 @@ export class Context {
   measureText(text) {
     return this._context.measureText(text);
   }
+
   /**
    * getImageData function.
    * @method
@@ -514,6 +543,7 @@ export class Context {
   getImageData(a0, a1, a2, a3) {
     return this._context.getImageData(a0, a1, a2, a3);
   }
+
   /**
    * lineTo function.
    * @method
@@ -522,6 +552,7 @@ export class Context {
   lineTo(a0, a1) {
     this._context.lineTo(a0, a1);
   }
+
   /**
    * moveTo function.
    * @method
@@ -530,6 +561,7 @@ export class Context {
   moveTo(a0, a1) {
     this._context.moveTo(a0, a1);
   }
+
   /**
    * rect function.
    * @method
@@ -538,6 +570,7 @@ export class Context {
   rect(a0, a1, a2, a3) {
     this._context.rect(a0, a1, a2, a3);
   }
+
   /**
    * putImageData function.
    * @method
@@ -546,6 +579,7 @@ export class Context {
   putImageData(a0, a1, a2) {
     this._context.putImageData(a0, a1, a2);
   }
+
   /**
    * quadraticCurveTo function.
    * @method
@@ -554,6 +588,47 @@ export class Context {
   quadraticCurveTo(a0, a1, a2, a3) {
     this._context.quadraticCurveTo(a0, a1, a2, a3);
   }
+
+
+  /**
+   * Draws a rounded rectangle using the current state of the canvas.
+   * If you omit the last three params, it will draw a rectangle
+   * outline with a 5 pixel border radius
+   * @param {CanvasRenderingContext2D} ctx
+   * @param {Number} x The top left x coordinate
+   * @param {Number} y The top left y coordinate
+   * @param {Number} width The width of the rectangle
+   * @param {Number} height The height of the rectangle
+   * @param radius Border radius
+   */
+  roundRect(x: number, y: number, width: number, height: number, radius: BorderRadius) {
+    // Apply default radius if not given
+    var defaultRadius: BorderRadius = borderRadiusAll(0);
+    for (var side in defaultRadius) {
+      radius[side] = radius[side] || defaultRadius[side];
+    }
+
+    // Operate onto native canvas
+    const ctx = this._context;
+
+    ctx.beginPath();
+    ctx.moveTo(x + radius.topLeft, y);
+    ctx.lineTo(x + width - radius.topRight, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + radius.topRight);
+    ctx.lineTo(x + width, y + height - radius.bottomRight);
+    ctx.quadraticCurveTo(x + width,
+      y + height,
+      x + width - radius.bottomRight,
+      y + height);
+    ctx.lineTo(x + radius.bottomLeft, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - radius.bottomLeft);
+    ctx.lineTo(x, y + radius.topLeft);
+    ctx.quadraticCurveTo(x, y, x + radius.topLeft, y);
+    ctx.closePath();
+
+    this.stroke();
+  }
+
   /**
    * restore function.
    * @method
@@ -562,6 +637,7 @@ export class Context {
   restore() {
     this._context.restore();
   }
+
   /**
    * rotate function.
    * @method
@@ -570,6 +646,7 @@ export class Context {
   rotate(a0) {
     this._context.rotate(a0);
   }
+
   /**
    * save function.
    * @method
@@ -578,6 +655,7 @@ export class Context {
   save() {
     this._context.save();
   }
+
   /**
    * scale function.
    * @method
@@ -586,6 +664,7 @@ export class Context {
   scale(a0, a1) {
     this._context.scale(a0, a1);
   }
+
   /**
    * setLineDash function.
    * @method
@@ -597,14 +676,15 @@ export class Context {
       this._context.setLineDash(a0);
     } else if ('mozDash' in this._context) {
       // verified that this works in firefox
-      (<any>this._context['mozDash']) = a0;
+      (<any> this._context['mozDash']) = a0;
     } else if ('webkitLineDash' in this._context) {
       // does not currently work for Safari
-      (<any>this._context['webkitLineDash']) = a0;
+      (<any> this._context['webkitLineDash']) = a0;
     }
 
     // no support for IE9 and IE10
   }
+
   /**
    * getLineDash function.
    * @method
@@ -613,6 +693,7 @@ export class Context {
   getLineDash() {
     return this._context.getLineDash();
   }
+
   /**
    * setTransform function.
    * @method
@@ -621,6 +702,7 @@ export class Context {
   setTransform(a0, a1, a2, a3, a4, a5) {
     this._context.setTransform(a0, a1, a2, a3, a4, a5);
   }
+
   /**
    * stroke function.
    * @method
@@ -633,6 +715,7 @@ export class Context {
       this._context.stroke();
     }
   }
+
   /**
    * strokeText function.
    * @method
@@ -641,6 +724,7 @@ export class Context {
   strokeText(a0, a1, a2, a3) {
     this._context.strokeText(a0, a1, a2, a3);
   }
+
   /**
    * transform function.
    * @method
@@ -649,6 +733,7 @@ export class Context {
   transform(a0, a1, a2, a3, a4, a5) {
     this._context.transform(a0, a1, a2, a3, a4, a5);
   }
+
   /**
    * translate function.
    * @method
@@ -657,6 +742,7 @@ export class Context {
   translate(a0, a1) {
     this._context.translate(a0, a1);
   }
+
   _enableTrace() {
     var that = this,
       len = CONTEXT_METHODS.length,
@@ -704,6 +790,7 @@ export class Context {
       });
     };
   }
+
   _applyGlobalCompositeOperation(node) {
     const op = node.attrs.globalCompositeOperation;
     var def = !op || op === 'source-over';
@@ -731,10 +818,12 @@ export class SceneContext extends Context {
     this.setAttr('fillStyle', fill);
     shape._fillFunc(this);
   }
+
   _fillPattern(shape) {
     this.setAttr('fillStyle', shape._getFillPattern());
     shape._fillFunc(this);
   }
+
   _fillLinearGradient(shape) {
     var grd = shape._getLinearGradient();
 
@@ -743,6 +832,7 @@ export class SceneContext extends Context {
       shape._fillFunc(this);
     }
   }
+
   _fillRadialGradient(shape) {
     var grd = shape._getRadialGradient();
     if (grd) {
@@ -750,6 +840,7 @@ export class SceneContext extends Context {
       shape._fillFunc(this);
     }
   }
+
   _fill(shape) {
     var hasColor = shape.fill(),
       fillPriority = shape.getFillPriority();
@@ -789,6 +880,7 @@ export class SceneContext extends Context {
       this._fillRadialGradient(shape);
     }
   }
+
   _strokeLinearGradient(shape) {
     var start = shape.getStrokeLinearGradientStartPoint(),
       end = shape.getStrokeLinearGradientEndPoint(),
@@ -803,6 +895,7 @@ export class SceneContext extends Context {
       this.setAttr('strokeStyle', grd);
     }
   }
+
   _stroke(shape) {
     var dash = shape.dash(),
       // ignore strokeScaleEnabled for Text
@@ -841,6 +934,7 @@ export class SceneContext extends Context {
       }
     }
   }
+
   _applyShadow(shape) {
     var color = shape.getShadowRGBA() ?? 'black',
       blur = shape.getShadowBlur() ?? 5,
@@ -870,11 +964,13 @@ export class HitContext extends Context {
     shape._fillFuncHit(this);
     this.restore();
   }
+
   strokeShape(shape: Shape) {
     if (shape.hasHitStroke()) {
       this._stroke(shape);
     }
   }
+
   _stroke(shape) {
     if (shape.hasHitStroke()) {
       // ignore strokeScaleEnabled for Text

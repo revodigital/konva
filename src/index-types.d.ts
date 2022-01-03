@@ -134,27 +134,32 @@ declare namespace Pamela {
   export const Ellipse: typeof import('./shapes/Ellipse').Ellipse;
   export type Ellipse = import('./shapes/Ellipse').Ellipse;
   export type EllipseConfig = import('./shapes/Ellipse').EllipseConfig;
+
   export const Image: typeof import('./shapes/Image').Image;
   export type Image = import('./shapes/Image').Image;
   export type ImageConfig = import('./shapes/Image').ImageConfig;
+
   export const Label: typeof import('./shapes/Label').Label;
   export type Label = import('./shapes/Label').Label;
   export type LabelConfig = import('./shapes/Label').LabelConfig;
+
   export const Tag: typeof import('./shapes/Label').Tag;
   export type Tag = import('./shapes/Label').Tag;
   export type TagConfig = import('./shapes/Label').TagConfig;
+
   export const Line: typeof import('./shapes/Line').Line;
   export type Line = import('./shapes/Line').Line;
   export type LineConfig = import('./shapes/Line').LineConfig;
+
   export const Path: typeof import('./shapes/Path').Path;
   export type Path = import('./shapes/Path').Path;
   export type PathConfig = import('./shapes/Path').PathConfig;
-  export const Rect: typeof import('./shapes/Rect').Rect;
 
   export const Table: typeof import('./shapes/Table').Table;
   export type Table = import('./shapes/Table').Table;
   export type TableConfig = import('./shapes/Table').TableConfig;
 
+  export const Rect: typeof import('./shapes/Rect').Rect;
   export type Rect = import('./shapes/Rect').Rect;
   export type RectConfig = import('./shapes/Rect').RectConfig;
 
@@ -177,6 +182,7 @@ declare namespace Pamela {
   export const Text: typeof import('./shapes/Text').Text;
   export type Text = import('./shapes/Text').Text;
   export type TextConfig = import('./shapes/Text').TextConfig;
+  export type GrowPolicy = typeof import ('./shapes/Text').GrowPolicy;
 
   export const TextPath: typeof import('./shapes/TextPath').TextPath;
   export type TextPath = import('./shapes/TextPath').TextPath;

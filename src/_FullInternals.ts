@@ -26,9 +26,9 @@ import { Rect } from './shapes/Rect';
 import { RegularPolygon } from './shapes/RegularPolygon';
 import { Ring } from './shapes/Ring';
 import { Sprite } from './shapes/Sprite';
-import { Star } from './shapes/Star';
-import { Text } from './shapes/Text';
-import { TextPath } from './shapes/TextPath';
+import { Star }             from './shapes/Star';
+import { GrowPolicy, Text } from './shapes/Text';
+import { TextPath }         from './shapes/TextPath';
 import { Transformer } from './shapes/Transformer';
 import { Wedge } from './shapes/Wedge';
 
@@ -76,6 +76,7 @@ export const Pamela = Core.Util._assign(Core, {
   Wedge,
   Table,
   Barcode,
+  GrowPolicy,
   /**
    * @namespace Filters
    * @memberof Konva

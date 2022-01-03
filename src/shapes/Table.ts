@@ -19,8 +19,7 @@ import {
   TextConfiguration
 }                             from '../configuration/TextConfiguration';
 import {
-  BorderOptions,
-  IBorderOptions
+  BorderConfig
 }                             from '../configuration/BorderOptions';
 import { GetSet }             from '../types';
 import { Factory }            from '../Factory';
@@ -40,11 +39,11 @@ import { ColumnLayout }       from '../layout/ColumnLayout';
 import {
   ColLayoutGroup
 }                             from '../layout/ColLayoutGroup';
-import { insertToArray } from './utils';
-import { RowLayout } from '../layout/RowLayout';
+import { insertToArray }      from './utils';
+import { RowLayout }          from '../layout/RowLayout';
 import {
   RowLayoutGroup
-}                    from '../layout/RowLayoutGroup';
+}                             from '../layout/RowLayoutGroup';
 
 export interface TableConfig extends ShapeConfig {
   header: IColumn[];
@@ -53,8 +52,8 @@ export interface TableConfig extends ShapeConfig {
   headerFill?: string;
   headerText?: ITextConfiguration;
   headerHeight: number | 'auto';
-  externalBorder?: IBorderOptions;
-  internalBorder?: IBorderOptions;
+  externalBorder?: BorderConfig;
+  internalBorder?: BorderConfig;
 }
 
 /**
@@ -75,12 +74,12 @@ export class Table extends Shape<TableConfig> {
   /**
    * Configuration for the internal border of this table
    */
-  internalBorder: GetSet<IBorderOptions, this>;
+  internalBorder: GetSet<BorderConfig, this>;
 
   /**
    * Configuration for the external border of this table
    */
-  externalBorder: GetSet<IBorderOptions, this>;
+  externalBorder: GetSet<BorderConfig, this>;
 
   /**
    * The height percentage of the header row
@@ -121,7 +120,7 @@ export class Table extends Shape<TableConfig> {
       y: 0,
       width: this.width(),
       height: this.height()
-    }
+    };
   }
 
   /**
@@ -159,6 +158,7 @@ export class Table extends Shape<TableConfig> {
   }
 
   private _renderTableBorders(layout: TableLayout, ctx: CanvasRenderingContext2D): void {
+    if(!this.externalBorder() || !this.externalBorder().bordered) return;
     // Draw table borders
     ctx.beginPath();
     ctx.moveTo(0,
@@ -170,8 +170,8 @@ export class Table extends Shape<TableConfig> {
     ctx.lineTo(0, 0);
     ctx.closePath();
 
-    ctx.strokeStyle = this.externalBorder().color;
-    ctx.lineWidth = this.externalBorder().width;
+    ctx.strokeStyle = this.externalBorder().borderColor;
+    ctx.lineWidth = this.externalBorder().borderWidth;
     ctx.stroke();
   }
 
@@ -672,16 +672,14 @@ Factory.addGetterSetter<Row[]>(Table, 'rows', []);
 /**
  * Get / set table internal border configuration
  */
-Factory.addGetterSetter<IBorderOptions>(Table,
-  'internalBorder',
-  BorderOptions.getDefaultBorder());
+Factory.addGetterSetter<BorderConfig>(Table,
+  'internalBorder');
 
 /**
  * Get / set external border configuration
  */
-Factory.addGetterSetter<IBorderOptions>(Table,
-  'externalBorder',
-  BorderOptions.getDefaultBorder());
+Factory.addGetterSetter<BorderConfig>(Table,
+  'externalBorder');
 
 /**
  * Get / set header height in percentage

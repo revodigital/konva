@@ -9,11 +9,13 @@
  * Description:
  */
 
-import { TEST_ELEMENT_ID } from '../global/global-defs';
-import { Stage }           from '../../src/Stage';
-import { Layer }           from '../../src/Layer';
-import { GrowMode, Text }  from '../../src/shapes/Text';
-import { Transformer }     from '../../src/shapes/Transformer';
+import { TEST_ELEMENT_ID }  from '../global/global-defs';
+import { Stage }            from '../../src/Stage';
+import { Layer }            from '../../src/Layer';
+import { GrowPolicy, Text } from '../../src/shapes/Text';
+import { Transformer }      from '../../src/shapes/Transformer';
+import { borderRadiusAll }  from '../../src/configuration/BorderOptions';
+import { LineDash }         from '../../src/configuration/LineDash';
 
 before(() => {
   const el = document.createElement('div');
@@ -37,21 +39,15 @@ it('Should make this text write', () => {
     const text = new Text({
       draggable: true,
       text: 'hellow',
-      width: 300,
-      height: 300,
+      width: 100,
+      height: 100,
       editable: true,
-      fontSize: 15,
-      lockSize: true,
-      growPolicy: GrowMode.GrowHeight
+      expandToFit: true,
+      padding: 20,
+      fontSize: 20,
+      growPolicy: GrowPolicy.GrowHeight,
     });
     l.add(text);
-
-    // l.add(new Rect({
-    //   x: 200,
-    //   width: 200,
-    //   height: 200,
-    //   fill: 'red'
-    // }));
 
     const t = new Transformer({
       nodes: [text]
@@ -62,3 +58,49 @@ it('Should make this text write', () => {
     l.draw();
   });
 });
+
+it('Should correctly store border options', () => {
+  const text = new Text({
+    bordered: true,
+    borderRadius: borderRadiusAll(4),
+    borderDash: LineDash.DASHED
+  });
+
+  expect(text.bordered()).to.eq(true);
+  expect(text.borderRadius()).to.have.property('topLeft', 4);
+  expect(text.borderRadius()).to.have.property('topRight', 4);
+  expect(text.borderRadius()).to.have.property('bottomLeft', 4);
+  expect(text.borderRadius()).to.have.property('bottomRight', 4);
+  expect(text.borderDash()).to.eq(LineDash.DASHED);
+});
+
+it('Should draw a text with a red border of 2 px, dashed', () => {
+  cy.document().get('#root').then((root) => {
+    expect(root).to.not.be.undefined;
+
+    const s = new Stage({
+      container: root.get()[0] as any,
+      width: 800,
+      height: 800
+    });
+
+    const l = new Layer();
+    l.add(new Text({
+      x: 10,
+      y: 10,
+      width: 200,
+      height: 200,
+      editable: true,
+      bordered: true,
+      fontSize: 20,
+      borderWidth: 2,
+      borderColor: 'red',
+      text: '',
+      padding: 20,
+      borderDash: LineDash.DASHED,
+      backgroundColor: 'blue'
+    }));
+
+    s.add(l);
+  });
+})
