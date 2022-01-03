@@ -9,48 +9,84 @@
  * Description: Implements the BorderOptions class
  */
 
+import { LineDashConfiguration } from './LineDash';
+import { Factory }               from '../Factory';
+import { BorderOptions }         from '../../lib/configuration/BorderOptions';
+
 /**
  * Represents the options of a border
  */
-export interface IBorderOptions {
-  width: number;
-  color: string;
-  visible: boolean;
-}
-
-/**
- * Represents the border options
- */
-export class BorderOptions implements IBorderOptions {
-  /**
-   * Indicates if this border is visible or not
-   */
-  visible: boolean;
-
+export interface BorderConfig {
   /**
    * The width of the border. 1 is default
    */
-  width: number;
+  borderWidth?: number;
 
   /**
-   * The color of the border
+   * Border color (html format or name)
    */
-  color: string;
+  borderColor?: string;
 
   /**
-   * Creates a new BorderOptions class
-   * @param options The border options
+   * Border visibility
    */
-  constructor(options: IBorderOptions) {
-    this.visible = options.visible;
-    this.color = options.color;
-    this.width = options.width;
-  }
+  bordered?: boolean;
 
   /**
-   * Returns the default border
+   * Border radius
    */
-  static getDefaultBorder(): IBorderOptions {
-    return {visible: true, color: 'black', width: 1};
+  borderRadius?: BorderRadius;
+
+  /**
+   * Border dash configuration
+   */
+  borderDash?: LineDashConfiguration;
+}
+
+/**
+ * Represents a complete border radius
+ * (all 4 corners)
+ */
+export interface BorderRadius {
+  topLeft: number;
+  topRight: number;
+  bottomLeft: number;
+  bottomRight: number;
+}
+
+/**
+ * Construct a border radius with every corner with the same
+ * radius
+ * @param val
+ */
+export const borderRadiusAll = (val: number): BorderRadius => {
+  return {
+    topLeft: val,
+    topRight: val,
+    bottomLeft: val,
+    bottomRight: val,
+  };
+};
+
+/**
+ * Create a symmetric border radius
+ * @param top Value for topLeft and topRight
+ * @param bottom Value for bottomLeft and bottomRight
+ */
+export const borderRadiusSym = (top: number, bottom: number): BorderRadius => {
+  return {
+    topLeft: top, topRight: top,
+    bottomRight: bottom,
+    bottomLeft: bottom
+  };
+};
+
+/**
+ * Adds border configuration to class
+ * @param cls
+ */
+export const addBorderConfigToClass = (cls: any) => {
+  for(let i of Object.keys(BorderOptions)) {
+    Factory.addGetterSetter(cls, i);
   }
 }

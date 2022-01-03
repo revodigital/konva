@@ -30,14 +30,21 @@ import {
   eventRemovesText,
   pixel,
   rangeOf
-}                              from './utils';
-import { normalizeFontFamily } from '../TextUtils';
+}                                     from './utils';
+import { normalizeFontFamily }        from '../TextUtils';
 import {
   LineMetric,
   TextMeasurementHelper,
   TextMetrics,
   TextMetricsHelper
-}                              from '../TextMeasurement';
+}                                     from '../TextMeasurement';
+import {
+  addBorderConfigToClass,
+  BorderConfig,
+  BorderRadius
+} from '../configuration/BorderOptions';
+import { Context, SceneContext }      from '../Context';
+import { LineDashConfiguration }      from '../configuration/LineDash';
 
 /**
  * Minimum font size
@@ -122,6 +129,31 @@ export interface TextConfig extends ShapeConfig {
   letterSpacing?: number;
   wrap?: string;
   ellipsis?: boolean;
+
+  /**
+   * The width of the border. 1 is default
+   */
+  borderWidth?: number;
+
+  /**
+   * Border color (html format or name)
+   */
+  borderColor?: string;
+
+  /**
+   * Border visibility
+   */
+  bordered?: boolean;
+
+  /**
+   * Border radius
+   */
+  borderRadius?: BorderRadius;
+
+  /**
+   * Border dash configuration
+   */
+  borderDash?: LineDashConfiguration;
 
   /**
    * Indicates if this text is editable or not
@@ -241,6 +273,13 @@ export class Text extends Shape<TextConfig> {
   spellcheckOnEdit: GetSet<boolean, this>;
   enableNewLine: GetSet<boolean, this>;
   expandToFit: GetSet<boolean, this>;
+
+  // Border configuration
+  bordered: GetSet<boolean, this>;
+  borderRadius: GetSet<BorderRadius, this>;
+  borderWidth: GetSet<number, this>;
+  borderColor: GetSet<string, this>;
+  borderDash: GetSet<LineDashConfiguration, this>;
 
   growPolicy: GetSet<GrowPolicy, this>;
 
@@ -758,7 +797,7 @@ export class Text extends Shape<TextConfig> {
    * Drawing function
    * @param context
    */
-  _sceneFunc(context) {
+  _sceneFunc(context: SceneContext) {
     var textArr = this.textArr,
       textArrLen = textArr.length;
 
@@ -767,6 +806,9 @@ export class Text extends Shape<TextConfig> {
       return;
     }
 
+    console.log(context);
+
+    // Extract options into separated variables
     var padding = this.padding(),
       fontSize = this.fontSize(),
       lineHeightPx = this.lineHeight() * fontSize,
@@ -780,6 +822,9 @@ export class Text extends Shape<TextConfig> {
       shouldUnderline = textDecoration.indexOf('underline') !== -1,
       shouldLineThrough = textDecoration.indexOf('line-through') !== -1,
       n;
+
+    // Draw shape borders
+    this._drawBorders(context);
 
     var translateY = 0;
     var translateY = lineHeightPx / 2;
@@ -843,8 +888,8 @@ export class Text extends Shape<TextConfig> {
 
         // I have no idea what is real ratio
         // just /15 looks good enough
-        context.lineWidth = fontSize / 15;
-        context.strokeStyle = fill;
+        (context as any).lineWidth = fontSize / 15;
+        (context as any).strokeStyle = fill;
         context.stroke();
         context.restore();
       }
@@ -862,8 +907,8 @@ export class Text extends Shape<TextConfig> {
           lineTranslateX + Math.round(lineWidth),
           translateY + lineTranslateY
         );
-        context.lineWidth = fontSize / 15;
-        context.strokeStyle = fill;
+        (context as any).lineWidth = fontSize / 15;
+        (context as any).strokeStyle = fill;
         context.stroke();
         context.restore();
       }
@@ -899,6 +944,10 @@ export class Text extends Shape<TextConfig> {
         translateY += lineHeightPx;
       }
     }
+  }
+
+  private _drawBorders(context: SceneContext) {
+
   }
 
   _hitFunc(context) {
@@ -1508,3 +1557,6 @@ Factory.addGetterSetter(Text, 'enableNewLine', false);
 Factory.addGetterSetter(Text, 'expandToFit', false);
 
 Factory.addGetterSetter(Text, 'growPolicy', GrowPolicy.GrowHeight);
+
+// Add border configuration
+addBorderConfigToClass(Text);

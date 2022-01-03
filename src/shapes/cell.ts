@@ -12,7 +12,7 @@
 import { PointRectangle2D }                       from '../common/PointRectangle2D';
 import { HorizontalAlignment, VerticalAlignment } from '../configuration/Alignment';
 import { ITextConfiguration, TextConfiguration } from '../configuration/TextConfiguration';
-import { IBorderOptions }                        from '../configuration/BorderOptions';
+import { BorderConfig }                          from '../configuration/BorderOptions';
 import { Point2D }                               from '../common/Point2D';
 
 /**
@@ -22,7 +22,7 @@ export interface ICell extends ITextConfiguration {
   content?: string;
   edges: PointRectangle2D;
   fill?: string;
-  border?: IBorderOptions;
+  border?: BorderConfig;
 }
 
 /**
@@ -50,11 +50,11 @@ export class Cell extends TextConfiguration {
   /**
    * Indicates if this cell should have some borders
    */
-  border: IBorderOptions;
+  border: BorderConfig;
 
   private _lastOfCol: boolean;
   private _lastOfRow: boolean;
-  private _tableExternalBorder: IBorderOptions;
+  private _tableExternalBorder: BorderConfig;
 
   /**
    * Creates a new instance of a Cell class, for drawing a Cell into a table.
@@ -63,16 +63,12 @@ export class Cell extends TextConfiguration {
    * @param lastOfRow Indicates if this cell is the last of the row
    * @param tableExternalBorder The table external border informations
    */
-  constructor(options: ICell, lastOfColumn: boolean, lastOfRow: boolean, tableExternalBorder: IBorderOptions) {
+  constructor(options: ICell, lastOfColumn: boolean, lastOfRow: boolean, tableExternalBorder: BorderConfig) {
     super(options);
     this.content = options.content || '';
     this.edges = options.edges;
     this.fill = options.fill || 'gray';
-    this.border = options.border || {
-      visible: true,
-      color: 'black',
-      width: 1
-    };
+    this.border = options.border;
     this._lastOfCol = lastOfColumn;
     this._lastOfRow = lastOfRow;
     this._tableExternalBorder = tableExternalBorder;
@@ -95,7 +91,7 @@ export class Cell extends TextConfiguration {
 
     this._renderText(ctx);
 
-    if (this.border.visible) this._renderBorders(ctx);
+    if (this.border.bordered) this._renderBorders(ctx);
   }
 
   /**
@@ -154,8 +150,8 @@ export class Cell extends TextConfiguration {
    * @private
    */
   private _renderBorders(ctx: CanvasRenderingContext2D): void {
-    ctx.strokeStyle = this.border.color;
-    ctx.lineWidth = this.border.width;
+    ctx.strokeStyle = this.border.borderColor;
+    ctx.lineWidth = this.border.borderWidth;
     ctx.closePath();
 
     // Bottom border
