@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.2.6 (3/1/2022)
+Implements basic text placeholder (only in textarea), configurable via
+```javascript
+text.placeholder('Insert some text')
+```
+
 ## 1.2.5 (3/1/2022)
 Refactors **Text** codebase, optimizes performances
 and adds methods for enable/disable text editing.
