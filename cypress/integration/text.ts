@@ -80,3 +80,34 @@ it('Should correctly store border options', () => {
   expect(text.borderRadius()).to.have.property('bottomRight', 4);
   expect(text.borderDash()).to.eq(LineDash.DASHED);
 });
+
+it('Should draw a text with a red border of 2 px, dashed', () => {
+  cy.document().get('#root').then((root) => {
+    expect(root).to.not.be.undefined;
+
+    const s = new Stage({
+      container: root.get()[0] as any,
+      width: 800,
+      height: 800
+    });
+
+    const l = new Layer();
+    l.add(new Text({
+      x: 10,
+      y: 10,
+      width: 200,
+      height: 200,
+      editable: false,
+      bordered: true,
+      borderRadius: borderRadiusAll(10),
+      fontSize: 20,
+      borderWidth: 2,
+      borderColor: 'red',
+      text: 'hello',
+      padding: 20,
+      borderDash: LineDash.DASHED
+    }));
+
+    s.add(l);
+  });
+})

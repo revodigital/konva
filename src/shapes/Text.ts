@@ -20,9 +20,9 @@ import {
   getStringValidator,
 }                                from '../Validators';
 
-import { GetSet }              from '../types';
-import { KonvaEventObject }    from '../Node';
-import { Size2D, sizeOf }      from '../common/Size2D';
+import { GetSet }                from '../types';
+import { KonvaEventObject }      from '../Node';
+import { Size2D, sizeOf }        from '../common/Size2D';
 import {
   eventAddsText,
   eventIsExit,
@@ -30,21 +30,22 @@ import {
   eventRemovesText,
   pixel,
   rangeOf
-}                                     from './utils';
-import { normalizeFontFamily }        from '../TextUtils';
+}                                from './utils';
+import { normalizeFontFamily }   from '../TextUtils';
 import {
   LineMetric,
   TextMeasurementHelper,
   TextMetrics,
   TextMetricsHelper
-}                                     from '../TextMeasurement';
+}                                from '../TextMeasurement';
 import {
   addBorderConfigToClass,
   BorderConfig,
   BorderRadius
-} from '../configuration/BorderOptions';
-import { Context, SceneContext }      from '../Context';
-import { LineDashConfiguration }      from '../configuration/LineDash';
+}                                from '../configuration/BorderOptions';
+import { Context, SceneContext } from '../Context';
+import { LineDashConfiguration } from '../configuration/LineDash';
+import { LineCap }               from '../configuration/LineCap';
 
 /**
  * Minimum font size
@@ -280,6 +281,7 @@ export class Text extends Shape<TextConfig> {
   borderWidth: GetSet<number, this>;
   borderColor: GetSet<string, this>;
   borderDash: GetSet<LineDashConfiguration, this>;
+  borderCap: GetSet<LineCap, this>;
 
   growPolicy: GetSet<GrowPolicy, this>;
 
@@ -311,6 +313,9 @@ export class Text extends Shape<TextConfig> {
 
     if (this.expandToFit() === undefined)
       this.expandToFit(true);
+
+    if (this.bordered() === undefined)
+      this.bordered(false);
 
     // Initial text expanding
     if (this.expandToFit()) this.fitContainer();
@@ -806,8 +811,6 @@ export class Text extends Shape<TextConfig> {
       return;
     }
 
-    console.log(context);
-
     // Extract options into separated variables
     var padding = this.padding(),
       fontSize = this.fontSize(),
@@ -947,10 +950,18 @@ export class Text extends Shape<TextConfig> {
   }
 
   private _drawBorders(context: SceneContext) {
+    // Check if borders are enabled
+    if (!this.bordered()) return;
 
+    context._context.lineWidth = this.borderWidth();
+    context._context.lineCap = this.borderCap();
+    context._context.strokeStyle = this.borderColor();
+    if (this.borderDash())
+      context.setLineDash(this.borderDash());
+    context.roundRect(0, 0, this.width(), this.height(), this.borderRadius());
   }
 
-  _hitFunc(context) {
+  private _hitFunc(context) {
     var width = this.getWidth(),
       height = this.getHeight();
 

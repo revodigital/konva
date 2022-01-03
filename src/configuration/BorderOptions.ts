@@ -12,6 +12,7 @@
 import { LineDashConfiguration } from './LineDash';
 import { Factory }               from '../Factory';
 import { BorderOptions }         from '../../lib/configuration/BorderOptions';
+import { LineCap }               from './LineCap';
 
 /**
  * Represents the options of a border
@@ -41,6 +42,11 @@ export interface BorderConfig {
    * Border dash configuration
    */
   borderDash?: LineDashConfiguration;
+
+  /**
+   * Border cap
+   */
+  borderCap?: LineCap;
 }
 
 /**
@@ -60,6 +66,7 @@ export const BORDER_OPTIONS = [
   'bordered',
   'borderRadius',
   'borderDash',
+  'borderCap',
 ];
 
 /**
