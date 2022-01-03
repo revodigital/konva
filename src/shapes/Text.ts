@@ -266,37 +266,43 @@ export class Text extends Shape<TextConfig> {
   _partialTextY = 0;
   _inputBlocked = false;
   _editing = false;
-
   _textArea: HTMLTextAreaElement;
   textWidth: number;
-
   textHeight: number;
+
   editable: GetSet<boolean, this>;
   lockSize: GetSet<boolean, this>;
   autoFontSize: GetSet<boolean, this>;
   spellcheckOnEdit: GetSet<boolean, this>;
   enableNewLine: GetSet<boolean, this>;
   expandToFit: GetSet<boolean, this>;
-
-  // Border configuration
   bordered: GetSet<boolean, this>;
   borderRadius: GetSet<BorderRadius, this>;
   borderWidth: GetSet<number, this>;
   borderColor: GetSet<string, this>;
   borderDash: GetSet<LineDashConfiguration, this>;
   borderCap: GetSet<LineCap, this>;
-
   growPolicy: GetSet<GrowPolicy, this>;
-
   backgroundColor: GetSet<string, this>;
+  fontFamily: GetSet<string, this>;
+  fontSize: GetSet<number, this>;
+  fontStyle: GetSet<string, this>;
+  fontVariant: GetSet<string, this>;
+  align: GetSet<string, this>;
+  letterSpacing: GetSet<number, this>;
+  verticalAlign: GetSet<string, this>;
+  padding: GetSet<number, this>;
+  lineHeight: GetSet<number, this>;
+  textDecoration: GetSet<string, this>;
+  text: GetSet<string, this>;
+  wrap: GetSet<string, this>;
+  ellipsis: GetSet<boolean, this>;
 
   /**
    * Creates a new Text shape
    */
   constructor(config?: TextConfig) {
     super(checkDefaultFill(config));
-    //super();
-
     // Set textarea to undefined ( will be created only when editing will start)
     this._textArea = undefined;
     // update text data for certain attr changes
@@ -444,19 +450,6 @@ export class Text extends Shape<TextConfig> {
   }
 
   /**
-   * Calculates font size to make text fit into the given rectangle.
-   * @param size Rectangle size
-   * @returns true is it can be contained, false otherwise.
-   */
-  canFitRect(size: Size2D): boolean {
-    const newFontSize = Math.floor(Math.sqrt((size.getWidth() * size.getHeight()) / this.text().length));
-
-    if (newFontSize < MIN_FONT_SIZE) return false;
-    this.fontSize(newFontSize);
-    return true;
-  }
-
-  /**
    * Called before clipboard paste
    * @param e
    * @private
@@ -472,6 +465,71 @@ export class Text extends Shape<TextConfig> {
 
     // Add resizing callback
     this._textArea.addEventListener('input', handleTextResize);
+  }
+
+  /**
+   * Shows text editing area
+   */
+  private _showTextArea(): void {
+    this._textArea.style.visibility = 'visible';
+  }
+
+  /**
+   * Resizes text area width
+   * @param newWidth New width to set
+   */
+  private _resizeTextAreaWidth(newWidth: number): void {
+    if (!newWidth) {
+      // set width for placeholder
+      newWidth = this._textArea.placeholder.length * this.fontSize();
+    }
+    // some extra fixes on different browsers
+    var isSafari = /^((?!chrome|android).)*safari/i.test(
+      navigator.userAgent
+    );
+    var isFirefox =
+      navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+    if (isSafari || isFirefox) {
+      newWidth = Math.ceil(newWidth);
+    }
+
+    this._textArea.style.width = pixel(newWidth - (this.padding() * 2));
+  }
+
+  /**
+   * Resizes text area height
+   * @param newHeight
+   * @private
+   */
+  private _resizeTextAreaHeight(newHeight: number): void {
+    if (!newHeight) {
+      // set width for placeholder
+      newHeight = this._textArea.placeholder.length * this.fontSize();
+    }
+    // some extra fixes on different browsers
+    var isSafari = /^((?!chrome|android).)*safari/i.test(
+      navigator.userAgent
+    );
+    var isFirefox =
+      navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+    if (isSafari || isFirefox) {
+      newHeight = Math.ceil(newHeight);
+    }
+
+    this._textArea.style.height = pixel(newHeight - (this.padding() * 2));
+  }
+
+  /**
+   * Called when text editing ends
+   */
+  private _onEditingEnd(): void {
+    // Set status variables
+    this._editing = false;
+    this.show();
+
+    // Remove text area
+    this._textArea.parentNode.removeChild(this._textArea);
+    this._textArea = undefined;
   }
 
   /**
@@ -531,6 +589,35 @@ export class Text extends Shape<TextConfig> {
    */
   private _setTextAreaFontSize(ft: number): void {
     this._textArea.style.fontSize = `${ ft }px`;
+  }
+
+  /**
+   * Hides text editing area
+   */
+  private _hideTextArea(): void {
+    this._textArea.style.visibility = 'hidden';
+  }
+
+  /**
+   * Draws background
+   * @param context
+   * @private
+   */
+  private _drawBackground(context: SceneContext): void {
+    if (!this.backgroundColor()) return;
+
+    context._context.fillStyle = this.backgroundColor();
+    context.fillRect(0, 0, this.width(), this.height());
+  }
+
+  private _hitFunc(context) {
+    var width = this.getWidth(),
+      height = this.getHeight();
+
+    context.beginPath();
+    context.rect(0, 0, width, height);
+    context.closePath();
+    context.fillStrokeShape(this);
   }
 
   /**
@@ -683,153 +770,6 @@ export class Text extends Shape<TextConfig> {
   }
 
   /**
-   * Calculates a new fontsize to perfectly fit container size
-   * (shape width and height)
-   */
-  public fitContainer(): number {
-    let ft = this.fontSize();
-    let ftr = this._fontSizeFits(ft);
-    // Check if current fontsize can fit
-    while (ftr !== 0) {
-      // Increment or decrement font size
-      if (ftr === -1)
-        ft++;
-      else ft--;
-      // Update ftr
-      this.fontSize(ft);
-
-      // Sync also textarea font
-      if (this._textArea)
-        this._textArea.style.fontSize = pixel(ft);
-
-      ftr = this._fontSizeFits(ft);
-    }
-
-    return ft;
-  }
-
-  /**
-   * Checks if a fontsize can be contained into this shape
-   * @param fontSize
-   * @returns 0 when this fontsize fits leaving no space free
-   * @returns -1 when this fontsize leaves free space (al least fot 1 row)
-   * @returns 1 when this fontsize exceeds space
-   * @private
-   */
-  private _fontSizeFits(fontSize: number): -1 | 1 | 0 {
-    const h = this.measureTextHeightByFontSize(fontSize);
-
-    if (h <= this.height() && h > this.height() - (this.fontSize() * this.lineHeight())) return 0;
-    else if (h > this.height()) return 1;
-    else return -1;
-  }
-
-  /**
-   * Measures current text height based
-   * on fontsize, lineHeight and padding
-   */
-  measureTextHeight(): number {
-    return (this.fontSize() * this.textArr.length * this.lineHeight()) +
-           this.padding() * 2;
-  }
-
-  /**
-   * Measures text height based on a specific fontsize specified as parameter
-   * @param fontSize
-   */
-  measureTextHeightByFontSize(fontSize: number): number {
-    return (fontSize * this.textArr.length * this.lineHeight()) +
-           this.padding() * 2;
-  }
-
-  /**
-   * Hides text editing area
-   */
-  private _hideTextArea(): void {
-    this._textArea.style.visibility = 'hidden';
-  }
-
-  /**
-   * Shows text editing area
-   */
-  private _showTextArea(): void {
-    this._textArea.style.visibility = 'visible';
-  }
-
-  /**
-   * Resizes text area width
-   * @param newWidth New width to set
-   */
-  private _resizeTextAreaWidth(newWidth: number): void {
-    if (!newWidth) {
-      // set width for placeholder
-      newWidth = this._textArea.placeholder.length * this.fontSize();
-    }
-    // some extra fixes on different browsers
-    var isSafari = /^((?!chrome|android).)*safari/i.test(
-      navigator.userAgent
-    );
-    var isFirefox =
-      navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
-    if (isSafari || isFirefox) {
-      newWidth = Math.ceil(newWidth);
-    }
-
-    this._textArea.style.width = pixel(newWidth - (this.padding() * 2));
-  }
-
-  /**
-   * Resizes text area height
-   * @param newHeight
-   * @private
-   */
-  private _resizeTextAreaHeight(newHeight: number): void {
-    if (!newHeight) {
-      // set width for placeholder
-      newHeight = this._textArea.placeholder.length * this.fontSize();
-    }
-    // some extra fixes on different browsers
-    var isSafari = /^((?!chrome|android).)*safari/i.test(
-      navigator.userAgent
-    );
-    var isFirefox =
-      navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
-    if (isSafari || isFirefox) {
-      newHeight = Math.ceil(newHeight);
-    }
-
-    this._textArea.style.height = pixel(newHeight - (this.padding() * 2));
-  }
-
-  /**
-   * Called when text editing ends
-   */
-  private _onEditingEnd(): void {
-    // Set status variables
-    this._editing = false;
-    this.show();
-
-    // Remove text area
-    this._textArea.parentNode.removeChild(this._textArea);
-    this._textArea = undefined;
-  }
-
-  /**
-   * Drawing function
-   * @param context
-   */
-  _sceneFunc(context: SceneContext) {
-    // Draw shape fill
-    this._drawBackground(context);
-
-    // Draw shape borders
-    this._drawBorders(context);
-
-    // Draw text
-    this._drawText(context);
-  }
-
-  /**
    * Draw effective text
    * @param context
    * @private
@@ -974,133 +914,6 @@ export class Text extends Shape<TextConfig> {
   }
 
   /**
-   * Draws text box borders
-   * @param context Context
-   * @private
-   */
-  private _drawBorders(context: SceneContext) {
-    // Check if borders are enabled
-    if (!this.bordered()) return;
-
-    context._context.lineWidth = this.borderWidth() || 1;
-    context._context.lineCap = this.borderCap() || LineCap.Butt;
-    context._context.strokeStyle = this.borderColor() || 'black';
-    if (this.borderDash())
-      context.setLineDash(this.borderDash());
-    context.roundRect(0,
-      0,
-      this.width(),
-      this.height(),
-      this.borderRadius() || borderRadiusAll(0));
-  }
-
-  /**
-   * Draws background
-   * @param context
-   * @private
-   */
-  private _drawBackground(context: SceneContext): void {
-    if (!this.backgroundColor()) return;
-
-    context._context.fillStyle = this.backgroundColor();
-    context.fillRect(0, 0, this.width(), this.height());
-  }
-
-  private _hitFunc(context) {
-    var width = this.getWidth(),
-      height = this.getHeight();
-
-    context.beginPath();
-    context.rect(0, 0, width, height);
-    context.closePath();
-    context.fillStrokeShape(this);
-  }
-
-  /**
-   * Sets text of this shape
-   * @param text
-   */
-  setText(text) {
-    var str = Util._isString(text)
-              ? text
-              : text === null || text === undefined
-                ? ''
-                : text + '';
-    this._setAttr(TEXT, str);
-    return this;
-  }
-
-  getWidth() {
-    var isAuto = this.attrs.width === AUTO || this.attrs.width === undefined;
-    return isAuto ? this.getTextWidth() + this.padding() * 2 : this.attrs.width;
-  }
-
-  getHeight() {
-    var isAuto = this.attrs.height === AUTO || this.attrs.height === undefined;
-    return isAuto
-           ? this.fontSize() * this.textArr.length * this.lineHeight() +
-             this.padding() * 2
-           : this.attrs.height;
-  }
-
-  /**
-   * get pure text width without padding
-   * @method
-   * @name Pamela.Text#getTextWidth
-   * @returns {Number}
-   */
-  getTextWidth() {
-    return this.textWidth;
-  }
-
-  getTextHeight() {
-    Util.warn(
-      'text.getTextHeight() method is deprecated. Use text.height() - for full height and text.fontSize() - for one line height.'
-    );
-    return this.textHeight;
-  }
-
-  /**
-   * measure string with the font of current text shape.
-   * That method can't handle multiline text.
-   * @method
-   * @name Pamela.Text#measureSize
-   * @param {String} [text] text to measure
-   * @returns {Object} { width , height} of measured text
-   */
-  measureSize(text) {
-    var _context = getDummyContext(),
-      fontSize = this.fontSize(),
-      metrics;
-
-    _context.save();
-    _context.font = this._getContextFont();
-
-    metrics = _context.measureText(text);
-    _context.restore();
-    return {
-      width: metrics.width,
-      height: fontSize,
-    };
-  }
-
-  /**
-   * Returns the font string
-   * formatted properly
-   */
-  _getContextFont(): string {
-    return (
-      this.fontStyle() +
-      SPACE +
-      this.fontVariant() +
-      SPACE +
-      (this.fontSize() + PX_SPACE) +
-      // wrap font family into " so font families with spaces works ok
-      normalizeFontFamily(this.fontFamily())
-    );
-  }
-
-  /**
    * Add a line into the text
    * @param line
    */
@@ -1123,6 +936,22 @@ export class Text extends Shape<TextConfig> {
       getDummyContext().measureText(text).width +
       (length ? letterSpacing * (length - 1) : 0)
     );
+  }
+
+
+  /**
+   * Drawing function
+   * @param context
+   */
+  private _sceneFunc(context: SceneContext) {
+    // Draw shape fill
+    this._drawBackground(context);
+
+    // Draw shape borders
+    this._drawBorders(context);
+
+    // Draw text
+    this._drawText(context);
   }
 
   /**
@@ -1276,6 +1105,183 @@ export class Text extends Shape<TextConfig> {
     this.textWidth = textWidth;
   }
 
+  /**
+   * Draws text box borders
+   * @param context Context
+   * @private
+   */
+  private _drawBorders(context: SceneContext) {
+    // Check if borders are enabled
+    if (!this.bordered()) return;
+
+    context._context.lineWidth = this.borderWidth() || 1;
+    context._context.lineCap = this.borderCap() || LineCap.Butt;
+    context._context.strokeStyle = this.borderColor() || 'black';
+    if (this.borderDash())
+      context.setLineDash(this.borderDash());
+    context.roundRect(0,
+      0,
+      this.width(),
+      this.height(),
+      this.borderRadius() || borderRadiusAll(0));
+  }
+
+  /**
+   * Checks if a fontsize can be contained into this shape
+   * @param fontSize
+   * @returns 0 when this fontsize fits leaving no space free
+   * @returns -1 when this fontsize leaves free space (al least fot 1 row)
+   * @returns 1 when this fontsize exceeds space
+   * @private
+   */
+  private _fontSizeFits(fontSize: number): -1 | 1 | 0 {
+    const h = this.measureTextHeightByFontSize(fontSize);
+
+    if (h <= this.height() && h > this.height() - (this.fontSize() * this.lineHeight())) return 0;
+    else if (h > this.height()) return 1;
+    else return -1;
+  }
+
+  /**
+   * Calculates a new fontsize to perfectly fit container size
+   * (shape width and height)
+   */
+  fitContainer(): number {
+    let ft = this.fontSize();
+    let ftr = this._fontSizeFits(ft);
+    // Check if current fontsize can fit
+    while (ftr !== 0) {
+      // Increment or decrement font size
+      if (ftr === -1)
+        ft++;
+      else ft--;
+      // Update ftr
+      this.fontSize(ft);
+
+      // Sync also textarea font
+      if (this._textArea)
+        this._textArea.style.fontSize = pixel(ft);
+
+      ftr = this._fontSizeFits(ft);
+    }
+
+    return ft;
+  }
+
+  /**
+   * Measures current text height based
+   * on fontsize, lineHeight and padding
+   */
+  measureTextHeight(): number {
+    return (this.fontSize() * this.textArr.length * this.lineHeight()) +
+           this.padding() * 2;
+  }
+
+  /**
+   * Measures text height based on a specific fontsize specified as parameter
+   * @param fontSize
+   */
+  measureTextHeightByFontSize(fontSize: number): number {
+    return (fontSize * this.textArr.length * this.lineHeight()) +
+           this.padding() * 2;
+  }
+  /**
+   * Calculates font size to make text fit into the given rectangle.
+   * @param size Rectangle size
+   * @returns true is it can be contained, false otherwise.
+   */
+  canFitRect(size: Size2D): boolean {
+    const newFontSize = Math.floor(Math.sqrt((size.getWidth() * size.getHeight()) / this.text().length));
+
+    if (newFontSize < MIN_FONT_SIZE) return false;
+    this.fontSize(newFontSize);
+    return true;
+  }
+
+  /**
+   * Sets text of this shape
+   * @param text
+   */
+  setText(text) {
+    var str = Util._isString(text)
+              ? text
+              : text === null || text === undefined
+                ? ''
+                : text + '';
+    this._setAttr(TEXT, str);
+    return this;
+  }
+
+  getWidth() {
+    var isAuto = this.attrs.width === AUTO || this.attrs.width === undefined;
+    return isAuto ? this.getTextWidth() + this.padding() * 2 : this.attrs.width;
+  }
+
+  getHeight() {
+    var isAuto = this.attrs.height === AUTO || this.attrs.height === undefined;
+    return isAuto
+           ? this.fontSize() * this.textArr.length * this.lineHeight() +
+             this.padding() * 2
+           : this.attrs.height;
+  }
+
+  /**
+   * get pure text width without padding
+   * @method
+   * @name Pamela.Text#getTextWidth
+   * @returns {Number}
+   */
+  getTextWidth() {
+    return this.textWidth;
+  }
+
+  getTextHeight() {
+    Util.warn(
+      'text.getTextHeight() method is deprecated. Use text.height() - for full height and text.fontSize() - for one line height.'
+    );
+    return this.textHeight;
+  }
+
+  /**
+   * measure string with the font of current text shape.
+   * That method can't handle multiline text.
+   * @method
+   * @name Pamela.Text#measureSize
+   * @param {String} [text] text to measure
+   * @returns {Object} { width , height} of measured text
+   */
+  measureSize(text) {
+    var _context = getDummyContext(),
+      fontSize = this.fontSize(),
+      metrics;
+
+    _context.save();
+    _context.font = this._getContextFont();
+
+    metrics = _context.measureText(text);
+    _context.restore();
+    return {
+      width: metrics.width,
+      height: fontSize,
+    };
+  }
+
+  /**
+   * Returns the font string
+   * formatted properly
+   */
+  _getContextFont(): string {
+    return (
+      this.fontStyle() +
+      SPACE +
+      this.fontVariant() +
+      SPACE +
+      (this.fontSize() + PX_SPACE) +
+      // wrap font family into " so font families with spaces works ok
+      normalizeFontFamily(this.fontFamily())
+    );
+  }
+
   // for text we can't disable stroke scaling
   // if we do, the result will be unexpected
   getStrokeScaleEnabled() {
@@ -1307,20 +1313,6 @@ export class Text extends Shape<TextConfig> {
       ellipsis: this.ellipsis()
     };
   }
-
-  fontFamily: GetSet<string, this>;
-  fontSize: GetSet<number, this>;
-  fontStyle: GetSet<string, this>;
-  fontVariant: GetSet<string, this>;
-  align: GetSet<string, this>;
-  letterSpacing: GetSet<number, this>;
-  verticalAlign: GetSet<string, this>;
-  padding: GetSet<number, this>;
-  lineHeight: GetSet<number, this>;
-  textDecoration: GetSet<string, this>;
-  text: GetSet<string, this>;
-  wrap: GetSet<string, this>;
-  ellipsis: GetSet<boolean, this>;
 }
 
 Text.prototype._fillFunc = _fillFunc;
