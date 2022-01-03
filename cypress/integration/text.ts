@@ -95,7 +95,7 @@ it('Should draw a text with a red border of 2 px, dashed', () => {
       fontSize: 20,
       borderWidth: 2,
       borderColor: 'red',
-      text: 'hello',
+      text: '',
       padding: 20,
       borderDash: LineDash.DASHED,
       backgroundColor: 'blue'

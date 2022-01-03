@@ -1226,6 +1226,20 @@ export class Text extends Shape<TextConfig> {
   }
 
   /**
+   * Enables editing and registers useful listeners
+   */
+  enableEditing() {
+    this.editable(true);
+  }
+
+  /**
+   * Disables editing for this shape
+   */
+  disableEditing() {
+    this.editable(false);
+  }
+
+  /**
    * get pure text width without padding
    * @method
    * @name Pamela.Text#getTextWidth

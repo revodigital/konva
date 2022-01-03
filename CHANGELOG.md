@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.2.5 (3/1/2022)
+Refactors **Text** codebase, optimizes performances
+and adds methods for enable/disable text editing.
+```javascript
+// Enable editing on Text class
+text.enableEditing();
+
+// Disable editing on Text class
+text.disableEditing();
+```
+Implements also newer internal memory management.
+
 ## 1.2.3 (3/1/2022)
 Implements text **background** color, expressed using html format or by its known name.
 
