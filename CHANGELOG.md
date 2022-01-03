@@ -3,6 +3,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.2.3 (3/1/2022)
+Implements text **background** color, expressed using html format or by its known name.
+
 ## 1.2.2 (3/1/2022)
 Corrects exception when no borderRadius is provided and adds useful **BorderRadius** apis to create them, like:
 ```javascript
