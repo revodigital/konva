@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+
+## 1.2.7 (4/1/2022)
+Implements new shape **RichText** to render markdown text or html documents into
+a single shape. It offers several useful configuring options, such as
+**colors**, **font sizes** and **padding**. It automatically
+applies this configurations to make it simplier to work with.  
+We also refactored BorderRadius utils, now they are plugged 
+into a more syntetic way, under the **BorderRadiusUtils** namespace.  
+Now all the shapes support advanced borders, via the **BorderConfiguration**
+properties. Every shape can override the method used to render them,
+to give the programmer better control over it.
+
 ## 1.2.6 (3/1/2022)
 Implements basic text placeholder (only in textarea), configurable via
 ```javascript
