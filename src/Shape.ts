@@ -30,7 +30,7 @@ import { HitCanvas, SceneCanvas } from './Canvas';
 import { Size2D }                 from './common/Size2D';
 import {
   addBorderConfigToClass,
-  BorderRadius, borderRadiusAll
+  BorderRadius, BorderRadiusUtils,
 } from './configuration/BorderOptions';
 import { LineDashConfiguration }  from './configuration/LineDash';
 import { LineCap as LineCap2 } from './configuration/LineCap';
@@ -251,7 +251,7 @@ export class Shape<Config extends ShapeConfig = ShapeConfig> extends Node<Config
       0,
       this.width(),
       this.height(),
-      this.borderRadius() || borderRadiusAll(0));
+      this.borderRadius() || BorderRadiusUtils.squared());
   }
 
   constructor(config?: Config) {

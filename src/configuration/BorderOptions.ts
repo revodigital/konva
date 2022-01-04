@@ -86,13 +86,13 @@ export const BORDER_OPTIONS = [
 /**
  * Border radius useful functions
  */
-export const BorderRadius = {
+export const BorderRadiusUtils = {
   /**
    * Construct a border radius with every corner with the same
    * radius
    * @param val
    */
-  borderRadiusAll(val: number): BorderRadius {
+  all(val: number): BorderRadius {
     return {
       topLeft: val,
       topRight: val,
@@ -106,7 +106,7 @@ export const BorderRadius = {
    * @param top Value for topLeft and topRight
    * @param bottom Value for bottomLeft and bottomRight
    */
-  borderRadiusSym(top: number, bottom: number): BorderRadius {
+  sym(top: number, bottom: number): BorderRadius {
     return {
       topLeft: top, topRight: top,
       bottomRight: bottom,
@@ -119,7 +119,7 @@ export const BorderRadius = {
    * @param tlbr Corner radius for topLeft and bottomRight
    * @param trbl Corner radius for topRight and bottomLeft
    */
-  borderRadiusDg(tlbr: number, trbl: number): BorderRadius {
+  dg(tlbr: number, trbl: number): BorderRadius {
     return {
       topLeft: tlbr,
       bottomRight: tlbr,
@@ -131,8 +131,8 @@ export const BorderRadius = {
   /**
    * Shortcut for creating rectangular border radius
    */
-  borderRadiusEm(): BorderRadius {
-    return BorderRadius.borderRadiusAll(0);
+  squared(): BorderRadius {
+    return BorderRadiusUtils.all(0);
   }
 }
 

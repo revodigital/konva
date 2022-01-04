@@ -33,17 +33,7 @@ import {
 }                                                   from './utils';
 import { normalizeFontFamily }                      from '../TextUtils';
 import { TextMeasurementHelper, TextMetricsHelper } from '../TextMeasurement';
-import {
-  addBorderConfigToClass,
-  BorderRadius, borderRadiusAll
-}                                                   from '../configuration/BorderOptions';
 import { SceneContext }                             from '../Context';
-import {
-  LineDashConfiguration
-}                                                   from '../configuration/LineDash';
-import {
-  LineCap
-}                                                   from '../configuration/LineCap';
 
 /**
  * Minimum font size

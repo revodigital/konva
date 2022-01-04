@@ -12,8 +12,8 @@
 import { Util }                          from './Util';
 import { Pamela }                        from './Global';
 import { Canvas }                        from './Canvas';
-import { Shape }                         from './Shape';
-import { BorderRadius, borderRadiusAll } from './configuration/BorderOptions';
+import { Shape }                           from './Shape';
+import { BorderRadius, BorderRadiusUtils } from './configuration/BorderOptions';
 
 function simplifyArray(arr: Array<any>) {
   var retArr = [],
@@ -606,7 +606,7 @@ export class Context {
    */
   roundRect(x: number, y: number, width: number, height: number, radius: BorderRadius) {
     // Apply default radius if not given
-    var defaultRadius: BorderRadius = borderRadiusAll(0);
+    var defaultRadius: BorderRadius = BorderRadiusUtils.squared();
     for (var side in defaultRadius) {
       radius[side] = radius[side] || defaultRadius[side];
     }
