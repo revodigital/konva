@@ -278,7 +278,6 @@ export class Text extends Shape<TextConfig> {
 
   editable: GetSet<boolean, this>;
   lockSize: GetSet<boolean, this>;
-  autoFontSize: GetSet<boolean, this>;
   spellcheckOnEdit: GetSet<boolean, this>;
   enableNewLine: GetSet<boolean, this>;
   expandToFit: GetSet<boolean, this>;
@@ -1127,8 +1126,8 @@ export class Text extends Shape<TextConfig> {
     context._context.strokeStyle = this.borderColor() || 'black';
     if (this.borderDash())
       context.setLineDash(this.borderDash());
-    context.roundRect(0,
-      0,
+    context.roundRect(this.x(),
+      this.y(),
       this.width(),
       this.height(),
       this.borderRadius() || borderRadiusAll(0));
