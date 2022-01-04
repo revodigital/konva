@@ -498,6 +498,15 @@ export class Text extends Shape<TextConfig> {
     this._textArea = undefined;
   }
 
+  getSelfRect(): { x: number; width: number; y: number; height: number } {
+    return {
+      x: 0,
+      y: 0,
+      width: this.width(),
+      height: this.height()
+    };
+  }
+
   /**
    * Called after clipboard paste (textarea text has already been changed)
    * @private

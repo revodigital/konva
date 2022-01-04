@@ -90,6 +90,15 @@ export class RichText extends Shape<RichTextConfig> {
     if (this.sourceType() === undefined) this.sourceType(RichTextSource.Markdown);
   }
 
+  getSelfRect(): { x: number; width: number; y: number; height: number } {
+    return {
+      x: 0,
+      y: 0,
+      width: this.width(),
+      height: this.height()
+    };
+  }
+
   _sceneFunc(context: SceneContext) {
     // Draw background if any
     this._drawBackground(context);
