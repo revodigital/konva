@@ -9,9 +9,9 @@
  * Description:
  */
 
-import { Util }         from './Util';
-import { Pamela }       from './Global';
-import { Canvas }       from './Canvas';
+import { Util }                          from './Util';
+import { Pamela }                        from './Global';
+import { Canvas }                        from './Canvas';
 import { Shape }                         from './Shape';
 import { BorderRadius, borderRadiusAll } from './configuration/BorderOptions';
 
@@ -185,6 +185,9 @@ export class Context {
       this.fillShape(shape);
       this.strokeShape(shape);
     }
+    // Draw shape borders if any
+    if (shape._drawBorders)
+      shape._drawBorders(this);
   }
 
   getTrace(relaxed?, rounded?) {

@@ -130,31 +130,6 @@ export interface TextConfig extends ShapeConfig {
   ellipsis?: boolean;
 
   /**
-   * The width of the border. 1 is default
-   */
-  borderWidth?: number;
-
-  /**
-   * Border color (html format or name)
-   */
-  borderColor?: string;
-
-  /**
-   * Border visibility
-   */
-  bordered?: boolean;
-
-  /**
-   * Border radius
-   */
-  borderRadius?: BorderRadius;
-
-  /**
-   * Border dash configuration
-   */
-  borderDash?: LineDashConfiguration;
-
-  /**
    * Indicates if this text is editable or not
    * (using inline textarea)
    */
@@ -281,12 +256,6 @@ export class Text extends Shape<TextConfig> {
   spellcheckOnEdit: GetSet<boolean, this>;
   enableNewLine: GetSet<boolean, this>;
   expandToFit: GetSet<boolean, this>;
-  bordered: GetSet<boolean, this>;
-  borderRadius: GetSet<BorderRadius, this>;
-  borderWidth: GetSet<number, this>;
-  borderColor: GetSet<string, this>;
-  borderDash: GetSet<LineDashConfiguration, this>;
-  borderCap: GetSet<LineCap, this>;
   growPolicy: GetSet<GrowPolicy, this>;
   backgroundColor: GetSet<string, this>;
   fontFamily: GetSet<string, this>;
@@ -954,9 +923,6 @@ export class Text extends Shape<TextConfig> {
     // Draw shape fill
     this._drawBackground(context);
 
-    // Draw shape borders
-    this._drawBorders(context);
-
     // Draw text
     this._drawText(context);
   }
@@ -1110,27 +1076,6 @@ export class Text extends Shape<TextConfig> {
     //     maxTextWidth = Math.max(maxTextWidth, this.textArr[j].width);
     // }
     this.textWidth = textWidth;
-  }
-
-  /**
-   * Draws text box borders
-   * @param context Context
-   * @private
-   */
-  private _drawBorders(context: SceneContext) {
-    // Check if borders are enabled
-    if (!this.bordered()) return;
-
-    context._context.lineWidth = this.borderWidth() || 1;
-    context._context.lineCap = this.borderCap() || LineCap.Butt;
-    context._context.strokeStyle = this.borderColor() || 'black';
-    if (this.borderDash())
-      context.setLineDash(this.borderDash());
-    context.roundRect(this.x(),
-      this.y(),
-      this.width(),
-      this.height(),
-      this.borderRadius() || borderRadiusAll(0));
   }
 
   /**
@@ -1636,6 +1581,3 @@ Factory.addGetterSetter(Text, 'backgroundColor', 'transparent');
  * Placeholder text
  */
 Factory.addGetterSetter(Text, 'placeholder', 'Insert some text');
-
-// Add border configuration
-addBorderConfigToClass(Text);

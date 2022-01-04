@@ -54,31 +54,6 @@ export interface RichTextConfig extends ShapeConfig {
    * Base font size
    */
   fontSize?: number;
-
-  /**
-   * The width of the border. 1 is default
-   */
-  borderWidth?: number;
-
-  /**
-   * Border color (html format or name)
-   */
-  borderColor?: string;
-
-  /**
-   * Border visibility
-   */
-  bordered?: boolean;
-
-  /**
-   * Border radius
-   */
-  borderRadius?: BorderRadius;
-
-  /**
-   * Border dash configuration
-   */
-  borderDash?: LineDashConfiguration;
 }
 
 /**
@@ -91,12 +66,7 @@ export class RichText extends Shape<RichTextConfig> {
   backgroundColor: GetSet<string, this>;
   textColor: GetSet<string, this>;
   fontSize: GetSet<number, this>;
-  bordered: GetSet<boolean, this>;
-  borderRadius: GetSet<BorderRadius, this>;
-  borderWidth: GetSet<number, this>;
-  borderColor: GetSet<string, this>;
-  borderDash: GetSet<LineDashConfiguration, this>;
-  borderCap: GetSet<LineCap, this>;
+
 
   _initFunc(config?: RichTextConfig) {
     super._initFunc(config);
@@ -112,13 +82,12 @@ export class RichText extends Shape<RichTextConfig> {
     const parsed = Marked.parse(this.markdownContent());
     const doc = `
     <div id="document" style="
-    color: ${ this.textColor() || 'black' }; 
+    color: ${ this.textColor() || 'black' };
     margin: ${ this.padding() || 0 }px; 
-    background-color: ${ this.backgroundColor() }; 
+    background-color: ${ this.backgroundColor() || 'transparent' }; 
     font-size: ${ this.fontSize() }px
     ">${ parsed }</div>
     `;
-    console.log(doc);
 
     drawHTML(doc,
       null,
@@ -132,7 +101,6 @@ export class RichText extends Shape<RichTextConfig> {
         this.width(result.image.width);
         this.height(result.image.height);
         context.drawImage(result.image, this.x(), this.y());
-        this._drawBorders(context);
       }
     });
     // Render it to canvas
@@ -144,22 +112,6 @@ export class RichText extends Shape<RichTextConfig> {
 
     context._context.fillStyle = this.backgroundColor();
     context.fillRect(0, 0, this.width(), this.height());
-  }
-
-  private _drawBorders(context: SceneContext) {
-    // Check if borders are enabled
-    if (!this.bordered()) return;
-
-    context._context.lineWidth = this.borderWidth() || 1;
-    context._context.lineCap = this.borderCap() || LineCap.Butt;
-    context._context.strokeStyle = this.borderColor() || 'black';
-    if (this.borderDash())
-      context.setLineDash(this.borderDash());
-    context.roundRect(this.x(),
-      this.y(),
-      this.width(),
-      this.height(),
-      this.borderRadius() || borderRadiusAll(0));
   }
 }
 
@@ -176,8 +128,5 @@ Factory.addGetterSetter(RichText, 'textColor');
 Factory.addGetterSetter(RichText, 'fontSize');
 
 RichText.prototype.className = 'RichText';
-
-// Add border configuration
-addBorderConfigToClass(RichText);
 
 _registerNode(RichText);
