@@ -186,8 +186,19 @@ export class Context {
       this.strokeShape(shape);
     }
     // Draw shape borders if any
-    if (shape._drawBorders)
+    // Reset transform
+    if (shape._drawBorders) {
+      this.setTranslation(shape.x(), shape.y());
+      // Restore initial translation
       shape._drawBorders(this);
+    }
+  }
+
+  setTranslation(x: number, y: number) {
+    const matr = this._context.getTransform();
+    matr.e = x;
+    matr.f = y;
+    this._context.setTransform(matr);
   }
 
   getTrace(relaxed?, rounded?) {

@@ -9,13 +9,13 @@
  * Description:
  */
 
-import { TEST_ELEMENT_ID }  from '../global/global-defs';
-import { Stage }            from '../../src/Stage';
-import { Layer }            from '../../src/Layer';
-import { GrowPolicy, Text } from '../../src/shapes/Text';
-import { Transformer }      from '../../src/shapes/Transformer';
-import { borderRadiusAll }  from '../../src/configuration/BorderOptions';
-import { LineDash }         from '../../src/configuration/LineDash';
+import { TEST_ELEMENT_ID }   from '../global/global-defs';
+import { Stage }             from '../../src/Stage';
+import { Layer }             from '../../src/Layer';
+import { GrowPolicy, Text }  from '../../src/shapes/Text';
+import { Transformer }       from '../../src/shapes/Transformer';
+import { LineDash }          from '../../src/configuration/LineDash';
+import { BorderRadiusUtils } from '../../lib/configuration/BorderOptions';
 
 before(() => {
   const el = document.createElement('div');
@@ -62,7 +62,7 @@ it('Should make this text write', () => {
 it('Should correctly store border options', () => {
   const text = new Text({
     bordered: true,
-    borderRadius: borderRadiusAll(4),
+    borderRadius: BorderRadiusUtils.all(4),
     borderDash: LineDash.DASHED
   });
 
@@ -95,8 +95,9 @@ it('Should draw a text with a red border of 2 px, dashed', () => {
       fontSize: 20,
       borderWidth: 2,
       borderColor: 'red',
-      text: '',
+      rotation: 20,
       padding: 20,
+      text: 'My text',
       borderDash: LineDash.DASHED,
       backgroundColor: 'blue'
     }));

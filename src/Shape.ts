@@ -247,8 +247,8 @@ export class Shape<Config extends ShapeConfig = ShapeConfig> extends Node<Config
     context._context.strokeStyle = this.borderColor() || 'black';
     if (this.borderDash())
       context.setLineDash(this.borderDash());
-    context.roundRect(0,
-      0,
+    context.roundRect(this.borderWidth() || 1,
+      this.borderWidth() || 1,
       this.width(),
       this.height(),
       this.borderRadius() || BorderRadiusUtils.squared());
