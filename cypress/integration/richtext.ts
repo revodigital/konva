@@ -40,7 +40,6 @@ it('Should make this text write', () => {
       markdownContent: `This is a **bold** text. Now it is *italic* and here we have a simple text.  \n# Just a simple title  \nUsin __markdown__ is very simple with this shape  \n<span style="color:blue">some *blue* text</span>. `,
       padding: 30,
       fontSize: 30,
-      bordered: true,
       borderColor: 'red',
       borderWidth: 2
     });

@@ -201,6 +201,9 @@ declare namespace Pamela {
   export type RichTextConfig = import('./shapes/RichText').RichTextConfig;
   export type RichTextSource = import('./shapes/RichText').RichTextSource;
 
+  export type BorderRadius = import('./configuration/BorderOptions').BorderRadius;
+  export type BorderConfig = import('./configuration/BorderOptions').BorderConfig;
+
   export const Filters: {
     Blur: typeof Blur;
     Brighten: typeof Brighten;
