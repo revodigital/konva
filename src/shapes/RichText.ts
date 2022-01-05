@@ -82,6 +82,7 @@ export class RichText extends Shape<RichTextConfig> {
   sourceType?: GetSet<RichTextSource, this>;
 
   private _lastContent = '';
+  private _initialX = 0;
   private _image: HTMLImageElement = undefined;
 
   _initFunc(config?: RichTextConfig) {
@@ -118,16 +119,16 @@ export class RichText extends Shape<RichTextConfig> {
     context.rect(0, 0, width, height);
     context.closePath();
     context.fillStrokeShape(this);
+    context.drawRectBorders(this);
   }
 
   async _sceneFunc(context: SceneContext) {
-    context.beginPath();
-
     if (this.hasFill() || this.hasStroke()) {
       context.beginPath();
       context.rect(0, 0, this.width(), this.height());
       context.closePath();
       context.fillStrokeShape(this);
+      context.drawRectBorders(this);
     }
 
     // Format rendering html document
@@ -145,6 +146,9 @@ export class RichText extends Shape<RichTextConfig> {
           height: this.height()
         });
 
+      // Request new drawing
+      this._requestDraw();
+
       if (result.errors.length === 0) {
         this._image = result.image;
       }
@@ -154,8 +158,7 @@ export class RichText extends Shape<RichTextConfig> {
       context.drawImage(this._image, 0, 0);
     }
 
-    context.closePath();
-    //context.drawRectBorders(this);
+    context.drawRectBorders(this);
   }
 
   private _drawBackground(context: SceneContext) {
