@@ -44,17 +44,18 @@ import { HSV } from './filters/HSV';
 import { Invert }       from './filters/Invert';
 import { Kaleidoscope } from './filters/Kaleidoscope';
 import { Mask }      from './filters/Mask';
-import { Noise }     from './filters/Noise';
-import { Pixelate }  from './filters/Pixelate';
-import { Posterize } from './filters/Posterize';
-import { RGB }       from './filters/RGB';
-import { RGBA }      from './filters/RGBA';
-import { Sepia }     from './filters/Sepia';
-import { Solarize }  from './filters/Solarize';
-import { Threshold } from './filters/Threshold';
-import { Table }     from './shapes/Table';
+import { Noise }                    from './filters/Noise';
+import { Pixelate }                 from './filters/Pixelate';
+import { Posterize }                from './filters/Posterize';
+import { RGB }                      from './filters/RGB';
+import { RGBA }                     from './filters/RGBA';
+import { Sepia }                    from './filters/Sepia';
+import { Solarize }                 from './filters/Solarize';
+import { Threshold }                from './filters/Threshold';
+import { Table }                    from './shapes/Table';
 import { Barcode }                  from './shapes/Barcode';
 import { RichText, RichTextSource } from './shapes/RichText';
+import { Test }                     from './shapes/Test';
 
 export const Pamela = Core.Util._assign(Core, {
   Arc,
@@ -69,6 +70,7 @@ export const Pamela = Core.Util._assign(Core, {
   Rect,
   RegularPolygon,
   Ring,
+  Test,
   Sprite,
   Star,
   Text,

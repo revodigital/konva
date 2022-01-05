@@ -31,6 +31,7 @@ export const glob: any =
     : typeof window !== 'undefined'
     ? window
     : typeof WorkerGlobalScope !== 'undefined'
+        // eslint-disable-next-line no-restricted-globals
     ? self
     : {};
 
