@@ -66,10 +66,30 @@ export interface RichTextConfig extends ShapeConfig {
    * Base font size
    */
   fontSize?: number;
+
+  /**
+   * Font family
+   */
+  fontFamily?: string;
+
+  /**
+   * font decoration
+   */
+  fontDecoration?: string;
+
+  /**
+   * Font style
+   */
+  fontStyle?: string;
+
+  /**
+   * Font variant
+   */
+  fontVariant?: string;
 }
 
 /**
- * Shape to rendere a rich markdown text into a stage
+ * Shape to render a rich markdown or html text into a stage
  */
 export class RichText extends Shape<RichTextConfig> {
   markdownContent: GetSet<string, this>;
@@ -79,6 +99,10 @@ export class RichText extends Shape<RichTextConfig> {
   backgroundColor: GetSet<string, this>;
   textColor: GetSet<string, this>;
   fontSize: GetSet<number, this>;
+  fontStyle: GetSet<string, this>;
+  fontVariant: GetSet<string, this>;
+  fontFamily: GetSet<string, this>;
+  fontDecoration: GetSet<string, this>;
   sourceType?: GetSet<RichTextSource, this>;
 
   private _lastContent = '';
@@ -104,6 +128,9 @@ export class RichText extends Shape<RichTextConfig> {
     <div id="document" style="
     color: ${ this.textColor() || 'black' };
     margin: ${ this.padding() || 0 }px; 
+    font-family: ${this.fontFamily() || 'arial'};
+    font-variant: ${this.fontVariant() || ''}};
+    text-decoration: ${this.fontDecoration() || ''};
     background-color: ${ this.backgroundColor() || 'transparent' }; 
     font-size: ${ this.fontSize() }px
     ">${ this.htmlContent() }</div>
@@ -205,6 +232,27 @@ Factory.addGetterSetter(RichText, 'sourceType');
  * Get / set html content
  */
 Factory.addGetterSetter(RichText, 'htmlContent');
+
+/**
+ * Get / set font family
+ */
+Factory.addGetterSetter(RichText, 'fontFamily');
+
+/**
+ * Get / set font decoration
+ */
+Factory.addGetterSetter(RichText, 'fontDecoration');
+
+/**
+ * Get / set font style
+ */
+Factory.addGetterSetter(RichText, 'fontStyle');
+
+/**
+ * Get / set font variant
+ */
+Factory.addGetterSetter(RichText, 'fontVariant');
+
 
 RichText.prototype.className = 'RichText';
 _registerNode(RichText);
