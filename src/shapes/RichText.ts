@@ -81,6 +81,9 @@ export class RichText extends Shape<RichTextConfig> {
   fontSize: GetSet<number, this>;
   sourceType?: GetSet<RichTextSource, this>;
 
+  private _lastContent = '';
+  private _image: HTMLImageElement;
+
   _initFunc(config?: RichTextConfig) {
     super._initFunc(config);
 
@@ -90,19 +93,7 @@ export class RichText extends Shape<RichTextConfig> {
     if (this.sourceType() === undefined) this.sourceType(RichTextSource.Markdown);
   }
 
-  getSelfRect(): { x: number; width: number; y: number; height: number } {
-    return {
-      x: 0,
-      y: 0,
-      width: this.width(),
-      height: this.height()
-    };
-  }
-
-  _sceneFunc(context: SceneContext) {
-    // Draw background if any
-    this._drawBackground(context);
-
+  _formatDocument(): string {
     // Parse markdown, if it is selected source
     if (this.sourceType() === RichTextSource.Markdown)
       this.htmlContent(Marked.parse(this.markdownContent()));
@@ -117,23 +108,56 @@ export class RichText extends Shape<RichTextConfig> {
     ">${ this.htmlContent() }</div>
     `;
 
+    return doc;
+  }
+
+  getSelfRect(): { x: number; width: number; y: number; height: number } {
+    return {
+      x: 0,
+      y: 0,
+      width: this.width(),
+      height: this.height()
+    };
+  }
+
+  _useBufferCanvas() {
+    return super._useBufferCanvas(true);
+  }
+
+  async _sceneFunc(context: SceneContext) {
+    // Format rendering html document
+    const doc = this._formatDocument();
+
+    // Do not render if document is the same
+    if (doc === this._lastContent) {
+      // Draw image from cache
+      if (this._image)
+        context.drawImage(this._image, this.x(), this.y());
+      context.fillStrokeShape(this);
+      return;
+    }
+
+    // Draw background if any
+    this._drawBackground(context);
+
+    this._lastContent = doc;
     // Draw html into null canvas, get the image and draw
     // it as shape body
-    drawHTML(doc,
+    const result = await drawHTML(doc,
       null,
       !this.allowResize() ? {
         width: this.width(),
         height: this.height()
-      } : {}).then((result) => {
-      // Nothing
-      if (result.errors.length === 0) {
-        // Resize height and width
-        this.width(result.image.width);
-        this.height(result.image.height);
-        context.drawImage(result.image, this.x(), this.y());
-      }
-    });
-    // Render it to canvas
+      } : {});
+
+    // Draw image only if there are no errors
+    if (result.errors.length === 0) {
+      this._image = result.image;
+      context.drawImage(result.image, this.x(), this.y());
+      this.width(result.image.width);
+      this.height(result.image.height);
+    }
+
     context.fillStrokeShape(this);
   }
 

@@ -14,6 +14,7 @@ import { Stage }           from '../../src/Stage';
 import { Layer }           from '../../src/Layer';
 import { Transformer }     from '../../src/shapes/Transformer';
 import { RichText }        from '../../src/shapes/RichText';
+import { Text}             from '../../src/shapes/Text';
 
 before(() => {
   const el = document.createElement('div');

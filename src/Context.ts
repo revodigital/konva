@@ -186,11 +186,14 @@ export class Context {
       this.strokeShape(shape);
     }
     // Draw shape borders if any
-    // Reset transform
+    this.save();
     if (shape._drawBorders) {
+      // Remove any padding or margin by restoring original position
       this.setTranslation(shape.x(), shape.y());
-      // Restore initial translation
+      // Draw borders
       shape._drawBorders(this);
+      // Restore original transform
+      this.restore();
     }
   }
 
