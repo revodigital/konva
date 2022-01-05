@@ -9,11 +9,12 @@
  * Description:
  */
 
-import { Util }                          from './Util';
-import { Pamela }                        from './Global';
-import { Canvas }                        from './Canvas';
+import { Util }                            from './Util';
+import { Pamela }                          from './Global';
+import { Canvas }                          from './Canvas';
 import { Shape }                           from './Shape';
 import { BorderRadius, BorderRadiusUtils } from './configuration/BorderOptions';
+import { LineCap as LineCap2 }             from './configuration/LineCap';
 
 function simplifyArray(arr: Array<any>) {
   var retArr = [],
@@ -185,16 +186,25 @@ export class Context {
       this.fillShape(shape);
       this.strokeShape(shape);
     }
-    // Draw shape borders if any
-    this.save();
-    if (shape._drawBorders) {
-      // Remove any padding or margin by restoring original position
-      this.setTranslation(shape.x(), shape.y());
-      // Draw borders
-      shape._drawBorders(this);
-      // Restore original transform
-      this.restore();
-    }
+  }
+
+  drawRectBorders(shape: Shape) {
+    console.log("b");
+    // Check if borders are enabled
+    if (!shape.bordered()) return;
+
+    console.log("Border");
+
+    this._context.lineWidth = shape.borderWidth() || 1;
+    this._context.lineCap = shape.borderCap() || LineCap2.Butt;
+    this._context.strokeStyle = shape.borderColor() || 'black';
+    if (shape.borderDash())
+      this._context.setLineDash(shape.borderDash());
+    this.roundRect(shape.borderWidth() || 1,
+      shape.borderWidth() || 1,
+      shape.width(),
+      shape.height(),
+      shape.borderRadius() || BorderRadiusUtils.squared());
   }
 
   setTranslation(x: number, y: number) {

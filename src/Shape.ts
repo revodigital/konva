@@ -239,19 +239,7 @@ export class Shape<Config extends ShapeConfig = ShapeConfig> extends Node<Config
    * @param context Scene context to act on
    */
   _drawBorders(context: Context) {
-    // Check if borders are enabled
-    if (!this.bordered()) return;
 
-    context._context.lineWidth = this.borderWidth() || 1;
-    context._context.lineCap = this.borderCap() || LineCap2.Butt;
-    context._context.strokeStyle = this.borderColor() || 'black';
-    if (this.borderDash())
-      context.setLineDash(this.borderDash());
-    context.roundRect(this.borderWidth() || 1,
-      this.borderWidth() || 1,
-      this.width(),
-      this.height(),
-      this.borderRadius() || BorderRadiusUtils.squared());
   }
 
   constructor(config?: Config) {

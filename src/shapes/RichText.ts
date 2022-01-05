@@ -134,6 +134,7 @@ export class RichText extends Shape<RichTextConfig> {
       if (this._image)
         context.drawImage(this._image, this.x(), this.y());
       context.fillStrokeShape(this);
+      context.drawRectBorders(this);
       return;
     }
 
@@ -159,6 +160,7 @@ export class RichText extends Shape<RichTextConfig> {
     }
 
     context.fillStrokeShape(this);
+    context.drawRectBorders(this);
   }
 
   private _drawBackground(context: SceneContext) {

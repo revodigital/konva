@@ -15,6 +15,7 @@ import { Layer }           from '../../src/Layer';
 import { Transformer }     from '../../src/shapes/Transformer';
 import { RichText }        from '../../src/shapes/RichText';
 import { Text}             from '../../src/shapes/Text';
+import { Rect }            from '../../src/shapes/Rect';
 
 before(() => {
   const el = document.createElement('div');
@@ -46,6 +47,16 @@ it('Should make this text write', () => {
       borderWidth: 2
     });
     l.add(text);
+
+    l.add(new Rect({
+      width: 200,
+      height: 200,
+      x: 300,
+      y: 20,
+      fill: 'blue',
+      bordered: true,
+      borderWidth: 2,
+    }))
 
     const t = new Transformer({
       nodes: [text]
