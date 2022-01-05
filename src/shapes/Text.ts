@@ -41,6 +41,7 @@ import { SceneContext }                             from '../Context';
 export const MIN_FONT_SIZE = 6;
 
 // constants
+// eslint-disable-next-line no-unused-expressions
 export const AUTO = 'auto',
   //CANVAS = 'canvas',
   CENTER = 'center',
