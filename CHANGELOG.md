@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.3.0 (5/1/2022)
+Corrects huge problem with all newer shapes. They werent
+draggable into the stage.  
+Implements **RichText** font configuration(family, decoration, variant and size) and corrects dragwing problems.
+Adds to **RichText** the possibility to render direct html, insead of **markdown**.
+This behavior can be activated using:
+```javascript
+const richText = new Pamela.RichText({
+  draggable: true,
+  htmlContent: '<h1>Html text</h1>',
+  width: 300,
+  height: 200,
+  x: 100,
+  y: 20,
+  fill: 'white',
+  // Specifies if we want to render Markdown or
+  // html. By default is is set to Markdown
+  sourceType: RichTextSource.Html,
+  bordered: true,
+  borderColor: 'red',
+  fontFamily: 'Courier New'
+});
+```
+
+## 1.2.7 (4/1/2022)
+Implements new shape **RichText** to render markdown text or html documents into
+a single shape. It offers several useful configuring options, such as
+**colors**, **font sizes** and **padding**. It automatically
+applies this configurations to make it simplier to work with.  
+We also refactored BorderRadius utils, now they are plugged 
+into a more syntetic way, under the **BorderRadiusUtils** namespace.  
+Now all the shapes support advanced borders, via the **BorderConfiguration**
+properties. Every shape can override the method used to render them,
+to give the programmer better control over it.
+
+## 1.2.6 (3/1/2022)
+Implements basic text placeholder (only in textarea), configurable via
+```javascript
+text.placeholder('Insert some text')
+```
+
 ## 1.2.5 (3/1/2022)
 Refactors **Text** codebase, optimizes performances
 and adds methods for enable/disable text editing.

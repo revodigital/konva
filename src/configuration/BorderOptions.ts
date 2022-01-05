@@ -84,51 +84,56 @@ export const BORDER_OPTIONS = [
 ];
 
 /**
- * Construct a border radius with every corner with the same
- * radius
- * @param val
+ * Border radius useful functions
  */
-export const borderRadiusAll = (val: number): BorderRadius => {
-  return {
-    topLeft: val,
-    topRight: val,
-    bottomLeft: val,
-    bottomRight: val,
-  };
-};
+export const BorderRadiusUtils = {
+  /**
+   * Construct a border radius with every corner with the same
+   * radius
+   * @param val
+   */
+  all(val: number): BorderRadius {
+    return {
+      topLeft: val,
+      topRight: val,
+      bottomLeft: val,
+      bottomRight: val,
+    };
+  },
 
-/**
- * Create a symmetric border radius
- * @param top Value for topLeft and topRight
- * @param bottom Value for bottomLeft and bottomRight
- */
-export const borderRadiusSym = (top: number, bottom: number): BorderRadius => {
-  return {
-    topLeft: top, topRight: top,
-    bottomRight: bottom,
-    bottomLeft: bottom
-  };
-};
+  /**
+   * Create a symmetric border radius
+   * @param top Value for topLeft and topRight
+   * @param bottom Value for bottomLeft and bottomRight
+   */
+  sym(top: number, bottom: number): BorderRadius {
+    return {
+      topLeft: top, topRight: top,
+      bottomRight: bottom,
+      bottomLeft: bottom
+    };
+  },
 
-/**
- * Create a diagonal border radius
- * @param tlbr Corner radius for topLeft and bottomRight
- * @param trbl Corner radius for topRight and bottomLeft
- */
-export const borderRadiusDg = (tlbr: number, trbl: number): BorderRadius => {
-  return {
-    topLeft: tlbr,
-    bottomRight: tlbr,
-    topRight: trbl,
-    bottomLeft: trbl
+  /**
+   * Create a diagonal border radius
+   * @param tlbr Corner radius for topLeft and bottomRight
+   * @param trbl Corner radius for topRight and bottomLeft
+   */
+  dg(tlbr: number, trbl: number): BorderRadius {
+    return {
+      topLeft: tlbr,
+      bottomRight: tlbr,
+      topRight: trbl,
+      bottomLeft: trbl
+    }
+  },
+
+  /**
+   * Shortcut for creating rectangular border radius
+   */
+  squared(): BorderRadius {
+    return BorderRadiusUtils.all(0);
   }
-}
-
-/**
- * Shortcut for creating rectangular border radius
- */
-export const borderRadiusEm = (): BorderRadius => {
-  return borderRadiusAll(0);
 }
 
 /**

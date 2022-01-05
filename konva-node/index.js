@@ -2,7 +2,7 @@
  * Copyright (c) 2021. Revo Digital
  * ---
  * Author: gabriele
- * File: index.js
+ * File: index.ts
  * Project: pamela
  * Committed last: 2021/12/5 @ 141
  * ---

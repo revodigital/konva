@@ -528,6 +528,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
       cacheCanvas.width / ratio,
       cacheCanvas.height / ratio
     );
+
     context.restore();
   }
   _drawCachedHitCanvas(context: Context) {

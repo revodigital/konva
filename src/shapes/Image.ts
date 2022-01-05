@@ -111,6 +111,13 @@ export class Image extends Shape<ImageConfig> {
       context.drawImage.apply(context, params);
     }
   }
+
+  /**
+   * Function called when we have to detect hit boundaries.
+   * It should draw a rectangle with specific size of this
+   * shape using its fill color.
+   * @param context
+   */
   _hitFunc(context) {
     var width = this.width(),
       height = this.height();

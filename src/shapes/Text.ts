@@ -33,17 +33,7 @@ import {
 }                                                   from './utils';
 import { normalizeFontFamily }                      from '../TextUtils';
 import { TextMeasurementHelper, TextMetricsHelper } from '../TextMeasurement';
-import {
-  addBorderConfigToClass,
-  BorderRadius, borderRadiusAll
-}                                                   from '../configuration/BorderOptions';
 import { SceneContext }                             from '../Context';
-import {
-  LineDashConfiguration
-}                                                   from '../configuration/LineDash';
-import {
-  LineCap
-}                                                   from '../configuration/LineCap';
 
 /**
  * Minimum font size
@@ -51,6 +41,7 @@ import {
 export const MIN_FONT_SIZE = 6;
 
 // constants
+// eslint-disable-next-line no-unused-expressions
 export const AUTO = 'auto',
   //CANVAS = 'canvas',
   CENTER = 'center',
@@ -128,31 +119,6 @@ export interface TextConfig extends ShapeConfig {
   letterSpacing?: number;
   wrap?: string;
   ellipsis?: boolean;
-
-  /**
-   * The width of the border. 1 is default
-   */
-  borderWidth?: number;
-
-  /**
-   * Border color (html format or name)
-   */
-  borderColor?: string;
-
-  /**
-   * Border visibility
-   */
-  bordered?: boolean;
-
-  /**
-   * Border radius
-   */
-  borderRadius?: BorderRadius;
-
-  /**
-   * Border dash configuration
-   */
-  borderDash?: LineDashConfiguration;
 
   /**
    * Indicates if this text is editable or not
@@ -278,16 +244,9 @@ export class Text extends Shape<TextConfig> {
 
   editable: GetSet<boolean, this>;
   lockSize: GetSet<boolean, this>;
-  autoFontSize: GetSet<boolean, this>;
   spellcheckOnEdit: GetSet<boolean, this>;
   enableNewLine: GetSet<boolean, this>;
   expandToFit: GetSet<boolean, this>;
-  bordered: GetSet<boolean, this>;
-  borderRadius: GetSet<BorderRadius, this>;
-  borderWidth: GetSet<number, this>;
-  borderColor: GetSet<string, this>;
-  borderDash: GetSet<LineDashConfiguration, this>;
-  borderCap: GetSet<LineCap, this>;
   growPolicy: GetSet<GrowPolicy, this>;
   backgroundColor: GetSet<string, this>;
   fontFamily: GetSet<string, this>;
@@ -538,6 +497,15 @@ export class Text extends Shape<TextConfig> {
     // Remove text area
     this._textArea.parentNode.removeChild(this._textArea);
     this._textArea = undefined;
+  }
+
+  getSelfRect(): { x: number; width: number; y: number; height: number } {
+    return {
+      x: 0,
+      y: 0,
+      width: this.width(),
+      height: this.height()
+    };
   }
 
   /**
@@ -905,6 +873,7 @@ export class Text extends Shape<TextConfig> {
           this._partialTextY = translateY + lineTranslateY;
           this._partialText = letter;
           context.fillStrokeShape(this);
+          context.drawRectBorders(this);
           lineTranslateX += this.measureSize(letter).width + letterSpacing;
         }
       } else {
@@ -913,6 +882,7 @@ export class Text extends Shape<TextConfig> {
         this._partialText = text;
 
         context.fillStrokeShape(this);
+        context.drawRectBorders(this);
       }
       context.restore();
       if (textArrLen > 1) {
@@ -954,9 +924,6 @@ export class Text extends Shape<TextConfig> {
   private _sceneFunc(context: SceneContext) {
     // Draw shape fill
     this._drawBackground(context);
-
-    // Draw shape borders
-    this._drawBorders(context);
 
     // Draw text
     this._drawText(context);
@@ -1111,27 +1078,6 @@ export class Text extends Shape<TextConfig> {
     //     maxTextWidth = Math.max(maxTextWidth, this.textArr[j].width);
     // }
     this.textWidth = textWidth;
-  }
-
-  /**
-   * Draws text box borders
-   * @param context Context
-   * @private
-   */
-  private _drawBorders(context: SceneContext) {
-    // Check if borders are enabled
-    if (!this.bordered()) return;
-
-    context._context.lineWidth = this.borderWidth() || 1;
-    context._context.lineCap = this.borderCap() || LineCap.Butt;
-    context._context.strokeStyle = this.borderColor() || 'black';
-    if (this.borderDash())
-      context.setLineDash(this.borderDash());
-    context.roundRect(0,
-      0,
-      this.width(),
-      this.height(),
-      this.borderRadius() || borderRadiusAll(0));
   }
 
   /**
@@ -1637,6 +1583,3 @@ Factory.addGetterSetter(Text, 'backgroundColor', 'transparent');
  * Placeholder text
  */
 Factory.addGetterSetter(Text, 'placeholder', 'Insert some text');
-
-// Add border configuration
-addBorderConfigToClass(Text);

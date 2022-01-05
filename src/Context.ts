@@ -9,11 +9,12 @@
  * Description:
  */
 
-import { Util }         from './Util';
-import { Pamela }       from './Global';
-import { Canvas }       from './Canvas';
-import { Shape }                         from './Shape';
-import { BorderRadius, borderRadiusAll } from './configuration/BorderOptions';
+import { Util }                            from './Util';
+import { Pamela }                          from './Global';
+import { Canvas }                          from './Canvas';
+import { Shape }                           from './Shape';
+import { BorderRadius, BorderRadiusUtils } from './configuration/BorderOptions';
+import { LineCap as LineCap2 }             from './configuration/LineCap';
 
 function simplifyArray(arr: Array<any>) {
   var retArr = [],
@@ -185,6 +186,34 @@ export class Context {
       this.fillShape(shape);
       this.strokeShape(shape);
     }
+  }
+
+  /**
+   * Draws rectangular borders for this shape
+   * @param shape Shape to draw borders for
+   */
+  drawRectBorders(shape: Shape) {
+    // Check if borders are enabled
+    if (!shape.bordered()) return;
+
+    this._context.lineWidth = shape.borderWidth() || 1;
+    this._context.lineCap = shape.borderCap() || LineCap2.Butt;
+    this._context.strokeStyle = shape.borderColor() || 'black';
+    if (shape.borderDash())
+      this._context.setLineDash(shape.borderDash());
+    // Draw rounded rect
+    this.roundRect(0,
+      0,
+      shape.width(),
+      shape.height(),
+      shape.borderRadius() || BorderRadiusUtils.squared());
+  }
+
+  setTranslation(x: number, y: number) {
+    const matr = this._context.getTransform();
+    matr.e = x;
+    matr.f = y;
+    this._context.setTransform(matr);
   }
 
   getTrace(relaxed?, rounded?) {
@@ -374,6 +403,7 @@ export class Context {
    * @name Pamela.Context#clip
    */
   clip() {
+    this._context.clip();
     this._context.clip();
   }
 
@@ -603,7 +633,7 @@ export class Context {
    */
   roundRect(x: number, y: number, width: number, height: number, radius: BorderRadius) {
     // Apply default radius if not given
-    var defaultRadius: BorderRadius = borderRadiusAll(0);
+    var defaultRadius: BorderRadius = BorderRadiusUtils.squared();
     for (var side in defaultRadius) {
       radius[side] = radius[side] || defaultRadius[side];
     }

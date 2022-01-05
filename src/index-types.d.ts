@@ -196,6 +196,14 @@ declare namespace Pamela {
   export type Wedge = import('./shapes/Wedge').Wedge;
   export type WedgeConfig = import('./shapes/Wedge').WedgeConfig;
 
+  export const RichText: typeof import('./shapes/RichText').RichText;
+  export type RichText = import('./shapes/RichText').RichText;
+  export type RichTextConfig = import('./shapes/RichText').RichTextConfig;
+  export type RichTextSource = import('./shapes/RichText').RichTextSource;
+
+  export type BorderRadius = import('./configuration/BorderOptions').BorderRadius;
+  export type BorderConfig = import('./configuration/BorderOptions').BorderConfig;
+
   export const Filters: {
     Blur: typeof Blur;
     Brighten: typeof Brighten;

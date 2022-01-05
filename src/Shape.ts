@@ -28,6 +28,12 @@ import * as PointerEvents        from './PointerEvents';
 import { GetSet, Vector2d }       from './types';
 import { HitCanvas, SceneCanvas } from './Canvas';
 import { Size2D }                 from './common/Size2D';
+import {
+  addBorderConfigToClass,
+  BorderRadius, BorderRadiusUtils,
+} from './configuration/BorderOptions';
+import { LineDashConfiguration }  from './configuration/LineDash';
+import { LineCap as LineCap2 } from './configuration/LineCap';
 
 // hack from here https://stackoverflow.com/questions/52667959/what-is-the-purpose-of-bivariancehack-in-typescript-types/52668133#52668133
 export type ShapeConfigHandler<TTarget> = {
@@ -91,6 +97,30 @@ export interface ShapeConfig extends NodeConfig {
   dashOffset?: number;
   dashEnabled?: boolean;
   perfectDrawEnabled?: boolean;
+  /**
+   * The width of the border. 1 is default
+   */
+  borderWidth?: number;
+
+  /**
+   * Border color (html format or name)
+   */
+  borderColor?: string;
+
+  /**
+   * Border visibility
+   */
+  bordered?: boolean;
+
+  /**
+   * Border radius
+   */
+  borderRadius?: BorderRadius;
+
+  /**
+   * Border dash configuration
+   */
+  borderDash?: LineDashConfiguration;
 }
 
 export interface ShapeGetClientRectConfig {
@@ -203,6 +233,14 @@ export class Shape<Config extends ShapeConfig = ShapeConfig> extends Node<Config
   _initFunc(config?: Config) {
     // nothing
   };
+
+  /**
+   * Draws borders for this shape
+   * @param context Scene context to act on
+   */
+  _drawBorders(context: Context) {
+
+  }
 
   constructor(config?: Config) {
     super(config);
@@ -887,6 +925,12 @@ export class Shape<Config extends ShapeConfig = ShapeConfig> extends Node<Config
   strokeWidth: GetSet<number, this>;
   hitStrokeWidth: GetSet<number | 'auto', this>;
   strokeLinearGradientColorStops: GetSet<Array<number | string>, this>;
+  bordered: GetSet<boolean, this>;
+  borderRadius: GetSet<BorderRadius, this>;
+  borderWidth: GetSet<number, this>;
+  borderColor: GetSet<string, this>;
+  borderDash: GetSet<LineDashConfiguration, this>;
+  borderCap: GetSet<LineCap, this>;
 }
 
 Shape.prototype._fillFunc = _fillFunc;
@@ -2064,3 +2108,6 @@ Factory.backCompat(Shape, {
   getDrawHitFunc: 'getHitFunc',
   setDrawHitFunc: 'setHitFunc',
 });
+
+// Add border configuration
+addBorderConfigToClass(Shape);

@@ -98,6 +98,7 @@ export class Rect extends Shape<RectConfig> {
     }
     context.closePath();
     context.fillStrokeShape(this);
+    context.drawRectBorders(this);
   }
 
   cornerRadius: GetSet<number | number[], this>;
