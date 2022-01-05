@@ -82,7 +82,7 @@ export class RichText extends Shape<RichTextConfig> {
   sourceType?: GetSet<RichTextSource, this>;
 
   private _lastContent = '';
-  private _image: HTMLImageElement;
+  private _image: HTMLImageElement = undefined;
 
   _initFunc(config?: RichTextConfig) {
     super._initFunc(config);
@@ -110,64 +110,56 @@ export class RichText extends Shape<RichTextConfig> {
 
     return doc;
   }
+  _hitFunc(context) {
+    var width = this.width(),
+      height = this.height();
 
-  getSelfRect(): { x: number; width: number; y: number; height: number } {
-    return {
-      x: 0,
-      y: 0,
-      width: this.width(),
-      height: this.height()
-    };
-  }
-
-  _useBufferCanvas() {
-    return super._useBufferCanvas(true);
+    context.beginPath();
+    context.rect(0, 0, width, height);
+    context.closePath();
+    context.fillStrokeShape(this);
   }
 
   async _sceneFunc(context: SceneContext) {
+    context.beginPath();
+
+    if (this.hasFill() || this.hasStroke()) {
+      context.beginPath();
+      context.rect(0, 0, this.width(), this.height());
+      context.closePath();
+      context.fillStrokeShape(this);
+    }
+
     // Format rendering html document
     const doc = this._formatDocument();
 
-    // Do not render if document is the same
-    if (doc === this._lastContent) {
-      // Draw image from cache
-      if (this._image)
-        context.drawImage(this._image, 0, 0);
-      context.fillStrokeShape(this);
-      context.drawRectBorders(this);
-      return;
+    // Check cached document
+    if (this._lastContent !== doc) {
+      this._lastContent = doc;
+      // Draw html into null canvas, get the image and draw
+      // it as shape body
+      const result = await drawHTML(doc,
+        null,
+        {
+          width: this.width(),
+          height: this.height()
+        });
+
+      if (result.errors.length === 0) {
+        this._image = result.image;
+      }
     }
 
-    // Draw background if any
-    this._drawBackground(context);
-
-    this._lastContent = doc;
-    // Draw html into null canvas, get the image and draw
-    // it as shape body
-    const result = await drawHTML(doc,
-      null,
-      !this.allowResize() ? {
-        width: this.width(),
-        height: this.height()
-      } : {});
-
-    // Draw image only if there are no errors
-    if (result.errors.length === 0) {
-      this._image = result.image;
-      context.drawImage(result.image, 0, 0);
-      this.width(result.image.width);
-      this.height(result.image.height);
+    if (this._image) {
+      context.drawImage(this._image, 0, 0);
     }
 
-    context.fillStrokeShape(this);
-    context.drawRectBorders(this);
+    context.closePath();
+    //context.drawRectBorders(this);
   }
 
   private _drawBackground(context: SceneContext) {
-    if (!this.backgroundColor()) return;
-
-    context._context.fillStyle = this.backgroundColor();
-    context.fillRect(0, 0, this.width(), this.height());
+    context.rect(0, 0, this.width(), this.height());
   }
 }
 
