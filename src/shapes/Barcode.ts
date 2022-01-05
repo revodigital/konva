@@ -103,6 +103,16 @@ export class Barcode extends Shape<BarcodeConfig> {
     context.fillStrokeShape(this);
   }
 
+  _hitFunc(context) {
+    var width = this.width(),
+      height = this.height();
+
+    context.beginPath();
+    context.rect(0, 0, width, height);
+    context.closePath();
+    context.fillStrokeShape(this);
+  }
+
   /**
    * Renders the placeholder
    * @param ctx The drawing context
