@@ -55,7 +55,6 @@ import { Threshold }                from './filters/Threshold';
 import { Table }                    from './shapes/Table';
 import { Barcode }                  from './shapes/Barcode';
 import { RichText, RichTextSource } from './shapes/RichText';
-import { Test }                     from './shapes/Test';
 
 export const Pamela = Core.Util._assign(Core, {
   Arc,
@@ -70,7 +69,6 @@ export const Pamela = Core.Util._assign(Core, {
   Rect,
   RegularPolygon,
   Ring,
-  Test,
   Sprite,
   Star,
   Text,

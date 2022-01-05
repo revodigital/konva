@@ -11,9 +11,10 @@
 
 import { PointRectangle2D }                       from '../common/PointRectangle2D';
 import { HorizontalAlignment, VerticalAlignment } from '../configuration/Alignment';
-import { ITextConfiguration, TextConfiguration } from '../configuration/TextConfiguration';
-import { BorderConfig }                          from '../configuration/BorderOptions';
-import { Point2D }                               from '../common/Point2D';
+import { ITextConfiguration, TextConfiguration }  from '../configuration/TextConfiguration';
+import { BorderConfig }                           from '../configuration/BorderOptions';
+import { Point2D }                                from '../common/Point2D';
+import { SceneContext }                           from '../Context';
 
 /**
  * Defines the configuration properties of a single cell
@@ -78,11 +79,11 @@ export class Cell extends TextConfiguration {
    * Renders this cell
    * @param ctx The drawing context
    */
-  _render(ctx: CanvasRenderingContext2D): void {
+  _render(ctx: SceneContext): void {
     if(this.edges.getWidth() === 0 || this.edges.getHeight() === 0) return;
 
     if (this.fill !== 'transparent') {
-      ctx.fillStyle = this.fill;
+      ctx._context.fillStyle = this.fill;
       ctx.fillRect(this.edges.topLeft.x,
         this.edges.topLeft.y,
         this.edges.getWidth(),
@@ -99,11 +100,11 @@ export class Cell extends TextConfiguration {
    * @param ctx Drawing context
    * @private
    */
-  private _renderText(ctx: CanvasRenderingContext2D): void {
+  private _renderText(ctx: SceneContext): void {
     // Set fill style
-    ctx.fillStyle = this.textColor;
+    ctx._context.fillStyle = this.textColor;
     // Format font configuration string
-    ctx.font = this._formatFontString();
+    ctx._context.font = this._formatFontString();
 
     // Calculate rectangle center
     const center = this.edges.getCenter();
@@ -113,15 +114,15 @@ export class Cell extends TextConfiguration {
     // Set horizontal position
     switch (this.textAlign) {
       case HorizontalAlignment.Center:
-        ctx.textAlign = 'center';
+        ctx._context.textAlign = 'center';
         startPoint.x = center.x;
         break;
       case HorizontalAlignment.Left:
-        ctx.textAlign = 'start';
+        ctx._context.textAlign = 'start';
         startPoint.x = this.edges.topLeft.x + this.padding;
         break;
       case HorizontalAlignment.Right:
-        ctx.textAlign = 'end';
+        ctx._context.textAlign = 'end';
         startPoint.x = this.edges.topRight.x - this.padding;
         break;
     }
@@ -149,13 +150,13 @@ export class Cell extends TextConfiguration {
    * @param ctx Drawing context
    * @private
    */
-  private _renderBorders(ctx: CanvasRenderingContext2D): void {
+  private _renderBorders(ctx: SceneContext): void {
     if(!this.border) return;
     if(!this.border.bordered) return;
 
-    ctx.lineCap = this.border.borderCap;
-    ctx.strokeStyle = this.border.borderColor;
-    ctx.lineWidth = this.border.borderWidth;
+    ctx._context.lineCap = this.border.borderCap;
+    ctx._context.strokeStyle = this.border.borderColor;
+    ctx._context.lineWidth = this.border.borderWidth;
 
     if(this.border.borderDash)
       ctx.setLineDash(this.border.borderDash);

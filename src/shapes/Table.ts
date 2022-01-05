@@ -10,9 +10,9 @@
  */
 
 import { Shape, ShapeConfig } from '../Shape';
-import { _registerNode }      from '../Global';
-import { Context }            from '../Context';
-import { Column, IColumn }    from './column';
+import { _registerNode }         from '../Global';
+import { Context, SceneContext } from '../Context';
+import { Column, IColumn }       from './column';
 import { IRow, Row }          from './Row';
 import {
   ITextConfiguration,
@@ -143,17 +143,32 @@ export class Table extends Shape<TableConfig> {
     return layout;
   }
 
-  _sceneFunc(context: Context) {
+  _sceneFunc(context: SceneContext) {
+    // Draw background
+    context.beginPath();
+    context.rect(0, 0, this.width(), this.height());
+    context.fillStrokeShape(this);
+    context.closePath();
 
+    // Get effective rows
     const rows = this._getEffectiveRows();
-
     // Calculate layout
     const layout = this._calculateLayout(rows);
 
-    this._renderContent(layout, rows, context._context);
+    // Render content
+    this._renderContent(layout, rows, context);
 
+    // Render borders
     this._renderTableBorders(layout, context._context);
+  }
 
+  _hitFunc(context) {
+    var width = this.width(),
+      height = this.height();
+
+    context.beginPath();
+    context.rect(0, 0, width, height);
+    context.closePath();
     context.fillStrokeShape(this);
   }
 
@@ -181,7 +196,7 @@ export class Table extends Shape<TableConfig> {
    * @param layout Content layout
    * @private
    */
-  private _renderContent(layout: TableLayout, rows: Row[], ctx: CanvasRenderingContext2D): void {
+  private _renderContent(layout: TableLayout, rows: Row[], ctx: SceneContext): void {
     // Drawing start point
     let startingPoint = new Point2D(layout.edgesRectangle.topLeft.x,
       layout.edgesRectangle.topLeft.y);
