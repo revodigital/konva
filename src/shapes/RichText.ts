@@ -132,7 +132,7 @@ export class RichText extends Shape<RichTextConfig> {
     if (doc === this._lastContent) {
       // Draw image from cache
       if (this._image)
-        context.drawImage(this._image, this.x(), this.y());
+        context.drawImage(this._image, 0, 0);
       context.fillStrokeShape(this);
       context.drawRectBorders(this);
       return;
@@ -154,7 +154,7 @@ export class RichText extends Shape<RichTextConfig> {
     // Draw image only if there are no errors
     if (result.errors.length === 0) {
       this._image = result.image;
-      context.drawImage(result.image, this.x(), this.y());
+      context.drawImage(result.image, 0, 0);
       this.width(result.image.width);
       this.height(result.image.height);
     }

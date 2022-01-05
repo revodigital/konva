@@ -37,7 +37,7 @@ it('Should make this text write', () => {
 
     const l = new Layer();
     const text = new RichText({
-      x: 20,
+      x: 100,
       y: 10,
       markdownContent: `This is a **bold** text. Now it is *italic* and here we have a simple text.  \n# Just a simple title  \nUsin __markdown__ is very simple with this shape  \n<span style="color:blue">some *blue* text</span>. `,
       padding: 30,

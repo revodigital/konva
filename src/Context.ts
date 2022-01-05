@@ -188,20 +188,22 @@ export class Context {
     }
   }
 
+  /**
+   * Draws rectangular borders for this shape
+   * @param shape Shape to draw borders for
+   */
   drawRectBorders(shape: Shape) {
-    console.log("b");
     // Check if borders are enabled
     if (!shape.bordered()) return;
-
-    console.log("Border");
 
     this._context.lineWidth = shape.borderWidth() || 1;
     this._context.lineCap = shape.borderCap() || LineCap2.Butt;
     this._context.strokeStyle = shape.borderColor() || 'black';
     if (shape.borderDash())
       this._context.setLineDash(shape.borderDash());
-    this.roundRect(shape.borderWidth() || 1,
-      shape.borderWidth() || 1,
+    // Draw rounded rect
+    this.roundRect(0,
+      0,
       shape.width(),
       shape.height(),
       shape.borderRadius() || BorderRadiusUtils.squared());
@@ -401,6 +403,7 @@ export class Context {
    * @name Pamela.Context#clip
    */
   clip() {
+    this._context.clip();
     this._context.clip();
   }
 
