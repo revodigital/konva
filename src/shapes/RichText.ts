@@ -9,19 +9,16 @@
  * Description:
  */
 
-import { Shape, ShapeConfig }  from '../Shape';
-import { GetSet }              from '../types';
-import { Factory }             from '../Factory';
-import { _registerNode }       from '../Global';
-import { SceneContext }        from '../Context';
-import { Marked }              from '@ts-stack/markdown';
-import { drawHTML, Options }   from 'next-rasterizehtml';
-import { Size2D }              from '../common/Size2D';
-import {
-  HAlign,
-  HorizontalAlignment, VAlign,
-  VerticalAlignment
-} from '../configuration/Alignment';
+import { Shape, ShapeConfig }          from '../Shape';
+import { GetSet }                      from '../types';
+import { Factory }                     from '../Factory';
+import { _registerNode }               from '../Global';
+import { SceneContext }                from '../Context';
+import { Marked }                      from '@ts-stack/markdown';
+import { drawHTML, Options }           from 'next-rasterizehtml';
+import { Size2D }                      from '../common/Size2D';
+import { HAlign, HorizontalAlignment } from '../configuration/Alignment';
+import { GrowPolicy }                  from './Text';
 
 /**
  * Represents the type of a rich text source
@@ -56,17 +53,12 @@ export interface RichTextConfig extends ShapeConfig {
   /**
    * Indicates if resizing of this shape during rendering is allowed or not
    */
-  allowResize?: boolean;
+  lockSize?: boolean;
 
   /**
    * Base text color
    */
   textColor?: string;
-
-  /**
-   * Background color
-   */
-  backgroundColor?: string;
 
   /**
    * Base font size
@@ -97,6 +89,13 @@ export interface RichTextConfig extends ShapeConfig {
    * Text horizontal alignment
    */
   horizontalAlignment?: HorizontalAlignment;
+
+  /**
+   * Represents how textbox boundaries should grow while in
+   * editing mode
+   * and witch of them should remain fixed
+   */
+  growPolicy?: GrowPolicy;
 }
 
 /**
@@ -105,9 +104,9 @@ export interface RichTextConfig extends ShapeConfig {
 export class RichText extends Shape<RichTextConfig> {
   markdownContent: GetSet<string, this>;
   htmlContent: GetSet<string, this>;
-  allowResize: GetSet<boolean, this>;
+  lockSize: GetSet<boolean, this>;
+  growPolicy: GetSet<GrowPolicy, this>;
   padding: GetSet<number, this>;
-  backgroundColor: GetSet<string, this>;
   textColor: GetSet<string, this>;
   fontSize: GetSet<number, this>;
   fontStyle: GetSet<string, this>;
@@ -124,10 +123,12 @@ export class RichText extends Shape<RichTextConfig> {
   _initFunc(config?: RichTextConfig) {
     super._initFunc(config);
 
-    if (this.allowResize() === undefined) this.allowResize(true);
+    if (this.lockSize() === undefined) this.lockSize(false);
 
     // By default is RichTextSource.Markdown
     if (this.sourceType() === undefined) this.sourceType(RichTextSource.Markdown);
+
+    if (this.growPolicy() === undefined) this.growPolicy(GrowPolicy.GrowHeight);
   }
 
   /**
@@ -152,7 +153,7 @@ export class RichText extends Shape<RichTextConfig> {
     font-variant: ${ this.fontVariant() || '' }};
     text-align: ${HAlign.toHtmlTextAlign(this.horizontalAlignment()) || 'left'};
     text-decoration: ${ this.fontDecoration() || '' };
-    background-color: ${ this.backgroundColor() || 'transparent' }; 
+    background-color: ${ this.fill() || 'transparent' }; 
     font-size: ${ fontSize || 12 }px
     ">${ this.htmlContent() }</div>
     `;
@@ -188,13 +189,23 @@ export class RichText extends Shape<RichTextConfig> {
     if (this._lastContent !== doc) {
       this._lastContent = doc;
       // Draw html into null canvas, get the image and draw
+      let options: Options;
+
+      if(this.growPolicy() === GrowPolicy.GrowHeight) options = {
+        width: this.width(),
+      };
+      else options = {height: this.height()}
+
       // it as shape body
       const result = await drawHTML(doc,
         null,
-        {
-          width: this.width(),
-          height: this.height()
-        });
+        options);
+
+      // Resize if needed
+      if(result.image.width > this.width())
+        this.width(result.image.width);
+      if(result.image.height > this.height())
+        this.height(result.image.height);
 
       // Request new drawing
       this._requestDraw();
@@ -292,12 +303,7 @@ Factory.addGetterSetter(RichText, 'padding');
 /**
  * Enable / disable resizing to effective text boundaries
  */
-Factory.addGetterSetter(RichText, 'allowResize');
-
-/**
- * Get / set background color
- */
-Factory.addGetterSetter(RichText, 'backgroundColor');
+Factory.addGetterSetter(RichText, 'lockSize');
 
 /**
  * Get / set text color
@@ -343,6 +349,11 @@ Factory.addGetterSetter(RichText, 'fontVariant');
  * Get / set horizontal alignment
  */
 Factory.addGetterSetter(RichText, 'horizontalAlignment');
+
+/**
+ * Get / set grow policy
+ */
+Factory.addGetterSetter(RichText, 'growPolicy');
 
 
 RichText.prototype.className = 'RichText';
