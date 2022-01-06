@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.3.2 (6/2/2022)
+Corrects fill problems for **RichText** and removes its property *backgroundColor*.  
+Implements resizing controls using *GrowPolicy*.
+
 ## 1.3.1 (6/2/2022)
 Implements useful function to adapt **RichText** fontsize to make it
 fit the container boundaries. It calculates a new font size to make
