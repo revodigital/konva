@@ -206,7 +206,7 @@ export class RichText extends Shape<RichTextConfig> {
    * fit entirely shape boundaries. If fontsize <= 6, then it
    * will be resized using fontsize of 6px.
    */
-  async fitContent(): Promise<number> {
+  async fitContent(onlyDecrease: boolean = false): Promise<number> {
     // Font size
     let ft = this.fontSize() || 12;
     const options: Options = {
@@ -221,18 +221,32 @@ export class RichText extends Shape<RichTextConfig> {
     // Minimum font size
     const MIN = 6;
 
-    while (ft > MIN && textRect.overflows(selfRect)) {
-      ft--;
+    if(textRect.overflows(selfRect)) {
+      // Decrease font size to make all fit
+      while (ft > MIN && textRect.overflows(selfRect)) {
+        ft--;
 
-      // Recalculate image
-      img = await this._getDocumentImage(this._formatDocument(ft), options);
-      // Recalculate text rect
-      textRect = Size2D.fromBounds(img.width, img.height);
+        // Recalculate image
+        img = await this._getDocumentImage(this._formatDocument(ft), options);
+        // Recalculate text rect
+        textRect = Size2D.fromBounds(img.width, img.height);
+      }
+      // Resize if needed
+      if (textRect.overflows(selfRect) && ft === 6)
+        this._onResize(selfRect, textRect);
+    } else if(!onlyDecrease) {
+      // Increase font size
+      while(textRect.canBeContainedBy(selfRect)) {
+        ft++;
+
+        // Recalculate image
+        img = await this._getDocumentImage(this._formatDocument(ft), options);
+        // Recalculate text rect
+        textRect = Size2D.fromBounds(img.width, img.height);
+      }
+
+      ft --;
     }
-
-    // Resize if needed
-    if (textRect.overflows(selfRect) && ft === 6)
-      this._onResize(selfRect, textRect);
 
     // Update font size
     this.fontSize(ft);
