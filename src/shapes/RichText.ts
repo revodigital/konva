@@ -15,7 +15,8 @@ import { Factory }            from '../Factory';
 import { _registerNode }      from '../Global';
 import { SceneContext }       from '../Context';
 import { Marked }             from '@ts-stack/markdown';
-import { drawHTML }           from 'next-rasterizehtml';
+import { drawHTML, Options }  from 'next-rasterizehtml';
+import { Size2D }             from '../common/Size2D';
 
 /**
  * Represents the type of a rich text source
@@ -118,7 +119,15 @@ export class RichText extends Shape<RichTextConfig> {
     if (this.sourceType() === undefined) this.sourceType(RichTextSource.Markdown);
   }
 
-  _formatDocument(): string {
+  /**
+   * Formats the document for rendering function.
+   * Selects the correct source, parses the contents and
+   * adds formatting options like fontsize, colors and padding.
+   *
+   * @param fontSize Font size to apply. If not supplied, will be used shape one.
+   * @returns the document ready for rendering
+   */
+  private _formatDocument(fontSize: number = this.fontSize()): string {
     // Parse markdown, if it is selected source
     if (this.sourceType() === RichTextSource.Markdown)
       this.htmlContent(Marked.parse(this.markdownContent()));
@@ -128,16 +137,17 @@ export class RichText extends Shape<RichTextConfig> {
     <div id="document" style="
     color: ${ this.textColor() || 'black' };
     margin: ${ this.padding() || 0 }px; 
-    font-family: ${this.fontFamily() || 'arial'};
-    font-variant: ${this.fontVariant() || ''}};
-    text-decoration: ${this.fontDecoration() || ''};
+    font-family: ${ this.fontFamily() || 'arial' };
+    font-variant: ${ this.fontVariant() || '' }};
+    text-decoration: ${ this.fontDecoration() || '' };
     background-color: ${ this.backgroundColor() || 'transparent' }; 
-    font-size: ${ this.fontSize() }px
+    font-size: ${ fontSize || 12 }px
     ">${ this.htmlContent() }</div>
     `;
 
     return doc;
   }
+
   _hitFunc(context) {
     var width = this.width(),
       height = this.height();
@@ -150,6 +160,7 @@ export class RichText extends Shape<RichTextConfig> {
   }
 
   async _sceneFunc(context: SceneContext) {
+    // Draw background
     if (this.hasFill() || this.hasStroke()) {
       context.beginPath();
       context.rect(0, 0, this.width(), this.height());
@@ -176,6 +187,7 @@ export class RichText extends Shape<RichTextConfig> {
       // Request new drawing
       this._requestDraw();
 
+      // Save image into cache
       if (result.errors.length === 0) {
         this._image = result.image;
       }
@@ -185,11 +197,59 @@ export class RichText extends Shape<RichTextConfig> {
       context.drawImage(this._image, 0, 0);
     }
 
+    // Draw rectangular borders
     context.drawRectBorders(this);
   }
 
-  private _drawBackground(context: SceneContext) {
-    context.rect(0, 0, this.width(), this.height());
+  /**
+   * Calculates a new fontsize for this text, to make it
+   * fit entirely shape boundaries. If fontsize <= 6, then it
+   * will be resized using fontsize of 6px.
+   */
+  async fitContent(): Promise<number> {
+    // Font size
+    let ft = this.fontSize() || 12;
+    const options: Options = {
+      width: this.width() - 3,
+    };
+    // Current image
+    let img = await this._getDocumentImage(this._formatDocument(ft), options);
+    // Error check. Img will be undefined if there were errors reading the document
+    if (!img) return;
+    const selfRect = this.getSizeRect();
+    let textRect: Size2D = Size2D.fromBounds(img.width, img.height);
+    // Minimum font size
+    const MIN = 6;
+
+    while (ft > MIN && textRect.overflows(selfRect)) {
+      ft--;
+
+      // Recalculate image
+      img = await this._getDocumentImage(this._formatDocument(ft), options);
+      // Recalculate text rect
+      textRect = Size2D.fromBounds(img.width, img.height);
+    }
+
+    // Resize if needed
+    if (textRect.overflows(selfRect) && ft === 6)
+      this._onResize(selfRect, textRect);
+
+    // Update font size
+    this.fontSize(ft);
+    this._requestDraw();
+
+    return ft;
+  }
+
+  private async _getDocumentImage(doc: string, options?: Options): Promise<HTMLImageElement> {
+    return (await drawHTML(doc,
+      null,
+      options)).image;
+  }
+
+  private _onResize(oldRect: Size2D, newRect: Size2D): void {
+    this.width(newRect.getWidth());
+    this.height(newRect.getHeight());
   }
 }
 
