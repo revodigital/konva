@@ -9,14 +9,19 @@
  * Description:
  */
 
-import { Shape, ShapeConfig } from '../Shape';
-import { GetSet }             from '../types';
-import { Factory }            from '../Factory';
-import { _registerNode }      from '../Global';
-import { SceneContext }       from '../Context';
-import { Marked }             from '@ts-stack/markdown';
-import { drawHTML, Options }  from 'next-rasterizehtml';
-import { Size2D }             from '../common/Size2D';
+import { Shape, ShapeConfig }  from '../Shape';
+import { GetSet }              from '../types';
+import { Factory }             from '../Factory';
+import { _registerNode }       from '../Global';
+import { SceneContext }        from '../Context';
+import { Marked }              from '@ts-stack/markdown';
+import { drawHTML, Options }   from 'next-rasterizehtml';
+import { Size2D }              from '../common/Size2D';
+import {
+  HAlign,
+  HorizontalAlignment, VAlign,
+  VerticalAlignment
+} from '../configuration/Alignment';
 
 /**
  * Represents the type of a rich text source
@@ -87,6 +92,11 @@ export interface RichTextConfig extends ShapeConfig {
    * Font variant
    */
   fontVariant?: string;
+
+  /**
+   * Text horizontal alignment
+   */
+  horizontalAlignment?: HorizontalAlignment;
 }
 
 /**
@@ -104,7 +114,8 @@ export class RichText extends Shape<RichTextConfig> {
   fontVariant: GetSet<string, this>;
   fontFamily: GetSet<string, this>;
   fontDecoration: GetSet<string, this>;
-  sourceType?: GetSet<RichTextSource, this>;
+  sourceType: GetSet<RichTextSource, this>;
+  horizontalAlignment: GetSet<HorizontalAlignment, this>;
 
   private _lastContent = '';
   private _initialX = 0;
@@ -139,6 +150,7 @@ export class RichText extends Shape<RichTextConfig> {
     margin: ${ this.padding() || 0 }px; 
     font-family: ${ this.fontFamily() || 'arial' };
     font-variant: ${ this.fontVariant() || '' }};
+    text-align: ${HAlign.toHtmlTextAlign(this.horizontalAlignment()) || 'left'};
     text-decoration: ${ this.fontDecoration() || '' };
     background-color: ${ this.backgroundColor() || 'transparent' }; 
     font-size: ${ fontSize || 12 }px
@@ -326,6 +338,11 @@ Factory.addGetterSetter(RichText, 'fontStyle');
  * Get / set font variant
  */
 Factory.addGetterSetter(RichText, 'fontVariant');
+
+/**
+ * Get / set horizontal alignment
+ */
+Factory.addGetterSetter(RichText, 'horizontalAlignment');
 
 
 RichText.prototype.className = 'RichText';

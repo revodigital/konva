@@ -27,3 +27,29 @@ export enum VerticalAlignment {
   Top,
   Bottom,
 }
+
+export const HAlign = {
+  toHtmlTextAlign(h: HorizontalAlignment): string {
+    switch (h) {
+      case HorizontalAlignment.Center:
+        return 'center';
+      case HorizontalAlignment.Left:
+        return 'left';
+      case HorizontalAlignment.Right:
+        return 'right';
+    }
+  }
+}
+
+export const VAlign = {
+  toHtmlVertAlign(v: VerticalAlignment): string {
+    switch (v) {
+      case VerticalAlignment.Bottom:
+        return 'bottom';
+      case VerticalAlignment.Center:
+        return 'baseline';
+      case VerticalAlignment.Top:
+        return 'top';
+    }
+  }
+}
