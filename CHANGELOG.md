@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.3.1 (6/2/2022)
+Implements useful function to adapt **RichText** fontsize to make it
+fit the container boundaries. It calculates a new font size to make
+all text fit into the container. If fontsize becomes less that 6px, 
+resizes the box and keeps 6pt as font size.  
+This is useful to make text more readable and adapt its font size automatically.  
+```javascript
+// Since it requires lots of calculations, this function is asincronus.
+// It resolves with the new fontsize used (min is 6pt)
+const newFontSize = await richText.fitContainer();
+```
+We also added a new configuration for **RichText**: Text horizontal alignment.
+Its default value is 'left'. You can change it using:
+```javascript
+new Pamela.RichText({
+  // This will center our text into the RichText
+  horizontalAlignment: HorizontalAlignment.Center
+})
+```
+
 ## 1.3.0 (5/1/2022)
 Corrects huge problem with all newer shapes. They werent
 draggable into the stage.  
