@@ -18,14 +18,14 @@
 // so here we just need to define full API of Konva manually
 
 // filters
-import { Blur } from './filters/Blur';
-import { Brighten } from './filters/Brighten';
-import { Contrast } from './filters/Contrast';
-import { Emboss } from './filters/Emboss';
-import { Enhance } from './filters/Enhance';
-import { Grayscale } from './filters/Grayscale';
-import { HSL } from './filters/HSL';
-import { HSV } from './filters/HSV';
+import { Blur }         from './filters/Blur';
+import { Brighten }     from './filters/Brighten';
+import { Contrast }     from './filters/Contrast';
+import { Emboss }       from './filters/Emboss';
+import { Enhance }      from './filters/Enhance';
+import { Grayscale }    from './filters/Grayscale';
+import { HSL }          from './filters/HSL';
+import { HSV }          from './filters/HSV';
 import { Invert }       from './filters/Invert';
 import { Kaleidoscope } from './filters/Kaleidoscope';
 import { Mask }         from './filters/Mask';
@@ -60,22 +60,20 @@ declare namespace Pamela {
   export const Node: typeof import('./Node').Node;
   export type Node = import('./Node').Node;
   export type NodeConfig = import('./Node').NodeConfig;
-  export type Point2D = import('./common/Point2D').Point2D;
 
-  export type KonvaEventObject<
-    EventType
-    > = import('./Node').KonvaEventObject<EventType>;
+  export type KonvaEventObject<EventType> = import('./Node').KonvaEventObject<EventType>;
 
   export type KonvaPointerEvent = import('./PointerEvents').KonvaPointerEvent;
 
-  export type KonvaEventListener<
-    This,
-    EventType
-    > = import('./Node').KonvaEventListener<This, EventType>;
+  export type KonvaEventListener<This,
+    EventType> = import('./Node').KonvaEventListener<This, EventType>;
 
   export const Container: typeof import('./Container').Container;
   export type Container = import('./Container').Container<Node>;
   export type ContainerConfig = import('./Container').ContainerConfig;
+
+  export const Point2D: typeof import('./common/Point2D').Point2D;
+  export type Point2D = import('./common/Point2D').Point2D;
 
   export const Transform: typeof import('./Util').Transform;
   export type Transform = import('./Util').Transform;

@@ -55,6 +55,7 @@ import { Threshold }                from './filters/Threshold';
 import { Table }                    from './shapes/Table';
 import { Barcode }                  from './shapes/Barcode';
 import { RichText, RichTextSource } from './shapes/RichText';
+import { Point2D }                  from './common/Point2D';
 
 export const Pamela = Core.Util._assign(Core, {
   Arc,
@@ -80,6 +81,7 @@ export const Pamela = Core.Util._assign(Core, {
   GrowPolicy,
   RichText,
   RichTextSource,
+  Point2D,
   /**
    * @namespace Filters
    * @memberof Konva
