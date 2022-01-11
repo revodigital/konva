@@ -47,6 +47,61 @@ export class Point2D implements IPoint2D {
   }
 
   /**
+   * Distance on X axis
+   * @param point
+   */
+  distanceX(point: Point2D): number {
+    return this.x - point.x;
+  }
+
+  /**
+   * Distance on Y axis
+   * @param point
+   */
+  distanceY(point: Point2D): number {
+    return this.y - point.y;
+  }
+
+  /**
+   * Absolute distance on Y axis
+   * @param point
+   */
+  absoluteDistanceY(point: Point2D): number {
+    return Math.abs(this.y - point.y);
+  }
+
+  /**
+   * Absolute distance on X axis
+   * @param point
+   */
+  absoluteDistanceX(point: Point2D): number {
+    return Math.abs(this.x - point.x);
+  }
+
+  /**
+   * Calculates the distance in x axis, y axis and returns
+   * it in form of a vector
+   * @param point
+   */
+  distanceVector(point: Point2D): Vector2d {
+    return {
+      x: this.distanceX(point),
+      y: this.distanceY(point),
+    }
+  }
+
+  /**
+   * Returns the absolute distance vector
+   * @param point
+   */
+  absoluteDistanceVector(point: Point2D): Vector2d {
+    return {
+      x: this.absoluteDistanceX(point),
+      y: this.absoluteDistanceY(point),
+    }
+  }
+
+  /**
    * Checks if this point is the topleft corner of a rectangle
    */
   isTopLeft(): boolean {
@@ -88,6 +143,20 @@ export class Point2D implements IPoint2D {
   translate(vector: Vector2d): void {
     this.x += vector.x;
     this.y += vector.y;
+  }
+
+  /**
+   * Translate a point applying a vector and a scale to reduce its size
+   * @param vector
+   * @param scale A number != 0 to divide vector coordinates
+   */
+  translateScale(vector: Vector2d, scale: number) {
+    const nV = {
+      x: vector.x / scale,
+      y: vector.y / scale,
+    }
+
+    this.translate(nV);
   }
 
   /**
