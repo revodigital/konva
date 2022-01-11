@@ -80,6 +80,7 @@ export interface NodeConfig {
   draggable?: boolean;
   dragDistance?: number;
   dragBoundFunc?: (this: Node, pos: Vector2d) => Vector2d;
+  dragbuttons?: number[];
   preventDefault?: boolean;
   globalCompositeOperation?: globalCompositeOperationType;
   filters?: Array<Filter>;
@@ -2415,8 +2416,12 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
 
     this.on('mousedown.konva touchstart.konva', function (evt) {
       var shouldCheckButton = evt.evt['button'] !== undefined;
+
+      // Allowed dragging buttons
+      const allowedButtons = this.dragbuttons() || Pamela.dragButtons;
+
       var canDrag =
-        !shouldCheckButton || Pamela.dragButtons.indexOf(evt.evt['button']) >= 0;
+        !shouldCheckButton || allowedButtons.indexOf(evt.evt['button']) >= 0;
       if (!canDrag) {
         return;
       }
@@ -2525,6 +2530,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
 
   dragBoundFunc: GetSet<(this: Node, pos: Vector2d) => Vector2d, this>;
   draggable: GetSet<boolean, this>;
+  dragbuttons: GetSet<number[], this>;
   dragDistance: GetSet<number, this>;
   embossBlend: GetSet<boolean, this>;
   embossDirection: GetSet<string, this>;
@@ -2692,6 +2698,8 @@ addGetterSetter(Node, 'zIndex');
 addGetterSetter(Node, 'absolutePosition');
 
 addGetterSetter(Node, 'position');
+
+addGetterSetter(Node, 'dragbuttons');
 /**
  * get/set node position relative to parent
  * @name Pamela.Node#position
