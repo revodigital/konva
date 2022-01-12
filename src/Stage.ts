@@ -406,6 +406,12 @@ export class Stage extends Container<Layer> {
       layer.draw();
     });
   }
+
+  /**
+   * Add a layer into the stage
+   * @param layer Layer to add
+   * @param rest Other layers
+   */
   add(layer: Layer, ...rest) {
     if (arguments.length > 1) {
       for (var i = 0; i < arguments.length; i++) {
@@ -435,6 +441,94 @@ export class Stage extends Container<Layer> {
     // chainable
     return this;
   }
+
+  /**
+   * Add a layer into the stage
+   * @param layer Layer to add
+   * @param rest Other layers
+   */
+  addLayer(layer: Layer, ...rest): Stage {
+    this.add(layer, rest);
+
+    return this;
+  }
+
+  /**
+   * Checks if this stage has a layer with
+   * the given name
+   * @param name Layer name
+   */
+  hasLayerWithName(name: string): boolean {
+    return this.getChildren((it) => it.name() === name).length > 0
+  }
+
+  /**
+   * Get all layers excluding the ones that have a specific name
+   * @param name Name to exclude
+   */
+  getLayersWithoutName(name: string): Layer[] {
+    return this.getChildrenWithoutName(name);
+  }
+
+  /**
+   * Get all children that don't have one of this names
+   * @param names Names to exclude
+   */
+  getLayersWithoutNames(names: string[]): Layer[] {
+    return this.getChildrenWithoutNames(names);
+  }
+
+  /**
+   * Get the first shape with the name given or undefined if it does not exist
+   * @param name The name to search for
+   */
+  getShapeWithName<T extends Shape>(name: string): T | undefined {
+    const layers = this.getLayers();
+    for(const l of layers) {
+      const child = l.getChildWithName(name)
+      if (child) return child as T;
+    }
+    return undefined;
+  }
+
+  /**
+   * Get the first layer with the given name
+   * @param name Layer name
+   */
+  getLayerByName(name: string): Layer | undefined {
+    try {
+      let layer = this.getChildren((it) => it.name() === name)[0];
+      return layer;
+    } catch (e) {
+      return undefined;
+    }
+  }
+
+  /**
+   * Add multiple layers to the stage
+   * @param layers
+   */
+  addLayers(layers: Layer[]): Stage {
+    for(const l of layers)
+      this.add(l);
+    return this;
+  }
+
+  /**
+   * Add a layer before all the others
+   * @param layer Layer to add
+   */
+  addLayerBeforeAll(layer: Layer): Stage {
+    if(this.hasChildren()) {
+      const temp = this.getLayers();
+      this.removeChildren();
+      this.add(layer);
+      this.addLayers(temp);
+    } else this.add(layer);
+
+    return this;
+  }
+
   getParent() {
     return null;
   }

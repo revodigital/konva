@@ -15,16 +15,17 @@ import { SceneCanvas, HitCanvas, Canvas } from './Canvas';
 import { Pamela }                         from './Global';
 import { Container }                      from './Container';
 import { GetSet, Vector2d, IRect } from './types';
-import { DD } from './DragAndDrop';
+import { DD }                      from './DragAndDrop';
 import {
   getNumberValidator,
   getStringValidator,
   getBooleanValidator,
-} from './Validators';
-import { Stage } from './Stage';
-import { Context } from './Context';
-import { Shape } from './Shape';
-import { Layer } from './Layer';
+}                                  from './Validators';
+import { Stage }                   from './Stage';
+import { Context }                 from './Context';
+import { Shape }                   from './Shape';
+import { Layer }                   from './Layer';
+import { Size2D }                  from './common/Size2D';
 
 export type Filter = (this: Node, imageData: ImageData) => void;
 
@@ -2019,6 +2020,14 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     this.height(size.height);
     return this;
   }
+
+  /**
+   * Returns size of this shape as a Size2D
+   */
+  getSizeRect(): Size2D {
+    return Size2D.fromBounds(this.width(), this.height());
+  }
+
   getSize() {
     return {
       width: this.width(),

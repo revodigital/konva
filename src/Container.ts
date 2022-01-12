@@ -9,14 +9,14 @@
  * Description:
  */
 
-import { Factory } from './Factory';
-import { Node, NodeConfig } from './Node';
+import { Factory }            from './Factory';
+import { Node, NodeConfig }   from './Node';
 import { getNumberValidator } from './Validators';
 
-import { GetSet, IRect } from './types';
-import { Shape } from './Shape';
+import { GetSet, IRect }          from './types';
+import { Shape }                  from './Shape';
 import { HitCanvas, SceneCanvas } from './Canvas';
-import { SceneContext } from './Context';
+import { SceneContext }           from './Context';
 
 export interface ContainerConfig extends NodeConfig {
   clearBeforeDraw?: boolean;
@@ -30,22 +30,20 @@ export interface ContainerConfig extends NodeConfig {
 /**
  * Container constructor.&nbsp; Containers are used to contain nodes or other containers
  * @constructor
- * @memberof Konva
- * @augments Konva.Node
+ * @memberof Pamela
+ * @augments Pamela.Node
  * @abstract
  * @param {Object} config
  * @@nodeParams
  * @@containerParams
  */
-export abstract class Container<
-  ChildType extends Node = Node
-> extends Node<ContainerConfig> {
+export abstract class Container<ChildType extends Node = Node> extends Node<ContainerConfig> {
   children: Array<ChildType> | undefined = [];
 
   /**
    * returns an array of direct descendant nodes
    * @method
-   * @name Konva.Container#getChildren
+   * @name Pamela.Container#getChildren
    * @param {Function} [filterFunc] filter function
    * @returns {Array}
    * @example
@@ -71,20 +69,68 @@ export abstract class Container<
     });
     return results;
   }
+
+  /**
+   * Get all children excluding the ones that have a specific name
+   * @param name Name to exclude
+   */
+  getChildrenWithoutName(name: string): ChildType[] {
+    return this.getChildren((it) => it.name() !== name);
+  }
+
+  /**
+   * Get the last child with a specific name
+   * @param name
+   */
+  getChildWithName(name: string): ChildType | undefined {
+    if(!this.hasChildren()) return undefined;
+
+    for(const c of this.children)
+      if(c.name() === name) return c;
+
+    return undefined;
+  }
+
+  /**
+   * Get all children that don't have one of this names
+   * @param names Names to exclude
+   */
+  getChildrenWithoutNames(names: string[]): ChildType[] {
+    return this.getChildren((it) => !names.includes(it.name()));
+  }
+
+  /**
+   * Checks if this container contains a specific child
+   * @param element Element to search
+   */
+  contains(element: ChildType): boolean {
+    return this.children.includes(element)
+  }
+
+  /**
+   * Get the children at the given index, if it exists
+   * @param index Index of children
+   */
+  at(index: number): ChildType | undefined {
+    if(this.hasChildren() && index >= 0 && index < this.lastIndex()) return this.children[index];
+    return undefined;
+  }
+
   /**
    * determine if node has children
    * @method
-   * @name Konva.Container#hasChildren
+   * @name Pamela.Container#hasChildren
    * @returns {Boolean}
    */
   hasChildren() {
     return this.getChildren().length > 0;
   }
+
   /**
    * remove all children. Children will be still in memory.
    * If you want to completely destroy all children please use "destroyChildren" method instead
    * @method
-   * @name Konva.Container#removeChildren
+   * @name Pamela.Container#removeChildren
    */
   removeChildren() {
     this.getChildren().forEach((child) => {
@@ -98,10 +144,11 @@ export abstract class Container<
     this._requestDraw();
     return this;
   }
+
   /**
    * destroy all children nodes.
    * @method
-   * @name Konva.Container#destroyChildren
+   * @name Pamela.Container#destroyChildren
    */
   destroyChildren() {
     this.getChildren().forEach((child) => {
@@ -115,12 +162,14 @@ export abstract class Container<
     this._requestDraw();
     return this;
   }
+
   abstract _validateAdd(node: Node): void;
+
   /**
    * add a child and children into container
-   * @name Konva.Container#add
+   * @name Pamela.Container#add
    * @method
-   * @param {...Konva.Node} child
+   * @param {...Pamela.Node} child
    * @returns {Container}
    * @example
    * layer.add(rect);
@@ -152,6 +201,7 @@ export abstract class Container<
     // chainable
     return this;
   }
+
   destroy() {
     if (this.hasChildren()) {
       this.destroyChildren();
@@ -159,6 +209,7 @@ export abstract class Container<
     super.destroy();
     return this;
   }
+
   /**
    * return an array of nodes that match the selector.
    * You can provide a string with '#' for id selections and '.' for name selections.
@@ -166,7 +217,7 @@ export abstract class Container<
    * With strings you can also select by type or class name. Pass multiple selectors
    * separated by a comma.
    * @method
-   * @name Konva.Container#find
+   * @name Pamela.Container#find
    * @param {String | Function} selector
    * @returns {Array}
    * @example
@@ -204,12 +255,13 @@ export abstract class Container<
     // second argument and getting unexpected `findOne` result
     return this._generalFind<ChildNode>(selector, false);
   }
+
   /**
    * return a first node from `find` method
    * @method
-   * @name Konva.Container#findOne
+   * @name Pamela.Container#findOne
    * @param {String | Function} selector
-   * @returns {Konva.Node | Undefined}
+   * @returns {Pamela.Node | Undefined}
    * @example
    * // select node with id foo
    * var node = stage.findOne('#foo');
@@ -226,6 +278,7 @@ export abstract class Container<
     var result = this._generalFind<ChildNode>(selector, true);
     return result.length > 0 ? result[0] : undefined;
   }
+
   _generalFind<ChildNode extends Node = Node>(
     selector: string | Function,
     findOne: boolean
@@ -245,6 +298,7 @@ export abstract class Container<
 
     return retArr;
   }
+
   private _descendants(fn: (n: Node) => boolean) {
     let shouldStop = false;
     const children = this.getChildren();
@@ -263,6 +317,7 @@ export abstract class Container<
     }
     return false;
   }
+
   // extenders
   toObject() {
     var obj = Node.prototype.toObject.call(this);
@@ -275,12 +330,13 @@ export abstract class Container<
 
     return obj;
   }
+
   /**
    * determine if node is an ancestor
    * of descendant
    * @method
-   * @name Konva.Container#isAncestorOf
-   * @param {Konva.Node} node
+   * @name Pamela.Container#isAncestorOf
+   * @param {Pamela.Node} node
    */
   isAncestorOf(node: Node) {
     var parent = node.getParent();
@@ -293,6 +349,11 @@ export abstract class Container<
 
     return false;
   }
+
+  /**
+   * Clone all children into a new object
+   * @param obj
+   */
   clone(obj?: any) {
     // call super method
     var node = Node.prototype.clone.call(this, obj);
@@ -302,13 +363,14 @@ export abstract class Container<
     });
     return node as this;
   }
+
   /**
    * get all shapes that intersect a point.  Note: because this method must clear a temporary
    * canvas and redraw every shape inside the container, it should only be used for special situations
-   * because it performs very poorly.  Please use the {@link Konva.Stage#getIntersection} method if at all possible
+   * because it performs very poorly.  Please use the {@link Pamela.Stage#getIntersection} method if at all possible
    * because it performs much better
    * @method
-   * @name Konva.Container#getAllIntersections
+   * @name Pamela.Container#getAllIntersections
    * @param {Object} pos
    * @param {Number} pos.x
    * @param {Number} pos.y
@@ -325,6 +387,39 @@ export abstract class Container<
 
     return arr;
   }
+
+  /**
+   * Get the first children of this container
+   */
+  first(): ChildType | undefined {
+    if (this.hasChildren()) return this.children[0];
+    else return undefined;
+  }
+
+  /**
+   * Get the last children of this container
+   */
+  last(): ChildType | undefined {
+    if (this.hasChildren()) return this.children[this.children.length - 1];
+    else return undefined;
+  }
+
+  /**
+   * Get the first index into this container
+   */
+  firstIndex(): number | undefined {
+    if (this.hasChildren()) return 0;
+    return undefined;
+  }
+
+  /**
+   * Get last valid index of children
+   */
+  lastIndex(): number | undefined {
+    if(this.hasChildren()) return this.children.length - 1;
+    return undefined;
+  }
+
   _clearSelfAndDescendantCache(attr?: string) {
     super._clearSelfAndDescendantCache(attr);
     // skip clearing if node is cached with canvas
@@ -336,12 +431,14 @@ export abstract class Container<
       node._clearSelfAndDescendantCache(attr);
     });
   }
+
   _setChildrenIndices() {
     this.children?.forEach(function (child, n) {
       child.index = n;
     });
     this._requestDraw();
   }
+
   drawScene(can?: SceneCanvas, top?: Node) {
     var layer = this.getLayer(),
       canvas = can || (layer && layer.getCanvas()),
@@ -365,6 +462,7 @@ export abstract class Container<
     }
     return this;
   }
+
   drawHit(can?: HitCanvas, top?: Node) {
     if (!this.shouldDrawHit(top)) {
       return this;
@@ -387,6 +485,7 @@ export abstract class Container<
     }
     return this;
   }
+
   _drawChildren(drawMethod, canvas, top) {
     var context = canvas && canvas.getContext(),
       clipWidth = this.clipWidth(),
@@ -524,10 +623,8 @@ export abstract class Container<
   clipHeight: GetSet<number, this>;
   // there was "this" instead of "Container<ChildType>",
   // but it breaks react-konva types: https://github.com/konvajs/react-konva/issues/390
-  clipFunc: GetSet<
-    (ctx: CanvasRenderingContext2D, shape: Container<ChildType>) => void,
-    this
-  >;
+  clipFunc: GetSet<(ctx: CanvasRenderingContext2D, shape: Container<ChildType>) => void,
+    this>;
 }
 
 // add getters setters
@@ -540,7 +637,7 @@ Factory.addComponentsGetterSetter(Container, 'clip', [
 /**
  * get/set clip
  * @method
- * @name Konva.Container#clip
+ * @name Pamela.Container#clip
  * @param {Object} clip
  * @param {Number} clip.x
  * @param {Number} clip.y
@@ -563,7 +660,7 @@ Factory.addComponentsGetterSetter(Container, 'clip', [
 Factory.addGetterSetter(Container, 'clipX', undefined, getNumberValidator());
 /**
  * get/set clip x
- * @name Konva.Container#clipX
+ * @name Pamela.Container#clipX
  * @method
  * @param {Number} x
  * @returns {Number}
@@ -578,7 +675,7 @@ Factory.addGetterSetter(Container, 'clipX', undefined, getNumberValidator());
 Factory.addGetterSetter(Container, 'clipY', undefined, getNumberValidator());
 /**
  * get/set clip y
- * @name Konva.Container#clipY
+ * @name Pamela.Container#clipY
  * @method
  * @param {Number} y
  * @returns {Number}
@@ -598,7 +695,7 @@ Factory.addGetterSetter(
 );
 /**
  * get/set clip width
- * @name Konva.Container#clipWidth
+ * @name Pamela.Container#clipWidth
  * @method
  * @param {Number} width
  * @returns {Number}
@@ -618,7 +715,7 @@ Factory.addGetterSetter(
 );
 /**
  * get/set clip height
- * @name Konva.Container#clipHeight
+ * @name Pamela.Container#clipHeight
  * @method
  * @param {Number} height
  * @returns {Number}
@@ -633,7 +730,7 @@ Factory.addGetterSetter(
 Factory.addGetterSetter(Container, 'clipFunc');
 /**
  * get/set clip function
- * @name Konva.Container#clipFunc
+ * @name Pamela.Container#clipFunc
  * @method
  * @param {Function} function
  * @returns {Function}
