@@ -83,12 +83,107 @@ export abstract class Container<ChildType extends Node = Node> extends Node<Cont
    * @param name
    */
   getChildWithName(name: string): ChildType | undefined {
-    if(!this.hasChildren()) return undefined;
+    if (!this.hasChildren()) return undefined;
 
-    for(const c of this.children)
-      if(c.name() === name) return c;
+    for (const c of this.children)
+      if (c.name() === name) return c;
 
     return undefined;
+  }
+
+  /**
+   * Get the index of the first child with the given name
+   * @param name
+   */
+  getChildIndexByName(name: string): number {
+    if (!this.hasChildren()) return -1;
+
+    let i = 0;
+    for (const c of this.children) {
+      if (c.name() === name) return i;
+      i++;
+    }
+
+    return -1;
+  }
+
+  /**
+   * Get first children with the given id
+   * @param id
+   */
+  getChildWithId(id: string): ChildType | undefined {
+    if (!this.hasChildren()) return undefined;
+
+    for (const c of this.children)
+      if (c.id() === id) return c;
+
+    return undefined;
+  }
+
+  /**
+   * Bring a children to the top of the stack
+   * @param id Id of the children
+   * @returns The brought element
+   */
+  bringToTop(id: string): ChildType | undefined {
+    const i = this.getChildIndexById(id);
+
+    if(i === -1) return undefined;
+
+    const e = this.children.splice(i, 1);
+    this.children.push(e[0]);
+
+    return e[0];
+  }
+
+  /**
+   * Bring a children to the top of the stack
+   * @param name name of the children
+   * @returns The brought element
+   */
+  bringToTopByName(name: string): ChildType | undefined {
+    if(!this.hasChildren()) return undefined;
+    const i = this.getChildIndexByName(name);
+
+    if(i === -1) return;
+
+    const e = this.children.splice(i, 1);
+    this.children.push(e[0]);
+
+    return e[0];
+  }
+
+  /**
+   * Get the index of the first child with the given index
+   * or -1 if it does not exist
+   * @param id
+   */
+  getChildIndexById(id: string): number {
+    if(!this.hasChildren()) return -1;
+
+    let index = 0;
+    for (const c of this.children) {
+      if (c.id() === id) return index;
+      index++;
+    }
+
+    return -1;
+  }
+
+  /**
+   * Get index of this child or -1 if not exists
+   * @param child
+   */
+  getChildIndex(child: ChildType): number {
+    if(!this.hasChildren()) return -1;
+
+    let index = 0;
+    for (const c of this.children) {
+      if (c === child) return index;
+      index++;
+    }
+
+    return -1;
   }
 
   /**
@@ -104,7 +199,7 @@ export abstract class Container<ChildType extends Node = Node> extends Node<Cont
    * @param element Element to search
    */
   contains(element: ChildType): boolean {
-    return this.children.includes(element)
+    return this.children.includes(element);
   }
 
   /**
@@ -112,7 +207,7 @@ export abstract class Container<ChildType extends Node = Node> extends Node<Cont
    * @param index Index of children
    */
   at(index: number): ChildType | undefined {
-    if(this.hasChildren() && index >= 0 && index < this.lastIndex()) return this.children[index];
+    if (this.hasChildren() && index >= 0 && index < this.lastIndex()) return this.children[index];
     return undefined;
   }
 
@@ -416,7 +511,7 @@ export abstract class Container<ChildType extends Node = Node> extends Node<Cont
    * Get last valid index of children
    */
   lastIndex(): number | undefined {
-    if(this.hasChildren()) return this.children.length - 1;
+    if (this.hasChildren()) return this.children.length - 1;
     return undefined;
   }
 

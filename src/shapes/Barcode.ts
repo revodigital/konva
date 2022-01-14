@@ -35,8 +35,9 @@ export interface BarcodeConfig extends ShapeConfig {
 
   /**
    * Indicates width of code line
+   * Default is 1
    */
-  codeLineWidth: number;
+  codeLineWidth?: number;
 
   /**
    * Encoding of generated barcode
@@ -50,56 +51,54 @@ export interface BarcodeConfig extends ShapeConfig {
   showContent?: boolean;
 
   /**
-   * Text formatting for content
-   */
-  contentOptions?: ITextConfiguration;
-  /**
    * Placeholder text used when no code is provided
    */
-  placeHolder: string;
-
-  /**
-   * Placeholder text configuration
-   */
-  placeHolderOptions?: ITextConfiguration;
+  placeHolder?: string;
 }
 
 export class Barcode extends Shape<BarcodeConfig> {
   code: GetSet<string, this>;
   transparentBackground: GetSet<boolean, this>;
-  codeLineWidth?: GetSet<number, this>;
-  encoding?: GetSet<string, this>;
-  showContent?: GetSet<boolean, this>;
-  contentOptions?: GetSet<ITextConfiguration, this>;
+  codeLineWidth: GetSet<number, this>;
+  encoding: GetSet<string, this>;
+  showContent: GetSet<boolean, this>;
   placeHolder: GetSet<string, this>;
-  placeHolderOptions?: GetSet<ITextConfiguration, this>;
 
   _imageBuffer: CanvasImageSource;
   _oldCode: string;
   _oldEncoding: string;
 
+  _initFunc(config?: BarcodeConfig) {
+    super._initFunc(config);
+    this._oldCode = this.code();
+    this._oldEncoding = this.encoding();
+
+    // Apply default values
+    if (!this.placeHolder()) this.placeHolder('test-code');
+    if (!this.code()) this.code(this.placeHolder());
+    if (!this.encoding()) this.encoding('CODE39');
+    if (!this.codeLineWidth()) this.codeLineWidth(1);
+
+    // Add event listeners
+    this.on('transformend', (event) => {
+      // Delete cache after transform
+      this._imageBuffer = undefined;
+    });
+  }
 
   async _sceneFunc(context: Context): Promise<void> {
     if (!this.height()) return;
 
-    // Calculate layout
-    const layout = new BarcodeLayout({
-      width: this.width() || 50,
-      height: this.height() || 50
-    });
+    // Check cache presence
+    if (!this._imageBuffer)
+      await this._loadBarcodeImage();
 
-    // Check if there is a code to render
-    if (!this.code()) this._renderPlaceholder(layout, context._context);
-    else if (this.code() && this.encoding()) {
-      // Check cache presence
-      if (!this._imageBuffer)
-        await this._loadBarcodeImage();
+    // Reload cache if encoding or code has changed
+    if (this._oldEncoding !== this.encoding() || this._oldCode !== this.code())
+      await this._loadBarcodeImage();
 
-      if (this._oldEncoding !== this.encoding() || this._oldCode !== this.code())
-        await this._loadBarcodeImage();
-
-      context.drawImage(this._imageBuffer, 0, 0);
-    } else throw new InvalidBarcodeConfiguration('invalid barcode options');
+    // Draw barcode image
+    context.drawImage(this._imageBuffer, 0, 0);
     context.fillStrokeShape(this);
   }
 
@@ -111,21 +110,6 @@ export class Barcode extends Shape<BarcodeConfig> {
     context.rect(0, 0, width, height);
     context.closePath();
     context.fillStrokeShape(this);
-  }
-
-  /**
-   * Renders the placeholder
-   * @param ctx The drawing context
-   * @param layout The barcode layout
-   */
-  _renderPlaceholder(layout: BarcodeLayout, ctx: CanvasRenderingContext2D): void {
-    const center = layout.getCenter();
-    const textMeasure = ctx.measureText(this.placeHolder());
-
-    ctx.textAlign = 'center';
-    ctx.fillText(this.placeHolder(),
-      center.x,
-      center.y + (textMeasure.actualBoundingBoxAscent / 2));
   }
 
   async _loadBarcodeImage(): Promise<void> {
@@ -179,13 +163,7 @@ Factory.addGetterSetter(Barcode, 'encoding');
 
 Factory.addGetterSetter(Barcode, 'showContent');
 
-Factory.addGetterSetter(Barcode, 'contentOptions');
-
 Factory.addGetterSetter(Barcode, 'placeHolder');
-
-Factory.addGetterSetter(Barcode, 'placeHolder');
-
-Factory.addGetterSetter(Barcode, 'placeHolderOptions');
 
 Barcode.prototype.className = 'Barcode';
 _registerNode(Barcode);
