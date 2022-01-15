@@ -54,6 +54,11 @@ export interface BarcodeConfig extends ShapeConfig {
    * Placeholder text used when no code is provided
    */
   placeHolder?: string;
+
+  /**
+   * Enable / disable value rendering
+   */
+  displayValue?: boolean;
 }
 
 export class Barcode extends Shape<BarcodeConfig> {
@@ -63,6 +68,7 @@ export class Barcode extends Shape<BarcodeConfig> {
   encoding: GetSet<string, this>;
   showContent: GetSet<boolean, this>;
   placeHolder: GetSet<string, this>;
+  displayValue: GetSet<boolean, this>;
 
   _imageBuffer: CanvasImageSource;
   _oldCode: string;
@@ -78,6 +84,7 @@ export class Barcode extends Shape<BarcodeConfig> {
     if (!this.code()) this.code(this.placeHolder());
     if (!this.encoding()) this.encoding('CODE39');
     if (!this.codeLineWidth()) this.codeLineWidth(1);
+    if (!this.displayValue()) this.displayValue(false);
 
     // Add event listeners
     this.on('transformend', (event) => {
@@ -130,16 +137,20 @@ export class Barcode extends Shape<BarcodeConfig> {
   _generateBarCodeUrl(code: string, encoding: string): string {
     let canvas = document.createElement('canvas');
     const backgroundColor = this.transparentBackground() ? '#00000000' : this.fill() as string;
-    JsBarcode(canvas,
-      code,
-      {
-        format: encoding,
-        margin: 0,
-        width: this.codeLineWidth(),
-        height: this.height(),
-        displayValue: false,
-        background: backgroundColor
-      });
+    try{
+      JsBarcode(canvas,
+        code,
+        {
+          format: encoding,
+          margin: 0,
+          width: this.codeLineWidth(),
+          height: this.height(),
+          displayValue: this.displayValue(),
+          background: backgroundColor
+        });
+    } catch (e) {
+
+    }
     return canvas.toDataURL('image/png');
   }
 
@@ -164,6 +175,8 @@ Factory.addGetterSetter(Barcode, 'encoding');
 Factory.addGetterSetter(Barcode, 'showContent');
 
 Factory.addGetterSetter(Barcode, 'placeHolder');
+
+Factory.addGetterSetter(Barcode, 'displayValue');
 
 Barcode.prototype.className = 'Barcode';
 _registerNode(Barcode);
