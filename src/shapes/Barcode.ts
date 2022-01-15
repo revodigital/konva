@@ -73,18 +73,21 @@ export class Barcode extends Shape<BarcodeConfig> {
   _imageBuffer: CanvasImageSource;
   _oldCode: string;
   _oldEncoding: string;
+  _oldDS: boolean;
 
   _initFunc(config?: BarcodeConfig) {
     super._initFunc(config);
     this._oldCode = this.code();
     this._oldEncoding = this.encoding();
-
     // Apply default values
     if (!this.placeHolder()) this.placeHolder('test-code');
     if (!this.code()) this.code(this.placeHolder());
     if (!this.encoding()) this.encoding('CODE39');
     if (!this.codeLineWidth()) this.codeLineWidth(1);
     if (!this.displayValue()) this.displayValue(false);
+
+
+    this._oldDS = this.displayValue();
 
     // Add event listeners
     this.on('transformend', (event) => {
@@ -101,7 +104,8 @@ export class Barcode extends Shape<BarcodeConfig> {
       await this._loadBarcodeImage();
 
     // Reload cache if encoding or code has changed
-    if (this._oldEncoding !== this.encoding() || this._oldCode !== this.code())
+    // TODO: Use better chaching pattern
+    if (this._oldEncoding !== this.encoding() || this._oldCode !== this.code() || this._oldEncoding !== this.encoding())
       await this._loadBarcodeImage();
 
     // Draw barcode image
@@ -123,10 +127,15 @@ export class Barcode extends Shape<BarcodeConfig> {
     return new Promise((resolve) => {
       const barcodeImageUrl = this._generateBarCodeUrl(this.code(),
         this.encoding());
+
+      // Generate image only if barcode is correct
+      if (!barcodeImageUrl) return;
+
       Image.fromURL(barcodeImageUrl, (image: Image) => {
         this._imageBuffer = image.image();
         this._oldCode = this.code();
         this._oldEncoding = this.encoding();
+        this._oldDS = this.displayValue();
         this.width(image.width());
         this.height(image.height());
         resolve();
@@ -134,10 +143,10 @@ export class Barcode extends Shape<BarcodeConfig> {
     });
   }
 
-  _generateBarCodeUrl(code: string, encoding: string): string {
+  _generateBarCodeUrl(code: string, encoding: string): string | undefined {
     let canvas = document.createElement('canvas');
     const backgroundColor = this.transparentBackground() ? '#00000000' : this.fill() as string;
-    try{
+    try {
       JsBarcode(canvas,
         code,
         {
@@ -149,7 +158,7 @@ export class Barcode extends Shape<BarcodeConfig> {
           background: backgroundColor
         });
     } catch (e) {
-
+      return undefined;
     }
     return canvas.toDataURL('image/png');
   }
