@@ -335,6 +335,7 @@ export class Text extends Shape<TextConfig> {
     this._textArea.style.height = pixel(this.getPaddedHeight());
     this._textArea.style.fontSize = pixel(this.fontSize());
     this._textArea.style.fontWeight = this.fontStyle();
+    this._textArea.style.textDecoration = this.textDecoration();
     this._textArea.style.border = 'none';
     this._textArea.style.padding = pixel(this.padding());
     this._textArea.style.margin = '0px';
