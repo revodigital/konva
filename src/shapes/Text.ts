@@ -263,6 +263,7 @@ export class Text extends Shape<TextConfig> {
   wrap: GetSet<string, this>;
   ellipsis: GetSet<boolean, this>;
   placeholder: GetSet<string, this>;
+  _handleOutsideClick = (e: MouseEvent) => this._onOutsideClick(e, );
 
   /**
    * Creates a new Text shape
@@ -366,6 +367,20 @@ export class Text extends Shape<TextConfig> {
     this._textArea.addEventListener('keydown', (e) => this._onInputKeyDown(e));
     this._textArea.addEventListener('paste',
       (e) => this._beforeClipboardPaste(e));
+
+
+    setTimeout(() => {
+      window.addEventListener('click', this._handleOutsideClick);
+    });
+  }
+
+  private _onOutsideClick(e: MouseEvent) {
+    if (e.target !== this._textArea) {
+      this._onEditingEnd();
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      e.stopPropagation();
+    }
   }
 
   /**
@@ -410,7 +425,7 @@ export class Text extends Shape<TextConfig> {
 
     // Check for exiting events
     else if (eventIsExit(e))
-      this._onExitInput(e);
+      this._onExitInput();
 
     // Stop propagation from other listeners
     e.stopImmediatePropagation();
@@ -495,6 +510,7 @@ export class Text extends Shape<TextConfig> {
     this.show();
 
     // Remove text area
+    window.removeEventListener('click', this._handleOutsideClick);
     this._textArea.parentNode.removeChild(this._textArea);
     this._textArea = undefined;
   }
@@ -550,7 +566,7 @@ export class Text extends Shape<TextConfig> {
    * (enter or outside press) Closes editing mode and saves edited text
    * @param e
    */
-  private _onExitInput(e: KeyboardEvent): void {
+  _onExitInput(): void {
     // Sync shape text with textarea
     this.text(this._textArea.value);
     this._hideTextArea();
@@ -1139,6 +1155,7 @@ export class Text extends Shape<TextConfig> {
     return (fontSize * this.textArr.length * this.lineHeight()) +
            this.padding() * 2;
   }
+
   /**
    * Calculates font size to make text fit into the given rectangle.
    * @param size Rectangle size
