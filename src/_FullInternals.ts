@@ -56,6 +56,7 @@ import { Table }                    from './shapes/Table';
 import { Barcode }                  from './shapes/Barcode';
 import { RichText, RichTextSource } from './shapes/RichText';
 import { Point2D }                  from './common/Point2D';
+import { ExportVariable }           from './shapes/ExportVariable';
 
 export const Pamela = Core.Util._assign(Core, {
   Arc,
@@ -82,6 +83,7 @@ export const Pamela = Core.Util._assign(Core, {
   RichText,
   RichTextSource,
   Point2D,
+  ExportVariable,
   /**
    * @namespace Filters
    * @memberof Konva
