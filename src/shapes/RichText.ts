@@ -144,7 +144,6 @@ export class RichText extends Shape<RichTextConfig> {
     this._resizing = false;
     this.draw();
     this.draw();
-    console.log('Tr');
   }
 
   /**
@@ -185,20 +184,23 @@ export class RichText extends Shape<RichTextConfig> {
     context.rect(0, 0, width, height);
     context.closePath();
     context.fillStrokeShape(this);
-    context.drawRectBorders(this);
   }
 
-  async _sceneFunc(context: SceneContext) {
-    // Draw background
+  private _drawBackground(context: SceneContext) {
     if (this.hasFill() || this.hasStroke()) {
       context.beginPath();
       context.rect(0, 0, this.width(), this.height());
       context.closePath();
       context.fillStrokeShape(this);
-      context.drawRectBorders(this);
     }
+  }
 
-    if (this._resizing) return;
+  async _sceneFunc(context: SceneContext) {
+    // Draw background
+    if (this._resizing) {
+      this._drawBackground(context);
+      return;
+    }
 
     // Format rendering html document
     const doc = this._formatDocument();
@@ -207,6 +209,7 @@ export class RichText extends Shape<RichTextConfig> {
     if (this._lastContent !== doc || !this._lastSize.equalsTo(this.getSizeRect())) {
       this._lastContent = doc;
       this._lastSize = this.getSizeRect();
+      this._image = undefined;
       // Draw html into null canvas, get the image and draw
       let options: Options;
 
@@ -235,41 +238,27 @@ export class RichText extends Shape<RichTextConfig> {
 
       } else {
         // Make content fit
-        this.fontSize(await this.fitContent());
+        this.fitContent().then((value) => {
+          this.fontSize(value);
 
-        const result = await drawHTML(doc,
-          null, { width: this.width(), height: this.height() });
-
-        // Save image into cache
-        if (result.errors.length === 0) {
-          this._image = result.image;
-          this.draw();
-        }
+          const result = drawHTML(doc,
+            null,
+            { width: this.width(), height: this.height() }).then((result) => {
+            // Save image into cache
+            if (result.errors.length === 0) {
+              this._image = result.image;
+              this._requestDraw();
+            }
+          });
+        });
       }
     }
+
+    this._drawBackground(context);
 
     if (this._image) {
-      const translation = context.getTranslation();
-      if (this.getStage())
-        context.setTranslation(this.x() - this.getStage().absolutePosition().x * (-1),
-          this.y() + this.getStage().absolutePosition().y);
-      else context.setTranslation(this.x(), this.y());
-      context.clearRect(0, 0, this.width(), this.height());
-
-      if (this.hasFill() || this.hasStroke()) {
-        context.beginPath();
-        context.rect(0, 0, this.width(), this.height());
-        context.closePath();
-        context.fillStrokeShape(this);
-        context.drawRectBorders(this);
-      }
-
       context.drawImage(this._image, 0, 0);
-      context.setTranslation(translation.x, translation.y);
     }
-
-    // Draw rectangular borders
-    context.drawRectBorders(this);
   }
 
   /**
@@ -280,6 +269,7 @@ export class RichText extends Shape<RichTextConfig> {
   async fitContent(onlyDecrease: boolean = false): Promise<number> {
     // Font size
     let ft = this.fontSize() || 12;
+    this._resizing = true;
     const options: Options = {
       width: this.width() - 3,
     };
@@ -319,10 +309,8 @@ export class RichText extends Shape<RichTextConfig> {
       ft--;
     }
 
-    // Update font size
-    this.fontSize(ft);
-    this._requestDraw();
-
+    this._resizing = false;
+    this.draw();
     return ft;
   }
 

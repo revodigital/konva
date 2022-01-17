@@ -908,7 +908,6 @@ export class Text extends Shape<TextConfig> {
           this._partialTextY = translateY + lineTranslateY;
           this._partialText = letter;
           context.fillStrokeShape(this);
-          context.drawRectBorders(this);
           lineTranslateX += this.measureSize(letter).width + letterSpacing;
         }
       } else {
@@ -917,7 +916,6 @@ export class Text extends Shape<TextConfig> {
         this._partialText = text;
 
         context.fillStrokeShape(this);
-        context.drawRectBorders(this);
       }
       context.restore();
       if (textArrLen > 1) {

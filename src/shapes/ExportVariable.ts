@@ -62,7 +62,6 @@ export class ExportVariable extends Shape<ExportVariableConfig> {
       context.rect(0, 0, this.width(), this.height());
       context.closePath();
       context.fillStrokeShape(this);
-      context.drawRectBorders(this);
     }
 
     const centerY = this.height() / 2 + 5;

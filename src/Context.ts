@@ -189,26 +189,26 @@ export class Context {
     }
   }
 
-  /**
-   * Draws rectangular borders for this shape
-   * @param shape Shape to draw borders for
-   */
-  drawRectBorders(shape: Shape) {
-    // Check if borders are enabled
-    if (!shape.bordered()) return;
-
-    this._context.lineWidth = shape.borderWidth() || 1;
-    this._context.lineCap = shape.borderCap() || LineCap2.Butt;
-    this._context.strokeStyle = shape.borderColor() || 'black';
-    if (shape.borderDash())
-      this._context.setLineDash(shape.borderDash());
-    // Draw rounded rect
-    this.roundRect(0,
-      0,
-      shape.width(),
-      shape.height(),
-      shape.borderRadius() || BorderRadiusUtils.squared());
-  }
+  // /**
+  //  * Draws rectangular borders for this shape
+  //  * @param shape Shape to draw borders for
+  //  */
+  // drawRectBorders(shape: Shape) {
+  //   // Check if borders are enabled
+  //   if (!shape.bordered()) return;
+  //
+  //   this._context.lineWidth = shape.borderWidth() || 1;
+  //   this._context.lineCap = shape.borderCap() || LineCap2.Butt;
+  //   this._context.strokeStyle = shape.borderColor() || 'black';
+  //   if (shape.borderDash())
+  //     this._context.setLineDash(shape.borderDash());
+  //   // Draw rounded rect
+  //   this.roundRect(0,
+  //     0,
+  //     shape.width(),
+  //     shape.height(),
+  //     shape.borderRadius() || BorderRadiusUtils.squared());
+  // }
 
   setTranslation(x: number, y: number) {
     const matr = this._context.getTransform();
