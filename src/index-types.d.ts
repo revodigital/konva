@@ -199,6 +199,10 @@ declare namespace Pamela {
   export type RichTextConfig = import('./shapes/RichText').RichTextConfig;
   export type RichTextSource = import('./shapes/RichText').RichTextSource;
 
+  export const ExportVariable: typeof import('./shapes/ExportVariable').ExportVariable;
+  export type ExportVariable = import('./shapes/ExportVariable').ExportVariable;
+  export type ExportVariableConfig = import('./shapes/ExportVariable').ExportVariableConfig;
+
   export type BorderRadius = import('./configuration/BorderOptions').BorderRadius;
   export type BorderConfig = import('./configuration/BorderOptions').BorderConfig;
 

@@ -119,6 +119,7 @@ export class RichText extends Shape<RichTextConfig> {
   private _lastContent = '';
   private _initialX = 0;
   private _image: HTMLImageElement = undefined;
+  private _resizing: boolean;
 
   _initFunc(config?: RichTextConfig) {
     super._initFunc(config);
@@ -129,6 +130,19 @@ export class RichText extends Shape<RichTextConfig> {
     if (this.sourceType() === undefined) this.sourceType(RichTextSource.Markdown);
 
     if (this.growPolicy() === undefined) this.growPolicy(GrowPolicy.GrowHeight);
+    this._resizing = false;
+
+    this.on('transformstart', (e) => this._onStartResize());
+    this.on('transformend', (e) => this._onEndResize());
+  }
+
+  private _onStartResize() {
+    this._resizing = true;
+  }
+
+  private _onEndResize() {
+    this._resizing = false;
+    this.draw();
   }
 
   /**
@@ -151,7 +165,7 @@ export class RichText extends Shape<RichTextConfig> {
     margin: ${ this.padding() || 0 }px; 
     font-family: ${ this.fontFamily() || 'arial' };
     font-variant: ${ this.fontVariant() || '' }};
-    text-align: ${HAlign.toHtmlTextAlign(this.horizontalAlignment()) || 'left'};
+    text-align: ${ HAlign.toHtmlTextAlign(this.horizontalAlignment()) || 'left' };
     text-decoration: ${ this.fontDecoration() || '' };
     background-color: ${ this.fill() || 'transparent' }; 
     font-size: ${ fontSize || 12 }px
@@ -182,6 +196,8 @@ export class RichText extends Shape<RichTextConfig> {
       context.drawRectBorders(this);
     }
 
+    if (this._resizing) return;
+
     // Format rendering html document
     const doc = this._formatDocument();
 
@@ -191,10 +207,10 @@ export class RichText extends Shape<RichTextConfig> {
       // Draw html into null canvas, get the image and draw
       let options: Options;
 
-      if(this.growPolicy() === GrowPolicy.GrowHeight) options = {
+      if (this.growPolicy() === GrowPolicy.GrowHeight) options = {
         width: this.width(),
       };
-      else options = {height: this.height()}
+      else options = { height: this.height() };
 
       // it as shape body
       const result = await drawHTML(doc,
@@ -202,9 +218,9 @@ export class RichText extends Shape<RichTextConfig> {
         options);
 
       // Resize if needed
-      if(result.image.width > this.width())
+      if (result.image.width > this.width())
         this.width(result.image.width);
-      if(result.image.height > this.height())
+      if (result.image.height > this.height())
         this.height(result.image.height);
 
       // Request new drawing
@@ -244,7 +260,7 @@ export class RichText extends Shape<RichTextConfig> {
     // Minimum font size
     const MIN = 6;
 
-    if(textRect.overflows(selfRect)) {
+    if (textRect.overflows(selfRect)) {
       // Decrease font size to make all fit
       while (ft > MIN && textRect.overflows(selfRect)) {
         ft--;
@@ -257,9 +273,9 @@ export class RichText extends Shape<RichTextConfig> {
       // Resize if needed
       if (textRect.overflows(selfRect) && ft === 6)
         this._onResize(selfRect, textRect);
-    } else if(!onlyDecrease) {
+    } else if (!onlyDecrease) {
       // Increase font size
-      while(textRect.canBeContainedBy(selfRect)) {
+      while (textRect.canBeContainedBy(selfRect)) {
         ft++;
 
         // Recalculate image
@@ -268,7 +284,7 @@ export class RichText extends Shape<RichTextConfig> {
         textRect = Size2D.fromBounds(img.width, img.height);
       }
 
-      ft --;
+      ft--;
     }
 
     // Update font size
