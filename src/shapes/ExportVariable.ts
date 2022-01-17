@@ -29,11 +29,17 @@ export class ExportVariable extends Shape<ExportVariableConfig> {
     if (this.hideFX() === undefined) this.hideFX(false);
   }
 
+  /**
+   * Sets the value of a print variable. Disables all additional effects and redraws it.
+   * Sets a transparent background and disables stroke
+   * @param value The value to assign. 
+   */
   public assign(value: string) {
     this.content(value);
     this.fill('transparent');
     this.hideFX(true);
     this.assigned(true);
+    this.strokeEnabled(false);
     this.draw();
   }
 
@@ -62,15 +68,21 @@ export class ExportVariable extends Shape<ExportVariableConfig> {
     const centerY = this.height() / 2 + 5;
     let space = 0;
     context.beginPath();
+
+    context._context.fillStyle = 'black';
     if (!this.hideFX()) {
       context._context.font = 'bold italic 20px Courier New';
-      context._context.fillStyle = 'black';
       space += context.measureText('f(x)').width;
       context.fillText('f(x)', 10, centerY);
     }
     context._context.font = '15px Arial';
-    context.fillText(this.variableName(), space + 10, centerY);
-    const s = context.measureText(this.variableName());
+
+    let txt;
+    if(this.assigned()) txt = this.content();
+    else txt = this.variableName();
+
+    context.fillText(txt, space + 10, centerY);
+    const s = context.measureText(txt);
 
     // Resize evenly
     this.width(space + 10 + s.width + 5);
