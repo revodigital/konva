@@ -143,6 +143,8 @@ export class RichText extends Shape<RichTextConfig> {
   private _onEndResize() {
     this._resizing = false;
     this.draw();
+    this.draw();
+    console.log('Tr');
   }
 
   /**
@@ -248,7 +250,10 @@ export class RichText extends Shape<RichTextConfig> {
 
     if (this._image) {
       const translation = context.getTranslation();
-      context.setTranslation(this.x(), this.y());
+      if (this.getStage())
+        context.setTranslation(this.x() - this.getStage().absolutePosition().x * (-1),
+          this.y() + this.getStage().absolutePosition().y);
+      else context.setTranslation(this.x(), this.y());
       context.clearRect(0, 0, this.width(), this.height());
 
       if (this.hasFill() || this.hasStroke()) {
