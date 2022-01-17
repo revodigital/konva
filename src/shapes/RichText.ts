@@ -208,33 +208,59 @@ export class RichText extends Shape<RichTextConfig> {
       // Draw html into null canvas, get the image and draw
       let options: Options;
 
-      if (this.growPolicy() === GrowPolicy.GrowHeight) options = {
-        width: this.width(),
-      };
-      else options = { height: this.height() };
+      if (!this.lockSize()) {
+        // Calculate only 1 time the image and request draw
+        if (this.growPolicy() === GrowPolicy.GrowHeight) options = {
+          width: this.width(),
+        };
+        else options = { height: this.height() };
 
-      // it as shape body
-      const result = await drawHTML(doc,
-        null,
-        options);
+        // it as shape body
+        const result = await drawHTML(doc,
+          null,
+          options);
 
-      // Resize if needed
-      if (result.image.width > this.width())
-        this.width(result.image.width);
-      if (result.image.height > this.height())
-        this.height(result.image.height);
+        // Resize if needed
+        if (result.image.width > this.width())
+          this.width(result.image.width);
+        if (result.image.height > this.height())
+          this.height(result.image.height);
 
-      // Request new drawing
-      this._requestDraw();
+        // Save image into cache
+        if (result.errors.length === 0) {
+          this._image = result.image;
+        }
 
-      // Save image into cache
-      if (result.errors.length === 0) {
-        this._image = result.image;
+      } else {
+        // Make content fit
+        this.fontSize(await this.fitContent());
+
+        const result = await drawHTML(doc,
+          null, { width: this.width(), height: this.height() });
+
+        // Save image into cache
+        if (result.errors.length === 0) {
+          this._image = result.image;
+          this.draw();
+        }
       }
     }
 
     if (this._image) {
+      const translation = context.getTranslation();
+      context.setTranslation(this.x(), this.y());
+      context.clearRect(0, 0, this.width(), this.height());
+
+      if (this.hasFill() || this.hasStroke()) {
+        context.beginPath();
+        context.rect(0, 0, this.width(), this.height());
+        context.closePath();
+        context.fillStrokeShape(this);
+        context.drawRectBorders(this);
+      }
+
       context.drawImage(this._image, 0, 0);
+      context.setTranslation(translation.x, translation.y);
     }
 
     // Draw rectangular borders

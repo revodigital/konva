@@ -15,6 +15,7 @@ import { Canvas }                          from './Canvas';
 import { Shape }                           from './Shape';
 import { BorderRadius, BorderRadiusUtils } from './configuration/BorderOptions';
 import { LineCap as LineCap2 }             from './configuration/LineCap';
+import { Vector2d }                        from './types';
 
 function simplifyArray(arr: Array<any>) {
   var retArr = [],
@@ -214,6 +215,15 @@ export class Context {
     matr.e = x;
     matr.f = y;
     this._context.setTransform(matr);
+  }
+
+  getTranslation(): Vector2d {
+    const matr = this._context.getTransform();
+
+    return  {
+      x: matr.e,
+      y: matr.f,
+    }
   }
 
   getTrace(relaxed?, rounded?) {
