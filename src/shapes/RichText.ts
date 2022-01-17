@@ -117,7 +117,7 @@ export class RichText extends Shape<RichTextConfig> {
   horizontalAlignment: GetSet<HorizontalAlignment, this>;
 
   private _lastContent = '';
-  private _initialX = 0;
+  private _lastSize: Size2D;
   private _image: HTMLImageElement = undefined;
   private _resizing: boolean;
 
@@ -202,8 +202,9 @@ export class RichText extends Shape<RichTextConfig> {
     const doc = this._formatDocument();
 
     // Check cached document
-    if (this._lastContent !== doc) {
+    if (this._lastContent !== doc || !this._lastSize.equalsTo(this.getSizeRect())) {
       this._lastContent = doc;
+      this._lastSize = this.getSizeRect();
       // Draw html into null canvas, get the image and draw
       let options: Options;
 
