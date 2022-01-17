@@ -6,19 +6,35 @@ import { _registerNode }      from '../Global';
 
 export interface ExportVariableConfig extends ShapeConfig {
   variableName: string;
+  assigned?: boolean;
+  content?: string;
+  hideFX?: boolean;
 }
 
 export class ExportVariable extends Shape<ExportVariableConfig> {
   variableName: GetSet<string, this>;
+  assigned: GetSet<boolean, this>;
+  content: GetSet<string, this>;
+  hideFX: GetSet<boolean, this>;
 
   _initFunc(config?: ExportVariableConfig) {
     super._initFunc(config);
 
-    if(!this.width()) this.width(130);
-    if(!this.height()) this.height(40);
-    if(!this.fill()) this.fill('yellow');
-    if(!this.stroke()) this.stroke('black');
-    if(!this.strokeWidth()) this.strokeWidth(2);
+    if (!this.width()) this.width(130);
+    if (!this.height()) this.height(40);
+    if (!this.fill()) this.fill('yellow');
+    if (!this.stroke()) this.stroke('black');
+    if (!this.strokeWidth()) this.strokeWidth(2);
+    if (this.assigned() === undefined) this.assigned(false);
+    if (this.hideFX() === undefined) this.hideFX(false);
+  }
+
+  public assign(value: string) {
+    this.content(value);
+    this.fill('transparent');
+    this.hideFX(true);
+    this.assigned(true);
+    this.draw();
   }
 
   _hitFunc(context) {
@@ -35,7 +51,7 @@ export class ExportVariable extends Shape<ExportVariableConfig> {
   _sceneFunc(context: SceneContext) {
     // Draw f(x) indicator
     // Draw variable name
-    if(this.hasFill() || this.hasStroke()) {
+    if (this.hasFill() || this.hasStroke()) {
       context.beginPath();
       context.rect(0, 0, this.width(), this.height());
       context.closePath();
@@ -44,18 +60,20 @@ export class ExportVariable extends Shape<ExportVariableConfig> {
     }
 
     const centerY = this.height() / 2 + 5;
-
+    let space = 0;
     context.beginPath();
-    context._context.font = 'bold italic 20px Courier New';
-    context._context.fillStyle = 'black';
-    const space = context.measureText('f(x)');
-    context.fillText('f(x)', 10, centerY);
+    if (!this.hideFX()) {
+      context._context.font = 'bold italic 20px Courier New';
+      context._context.fillStyle = 'black';
+      space += context.measureText('f(x)').width;
+      context.fillText('f(x)', 10, centerY);
+    }
     context._context.font = '15px Arial';
-    context.fillText(this.variableName(), space.width + 10, centerY);
+    context.fillText(this.variableName(), space + 10, centerY);
     const s = context.measureText(this.variableName());
 
     // Resize evenly
-    this.width(space.width + 10 + s.width + 5);
+    this.width(space + 10 + s.width + 5);
     context.closePath();
   }
 }
@@ -64,5 +82,9 @@ export class ExportVariable extends Shape<ExportVariableConfig> {
  * Get / set variable name
  */
 Factory.addGetterSetter(ExportVariable, 'variableName');
+Factory.addGetterSetter(ExportVariable, 'assigned');
+Factory.addGetterSetter(ExportVariable, 'content');
+Factory.addGetterSetter(ExportVariable, 'hideFX');
+
 ExportVariable.prototype.className = 'ExportVariable';
 _registerNode(ExportVariable);

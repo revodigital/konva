@@ -16,7 +16,7 @@ import { Factory }                           from './Factory';
 import { getNumberValidator } from './Validators';
 
 // calculate pixel ratio
-var _pixelRatio;
+var _pixelRatio: number;
 function getDevicePixelRatio() {
   if (_pixelRatio) {
     return _pixelRatio;
@@ -66,7 +66,7 @@ export class Canvas {
   constructor(config: ICanvasConfig) {
     var conf = config || {};
 
-    var pixelRatio =
+    var pixelRatio: number =
       conf.pixelRatio || Pamela.pixelRatio || getDevicePixelRatio();
 
     this.pixelRatio = pixelRatio;

@@ -34,6 +34,9 @@ import {
 import { normalizeFontFamily }                      from '../TextUtils';
 import { TextMeasurementHelper, TextMetricsHelper } from '../TextMeasurement';
 import { SceneContext }                             from '../Context';
+import {
+  EDITING_END, EditingEnd
+}                                                   from '../events/text/EditingEnd';
 
 /**
  * Minimum font size
@@ -375,6 +378,11 @@ export class Text extends Shape<TextConfig> {
     this._textArea.addEventListener('paste',
       (e) => this._beforeClipboardPaste(e));
 
+    // Fire editing start event
+    if (this.getStage()) {
+      this.getStage().fire('text-editingstart',
+        { node: this, textArea: this._textArea });
+    }
 
     setTimeout(() => {
       window.addEventListener('click', this._handleOutsideClick);
@@ -520,6 +528,8 @@ export class Text extends Shape<TextConfig> {
     window.removeEventListener('click', this._handleOutsideClick);
     this._textArea.parentNode.removeChild(this._textArea);
     this._textArea = undefined;
+    if (this.getStage())
+      this.getStage().fire(EDITING_END, { node: this } as EditingEnd);
   }
 
   getSelfRect(): { x: number; width: number; y: number; height: number } {
