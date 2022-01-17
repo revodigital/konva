@@ -15,7 +15,8 @@ import { Pamela }             from '../Global';
 import { getNumberValidator } from '../Validators';
 import { _registerNode } from '../Global';
 
-import { GetSet } from '../types';
+import { GetSet }       from '../types';
+import { SceneContext } from '../Context';
 
 export interface WedgeConfig extends ShapeConfig {
   angle: number;
@@ -46,7 +47,7 @@ export interface WedgeConfig extends ShapeConfig {
  * });
  */
 export class Wedge extends Shape<WedgeConfig> {
-  _sceneFunc(context) {
+  _sceneFunc(context: SceneContext) {
     context.beginPath();
     context.arc(
       0,
