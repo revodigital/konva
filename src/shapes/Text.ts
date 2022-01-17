@@ -263,7 +263,7 @@ export class Text extends Shape<TextConfig> {
   wrap: GetSet<string, this>;
   ellipsis: GetSet<boolean, this>;
   placeholder: GetSet<string, this>;
-  _handleOutsideClick = (e: MouseEvent) => this._onOutsideClick(e, );
+  _handleOutsideClick = (e: MouseEvent) => this._onOutsideClick(e,);
 
   /**
    * Creates a new Text shape
@@ -325,15 +325,20 @@ export class Text extends Shape<TextConfig> {
       x: this.getStage().container().offsetLeft + textPosition.x + 2,
       y: this.getStage().container().offsetTop + textPosition.y + 2,
     };
+    let scale;
+    if (this.getStage())
+      scale = this.getStage().scaleX();
+    else scale = 1;
+
     // Apply styles
     this._textArea.value = this.text();
     this._textArea.placeholder = this.placeholder() || 'Inserire del testo';
     this._textArea.style.position = 'absolute';
     this._textArea.style.top = areaPosition.y + 'px';
     this._textArea.style.left = areaPosition.x + 'px';
-    this._textArea.style.width = pixel(this.getPaddedWidth());
-    this._textArea.style.height = pixel(this.getPaddedHeight());
-    this._textArea.style.fontSize = pixel(this.fontSize());
+    this._textArea.style.width = pixel(this.getPaddedWidth() * scale);
+    this._textArea.style.height = pixel(this.getPaddedHeight() * scale);
+    this._textArea.style.fontSize = pixel(this.fontSize() * scale);
     this._textArea.style.fontWeight = this.fontStyle();
     this._textArea.style.textDecoration = this.textDecoration();
     this._textArea.style.border = 'none';
@@ -582,7 +587,7 @@ export class Text extends Shape<TextConfig> {
    * @private
    */
   private _setTextAreaFontSize(ft: number): void {
-    this._textArea.style.fontSize = `${ ft }px`;
+    this._textArea.style.fontSize = `${ ft * this.getAbsoluteScale().x }px`;
   }
 
   /**
@@ -619,6 +624,7 @@ export class Text extends Shape<TextConfig> {
    * @param e
    */
   private _onRemoveText(e: KeyboardEvent): void {
+    const scale = this.getAbsoluteScale().x;
     // Check if text can be resized to fit container
     if (this.expandToFit() === true) {
       const f = this.fitContainer();
@@ -629,12 +635,12 @@ export class Text extends Shape<TextConfig> {
     if (this.lockSize() === false) {
       // Resize height
       if (this.growPolicy() === GrowPolicy.GrowHeight) {
-        this.height(this.measureTextHeight() + (this.padding() * 2));
-        this._resizeTextAreaHeight(this.height());
+        this.height(this.measureTextHeight() + (this.padding() * 2) + (this.lineHeight() || 1) * this.fontSize());
+        this._resizeTextAreaHeight(this.height() * scale);
       } else {
         // Resize width
         this.width(this.getTextWidth() + (this.padding() * 2));
-        this._resizeTextAreaWidth(this.width());
+        this._resizeTextAreaWidth(this.width() * scale);
       }
     }
 
@@ -688,10 +694,10 @@ export class Text extends Shape<TextConfig> {
     const newCharWidth = this.fontSize() * this.lineHeight();
 
     // True if this text is overflowing on height
-    const overflowsHeight: boolean = textMetrics.height + newLineHeight > this.height() - (this.padding() * 2);
+    const overflowsHeight: boolean = (textMetrics.height) >= (this.height() - (this.padding() * 2));
     // True if this text is overflowing on width
-    const overflowsWidth: boolean = rangeOf(this.width() - (this.fontSize() * this.lineHeight()) - (this.padding() * 2),
-      this.width() - (this.padding() * 2),
+    const overflowsWidth: boolean = rangeOf((this.width() - (this.fontSize() * this.lineHeight()) - (this.padding() * 2)),
+      (this.width() - (this.padding() * 2)),
       textMetrics.maxWidth);
 
     // Let size grow if allowed
@@ -700,14 +706,14 @@ export class Text extends Shape<TextConfig> {
       if (overflowsHeight && this.growPolicy() === GrowPolicy.GrowHeight) {
         // Resize height of shape and also of text area
         this.height(this.height() + newLineHeight);
-        this._resizeTextAreaHeight(this.height());
+        this._resizeTextAreaHeight(this.height() * scale);
       }
 
       // Check for grow width
       if (overflowsWidth && this.growPolicy() === GrowPolicy.GrowWidth) {
         // Add some space left
         this.width(this.width() + newCharWidth);
-        this._resizeTextAreaWidth(this.width());
+        this._resizeTextAreaWidth(this.width() * scale);
       }
     } else if (overflowsHeight && this.lockSize()) {
       // If unable to decrease font (fontSize < 6pt) resize following
@@ -743,10 +749,11 @@ export class Text extends Shape<TextConfig> {
    * @private
    */
   private _decreaseFontSizeToFit(measurement: TextMeasurementHelper, box: Size2D): boolean {
+    const scale = this.getAbsoluteScale().x;
     let metrics = measurement.measureComplexText(box);
-    let fontSize = this.fontSize();
+    let fontSize = this.fontSize() * scale;
 
-    while (metrics.height + (fontSize * this.lineHeight()) > this.height() - this.padding()) {
+    while (scale * (metrics.height + (fontSize * this.lineHeight())) > (this.height() - this.padding()) * scale) {
       if (fontSize < 7) return false;
 
       fontSize--;
@@ -756,7 +763,7 @@ export class Text extends Shape<TextConfig> {
 
       // Set fontsize to shape and textarea
       if (this._textArea)
-        this._textArea.style.fontSize = `${ fontSize }px`;
+        this._textArea.style.fontSize = `${ fontSize * scale }px`;
 
       this.fontSize(fontSize);
     }
