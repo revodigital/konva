@@ -32,7 +32,7 @@ export class ExportVariable extends Shape<ExportVariableConfig> {
   /**
    * Sets the value of a print variable. Disables all additional effects and redraws it.
    * Sets a transparent background and disables stroke
-   * @param value The value to assign. 
+   * @param value The value to assign.
    */
   public assign(value: string) {
     this.content(value);
