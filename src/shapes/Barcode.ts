@@ -74,6 +74,7 @@ export class Barcode extends Shape<BarcodeConfig> {
   _oldCode: string;
   _oldEncoding: string;
   _oldDS: boolean;
+  _resizing: boolean;
 
   _initFunc(config?: BarcodeConfig) {
     super._initFunc(config);
@@ -88,29 +89,44 @@ export class Barcode extends Shape<BarcodeConfig> {
 
 
     this._oldDS = this.displayValue();
+    this._resizing = false;
 
     // Add event listeners
+    this.on('transformstart', () => {
+      this._resizing = true;
+    })
     this.on('transformend', (event) => {
       // Delete cache after transform
       this._imageBuffer = undefined;
+      this._resizing = false;
+      this.draw();
     });
   }
 
   async _sceneFunc(context: Context): Promise<void> {
-    if (!this.height()) return;
-
-    // Check cache presence
-    if (!this._imageBuffer)
-      await this._loadBarcodeImage();
-
     // Reload cache if encoding or code has changed
     // TODO: Use better chaching pattern
-    if (this._oldEncoding !== this.encoding() || this._oldCode !== this.code() || this._oldEncoding !== this.encoding())
-      await this._loadBarcodeImage();
+    if (this._oldEncoding !== this.encoding() || this._oldCode !== this.code() || !this._imageBuffer) {
+      this._imageBuffer = undefined;
+      this._loadBarcodeImage().then((image) => {
+        this._resizing = true;
+        this._oldCode = this.code();
+        this._oldEncoding = this.encoding();
+        this._oldDS = this.displayValue();
+        this.width(image.width());
+        this.height(image.height());
+        this._imageBuffer = image.image();
+        this._resizing = false;
+        this.draw();
+      });
+    }
+
+    context.fillStrokeShape(this);
 
     // Draw barcode image
-    context.drawImage(this._imageBuffer, 0, 0);
-    context.fillStrokeShape(this);
+    if (this._imageBuffer && !this._resizing) {
+      context.drawImage(this._imageBuffer, 0, 0);
+    }
   }
 
   _hitFunc(context) {
@@ -123,22 +139,20 @@ export class Barcode extends Shape<BarcodeConfig> {
     context.fillStrokeShape(this);
   }
 
-  async _loadBarcodeImage(): Promise<void> {
+  async _loadBarcodeImage(): Promise<Image> {
     return new Promise((resolve) => {
       const barcodeImageUrl = this._generateBarCodeUrl(this.code(),
         this.encoding());
 
       // Generate image only if barcode is correct
-      if (!barcodeImageUrl) return;
+      if (!barcodeImageUrl) {
+        resolve(undefined);
+        return;
+      }
 
+      // Load my image
       Image.fromURL(barcodeImageUrl, (image: Image) => {
-        this._imageBuffer = image.image();
-        this._oldCode = this.code();
-        this._oldEncoding = this.encoding();
-        this._oldDS = this.displayValue();
-        this.width(image.width());
-        this.height(image.height());
-        resolve();
+        resolve(image);
       });
     });
   }
