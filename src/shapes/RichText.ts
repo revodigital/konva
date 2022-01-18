@@ -206,24 +206,22 @@ export class RichText extends Shape<RichTextConfig> {
     const doc = this._formatDocument();
 
     // Check cached document
-    // TODO: Extract into separated function
     if (this._lastContent !== doc || !this._lastSize.equalsTo(this.getSizeRect())) {
       this._lastContent = doc;
       this._lastSize = this.getSizeRect();
       this._image = undefined;
 
-      if (!this.lockSize()) {
+      if (!this.lockSize())
         this._loadFreeImage(doc);
-      } else {
+      else
         this._loadFittedImage(doc);
-      }
     }
 
     this._drawBackground(context);
 
-    if (this._image) {
+    if (this._image)
       context.drawImage(this._image, 0, 0);
-    }
+
   }
 
   private _loadFreeImage(doc: string) {
@@ -256,12 +254,11 @@ export class RichText extends Shape<RichTextConfig> {
 
   private _loadFittedImage(doc: string) {
     // Make content fit
-    // TODO: It enters 2 times into this function, it should be only 1
-    // TODO: Refactor using async await
+    this._image = undefined;
     this.fitContent().then((value) => {
       this.fontSize(value);
 
-      const result = drawHTML(doc,
+      drawHTML(doc,
         null,
         { width: this.width(), height: this.height() }).then((result) => {
         // Save image into cache
@@ -322,7 +319,6 @@ export class RichText extends Shape<RichTextConfig> {
     }
 
     this._resizing = false;
-    this.draw();
     return ft;
   }
 
