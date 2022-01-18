@@ -206,51 +206,16 @@ export class RichText extends Shape<RichTextConfig> {
     const doc = this._formatDocument();
 
     // Check cached document
+    // TODO: Extract into separated function
     if (this._lastContent !== doc || !this._lastSize.equalsTo(this.getSizeRect())) {
       this._lastContent = doc;
       this._lastSize = this.getSizeRect();
       this._image = undefined;
-      // Draw html into null canvas, get the image and draw
-      let options: Options;
 
       if (!this.lockSize()) {
-        // Calculate only 1 time the image and request draw
-        if (this.growPolicy() === GrowPolicy.GrowHeight) options = {
-          width: this.width(),
-        };
-        else options = { height: this.height() };
-
-        // it as shape body
-        const result = await drawHTML(doc,
-          null,
-          options);
-
-        // Resize if needed
-        if (result.image.width > this.width())
-          this.width(result.image.width);
-        if (result.image.height > this.height())
-          this.height(result.image.height);
-
-        // Save image into cache
-        if (result.errors.length === 0) {
-          this._image = result.image;
-        }
-
+        this._loadFreeImage(doc);
       } else {
-        // Make content fit
-        this.fitContent().then((value) => {
-          this.fontSize(value);
-
-          const result = drawHTML(doc,
-            null,
-            { width: this.width(), height: this.height() }).then((result) => {
-            // Save image into cache
-            if (result.errors.length === 0) {
-              this._image = result.image;
-              this._requestDraw();
-            }
-          });
-        });
+        this._loadFittedImage(doc);
       }
     }
 
@@ -259,6 +224,53 @@ export class RichText extends Shape<RichTextConfig> {
     if (this._image) {
       context.drawImage(this._image, 0, 0);
     }
+  }
+
+  private _loadFreeImage(doc: string) {
+    // Draw html into null canvas, get the image and draw
+    let options: Options;
+    this._resizing = true;
+    // Calculate only 1 time the image and request draw
+    if (this.growPolicy() === GrowPolicy.GrowHeight) options = {
+      width: this.width(),
+    };
+    else options = { height: this.height() };
+
+    // it as shape body
+    drawHTML(doc,
+      null,
+      options).then(result => {
+      // Resize if needed
+      if (result.image.width > this.width())
+        this.width(result.image.width);
+      if (result.image.height > this.height())
+        this.height(result.image.height);
+      // Save image into cache
+      if (result.errors.length === 0) {
+        this._resizing = false;
+        this._image = result.image;
+        this.draw();
+      }
+    });
+  }
+
+  private _loadFittedImage(doc: string) {
+    // Make content fit
+    // TODO: It enters 2 times into this function, it should be only 1
+    // TODO: Refactor using async await
+    this.fitContent().then((value) => {
+      this.fontSize(value);
+
+      const result = drawHTML(doc,
+        null,
+        { width: this.width(), height: this.height() }).then((result) => {
+        // Save image into cache
+        if (result.errors.length === 0) {
+          this._image = result.image;
+          this.draw();
+        }
+      });
+    });
   }
 
   /**

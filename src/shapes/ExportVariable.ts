@@ -51,7 +51,6 @@ export class ExportVariable extends Shape<ExportVariableConfig> {
     context.rect(0, 0, width, height);
     context.closePath();
     context.fillStrokeShape(this);
-    context.drawRectBorders(this);
   }
 
   _sceneFunc(context: SceneContext) {
