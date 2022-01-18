@@ -13,6 +13,8 @@
   "type": "module",
   "scripts": {
     "start": "npx serve && npx cypress open",
+    "doc": "npx typedoc",
+    "doc-watch": "npx typedoc --watch",
     "build": "npm run clean && tsc && cp ./src/index-types.d.ts ./lib/",
     "clean": "rm -rf ./lib ./types ./test-build"
   },
