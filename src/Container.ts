@@ -92,6 +92,31 @@ export abstract class Container<ChildType extends Node = Node> extends Node<Cont
   }
 
   /**
+   * Removes all the children with the given name from the children array.
+   * @param name Name to exclude
+   * @returns a copy of the new children list
+   */
+  removeAllChildrenNamed(name: string): ChildType[] {
+    let temp = [];
+
+    this.getChildren().forEach((child) => {
+      if(child.name() === name) {
+        // reset parent to prevent many _setChildrenIndices calls
+        child.parent = null;
+        child.index = 0;
+        child.remove();
+        return;
+      }
+
+      temp.push(child);
+    });
+    // because all children were detached from parent, request draw via container
+    this._requestDraw();
+
+    return this.children;
+  }
+
+  /**
    * Get the index of the first child with the given name
    * @param name
    */
@@ -128,7 +153,7 @@ export abstract class Container<ChildType extends Node = Node> extends Node<Cont
   bringToTop(id: string): ChildType | undefined {
     const i = this.getChildIndexById(id);
 
-    if(i === -1) return undefined;
+    if (i === -1) return undefined;
 
     const e = this.children.splice(i, 1);
     this.children.push(e[0]);
@@ -142,10 +167,10 @@ export abstract class Container<ChildType extends Node = Node> extends Node<Cont
    * @returns The brought element
    */
   bringToTopByName(name: string): ChildType | undefined {
-    if(!this.hasChildren()) return undefined;
+    if (!this.hasChildren()) return undefined;
     const i = this.getChildIndexByName(name);
 
-    if(i === -1) return;
+    if (i === -1) return;
 
     const e = this.children.splice(i, 1);
     this.children.push(e[0]);
@@ -159,7 +184,7 @@ export abstract class Container<ChildType extends Node = Node> extends Node<Cont
    * @param id
    */
   getChildIndexById(id: string): number {
-    if(!this.hasChildren()) return -1;
+    if (!this.hasChildren()) return -1;
 
     let index = 0;
     for (const c of this.children) {
@@ -175,7 +200,7 @@ export abstract class Container<ChildType extends Node = Node> extends Node<Cont
    * @param child
    */
   getChildIndex(child: ChildType): number {
-    if(!this.hasChildren()) return -1;
+    if (!this.hasChildren()) return -1;
 
     let index = 0;
     for (const c of this.children) {

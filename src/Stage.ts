@@ -515,6 +515,15 @@ export class Stage extends Container<Layer> {
   }
 
   /**
+   * Removes all the layers with the specified name.
+   * Wrapper for [container.removeChildrenNamed(name)]
+   * @param name
+   */
+  removeLayersWithName(name: string): void {
+    this.removeAllChildrenNamed(name);
+  }
+
+  /**
    * Add a layer before all the others
    * @param layer Layer to add
    */
