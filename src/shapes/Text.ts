@@ -286,6 +286,8 @@ export class Text extends Shape<TextConfig> {
     // Editing listeners
     this.on('dblclick', (e) => this._onEditingStart(e));
 
+    this.on('transform', (e) => this._onTransform(e));
+
     // Default values
     if (!this.growPolicy())
       this.growPolicy(GrowPolicy.GrowWidth);
@@ -300,7 +302,7 @@ export class Text extends Shape<TextConfig> {
       this.bordered(false);
 
     // Initial text expanding
-    if (this.expandToFit()) this.fitContainer();
+    if (this.lockSize()) this.fitContainer();
   }
 
   /**
@@ -387,6 +389,11 @@ export class Text extends Shape<TextConfig> {
     setTimeout(() => {
       window.addEventListener('click', this._handleOutsideClick);
     });
+  }
+
+  private _onTransform(event: any) {
+    console.log("Transform");
+    if(this.lockSize()) this.fitContainer();
   }
 
   private _onOutsideClick(e: MouseEvent) {
@@ -1122,10 +1129,11 @@ export class Text extends Shape<TextConfig> {
    * @private
    */
   private _fontSizeFits(fontSize: number): -1 | 1 | 0 {
-    const h = this.measureTextHeightByFontSize(fontSize);
+    const measurement = this.getMeasurementHelper();
+    const h = measurement.measureComplexText(this.getSizeRect()).height;
 
     if (h <= this.height() && h > this.height() - (this.fontSize() * this.lineHeight())) return 0;
-    else if (h > this.height()) return 1;
+    else if (h >= this.height() + this.padding() * 2) return 1;
     else return -1;
   }
 
@@ -1136,8 +1144,9 @@ export class Text extends Shape<TextConfig> {
   fitContainer(): number {
     let ft = this.fontSize();
     let ftr = this._fontSizeFits(ft);
+    let lastResult = undefined;
     // Check if current fontsize can fit
-    while (ftr !== 0) {
+    while (ftr !== 0 || lastResult === ftr) {
       // Increment or decrement font size
       if (ftr === -1)
         ft++;
@@ -1149,6 +1158,7 @@ export class Text extends Shape<TextConfig> {
       if (this._textArea)
         this._textArea.style.fontSize = pixel(ft);
 
+      lastResult = ftr;
       ftr = this._fontSizeFits(ft);
     }
 
