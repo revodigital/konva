@@ -12,9 +12,7 @@
 import { Stage }           from '../../src/Stage';
 import { TEST_ELEMENT_ID } from '../global/global-defs';
 import { Layer }           from '../../src/Layer';
-import { Rect }    from '../../src/shapes/Rect';
-import { Table }   from '../../src/shapes/Table';
-import { MyShape } from '../../src/shapes/Testme';
+import { Rect }            from '../../src/shapes/Rect';
 
 before(() => {
   const el = document.createElement('div');

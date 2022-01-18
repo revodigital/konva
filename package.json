@@ -16,7 +16,9 @@
     "doc": "npx typedoc",
     "doc-watch": "npx typedoc --watch",
     "build": "npm run clean && tsc && cp ./src/index-types.d.ts ./lib/",
-    "clean": "rm -rf ./lib ./types ./test-build"
+    "clean": "rm -rf ./lib ./types ./test-build",
+    "serve": "npx serve -l 12345",
+    "test": "npx cypress open"
   },
   "targets": {
     "none": {}
@@ -51,6 +53,7 @@
     "@types/mocha": "^9.0.0",
     "@types/node": "^16.11.13",
     "cypress-plugin-snapshots": "^1.4.4",
+    "jest": "^27.4.7",
     "js-base64": "^2.5.2",
     "mocha": "8.4.0",
     "mocha-headless-chrome": "^3.1.0",
