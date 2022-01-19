@@ -754,6 +754,7 @@ Factory.addComponentsGetterSetter(Container, 'clip', [
   'width',
   'height',
 ]);
+
 /**
  * get/set clip
  * @method

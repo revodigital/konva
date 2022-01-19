@@ -21,6 +21,9 @@ import { BarcodeLayout }      from '../layout/BarcodeLayout';
 import { Image }              from './Image';
 import * as JsBarcode         from 'jsbarcode';
 import { _registerNode }      from '../Global';
+import {
+  INVALID_CDECS, InvalidCodeOrSpecification
+}                             from '../events/barcode/InvalidCodeOrSpecification';
 
 export interface BarcodeConfig extends ShapeConfig {
   /**
@@ -94,7 +97,7 @@ export class Barcode extends Shape<BarcodeConfig> {
     // Add event listeners
     this.on('transformstart', () => {
       this._resizing = true;
-    })
+    });
     this.on('transformend', (event) => {
       // Delete cache after transform
       this._imageBuffer = undefined;
@@ -108,16 +111,29 @@ export class Barcode extends Shape<BarcodeConfig> {
     // TODO: Use better chaching pattern
     if (this._oldEncoding !== this.encoding() || this._oldCode !== this.code() || !this._imageBuffer) {
       this._imageBuffer = undefined;
-      this._loadBarcodeImage().then((image) => {
+      this._loadBarcodeImage().then(({ image, link }) => {
         this._resizing = true;
         this._oldCode = this.code();
         this._oldEncoding = this.encoding();
         this._oldDS = this.displayValue();
-        this.width(image.width());
-        this.height(image.height());
-        this._imageBuffer = image.image();
-        this._resizing = false;
-        this.draw();
+        // Draw barcode only if there is an image
+        if (image) {
+          this.width(image.width());
+          this.height(image.height());
+          this._imageBuffer = image.image();
+          this._resizing = false;
+          this.draw();
+        } else {
+          // Fire error event
+          if (this.getStage()) this.getStage().fire(INVALID_CDECS,
+            {
+              image: image,
+              barcode: this,
+              code: this.code(),
+              encoding: this.encoding(),
+              generatedUrl: link
+            });
+        }
       });
     }
 
@@ -139,20 +155,23 @@ export class Barcode extends Shape<BarcodeConfig> {
     context.fillStrokeShape(this);
   }
 
-  async _loadBarcodeImage(): Promise<Image> {
+  /**
+   * Load the barcode image from the calculated link
+   */
+  async _loadBarcodeImage(): Promise<{ image: Image, link: string }> {
     return new Promise((resolve) => {
       const barcodeImageUrl = this._generateBarCodeUrl(this.code(),
         this.encoding());
 
       // Generate image only if barcode is correct
       if (!barcodeImageUrl) {
-        resolve(undefined);
+        resolve({ image: undefined, link: undefined });
         return;
       }
 
       // Load my image
       Image.fromURL(barcodeImageUrl, (image: Image) => {
-        resolve(image);
+        resolve({ image: image, link: barcodeImageUrl });
       });
     });
   }
@@ -171,10 +190,10 @@ export class Barcode extends Shape<BarcodeConfig> {
           displayValue: this.displayValue(),
           background: backgroundColor
         });
+      return canvas.toDataURL('image/png');
     } catch (e) {
       return undefined;
     }
-    return canvas.toDataURL('image/png');
   }
 
   getSelfRect(): { x: number; width: number; y: number; height: number } {
