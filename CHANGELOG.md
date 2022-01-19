@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.4.0 (19/1/2022)
+**Implements** new shape *ExportVariable*, to draw a **variable** into the stage.
+It has a yellow background by default, and it can render variable name, via *variableName* field.
+It also has some simple customizable black border. 
+Variable icon *(x)* can be hidden using *hideFX* property.  
+We have also corrected several richtext resizing / drawing problems, such as glitches and
+incorrect sizing. Now *RichText* can recalculate its font during resizing, when the *lockSize* option
+is activated. Box boundaries won't change, but the font size will decrease / increase
+to make all fit.  
+**Corrects** *Text* resizing problems, removing *expandToFit* option and using 
+only *lockSize*. The same behavior as *RichText* is now implemented into *Text*.  
+**Implements** new useful methods for containers (stage and layer): 
+* **Removing** items by **name**
+* **Searching** items by **name**
+* **Getting** child index by **name**
+* **Getting** child by **index**
+* **Remove** child by **index**
+* **Search** child with **id**
+* **Remove** child with **id**
+* **Bring** to top by **name**
+* **Bring** to top by **index**
+* **Bring** to top by **id**
+* **Contains** check
+
+**Implements** also functional-like accessors for containers (*first()*, *firstIndex()*, *last()*, *lastIndex()*) to **simplify**
+accessing children.  
+**Configures** *typedoc* for **automatic** **documentation** generation.
+**Corrects** *Barcode* drawing, clipping and resizing problems.  
+**Adds** events for contolling text editing, fired by *Text* shape during editing:
+* Editing start
+* Text changed
+* Editing end
+
+**Implements** outside click to stop *Text* editing.
+
 ## 1.3.2 (6/2/2022)
 Corrects fill problems for **RichText** and removes its property *backgroundColor*.  
 Implements resizing controls using *GrowPolicy*.
@@ -129,11 +164,11 @@ fixed bugs.
 
 ## 8.2.4 (2021-12-15)
 
-- Fix not working `Konva.Transformer` when several transformers were used
+- Fix not working `Pamela.Transformer` when several transformers were used
 
 ## 8.2.2
 
-- Fix `Konva.Arrow` rendering when it has two pointers
+- Fix `Pamela.Arrow` rendering when it has two pointers
 
 ## 8.2.1
 
@@ -141,7 +176,7 @@ fixed bugs.
 
 ## 8.2.0
 
-- Restore build in CommonJS. `const Konva = require('konva/cmj').default;`
+- Restore build in CommonJS. `const Pamela = require('konva/cmj').default;`
 - Fix arrow rendering when dash is used
 - Fix `dbltap` trigger when multi-touch is used
 
@@ -155,16 +190,16 @@ fixed bugs.
 
 ## 8.1.2
 
-- Fix memory leak for `Konva.Image`
+- Fix memory leak for `Pamela.Image`
 
 ## 8.1.1
 
-- Fix `Konva.Transformer` dragging draw when `shouldOverdrawWholeArea = true`.
+- Fix `Pamela.Transformer` dragging draw when `shouldOverdrawWholeArea = true`.
 - Fix auto redraw when `container.removeChildren()` or `container.destroyChildren()` are used
 
 ## 8.1.0
 
-- New property `useSingleNodeRotation` for `Konva.Transformer`.
+- New property `useSingleNodeRotation` for `Pamela.Transformer`.
 
 ## 8.0.4
 
@@ -181,12 +216,12 @@ fixed bugs.
 
 ## 8.0.0
 
-This is a very large release! The long term of `Konva` API is to make it simpler and faster. So when possible I am trying to optimize the code and remove unpopular/confusing API methods.
+This is a very large release! The long term of `Pamela` API is to make it simpler and faster. So when possible I am trying to optimize the code and remove unpopular/confusing API methods.
 
 **BREAKING:**
 
-- `Konva.Collection` is removed. `container.children` is a simple array now. `container.find()` will returns an array instead of `Konva.Collection()` instance.
-  `Konva.Collection` was confusing for many users. Also it was slow and worked with a bit of magic. So I decided to get rif of it. Now we are going to use good old arrays.
+- `Pamela.Collection` is removed. `container.children` is a simple array now. `container.find()` will returns an array instead of `Pamela.Collection()` instance.
+  `Pamela.Collection` was confusing for many users. Also it was slow and worked with a bit of magic. So I decided to get rif of it. Now we are going to use good old arrays.
 
 ```js
 // old code:
@@ -197,16 +232,16 @@ group.find('Shape').forEach((shape) => shape.visible(false));
 ```
 
 - argument `selector` is removed from `node.getIntersection(pos)` API. I don't think you even knew about it.
-- `Konva.Util.extend` is removed.
-- All "content" events from `Konva.Stage` are removed. E.g. instead of `contentMousemove` just use `mousemove` event.
+- `Pamela.Util.extend` is removed.
+- All "content" events from `Pamela.Stage` are removed. E.g. instead of `contentMousemove` just use `mousemove` event.
 
 **New features:**
 
-- All updates on canvas will do automatic redraw with `layer.batchDraw()`. This features is configurable with `Konva.autoDrawEnabled` property. Konva will automatically redraw layer when you change any property, remove or add nodes, do caching. So you don't need to call `layer.draw()` or `layer.batchDraw()` in most of the cases.
+- All updates on canvas will do automatic redraw with `layer.batchDraw()`. This features is configurable with `Pamela.autoDrawEnabled` property. Pamela will automatically redraw layer when you change any property, remove or add nodes, do caching. So you don't need to call `layer.draw()` or `layer.batchDraw()` in most of the cases.
 - New method `layer.getNativeCanvasElement()`
-- new `flipEnabled` property for `Konva.Transformer`
+- new `flipEnabled` property for `Pamela.Transformer`
 - new `node.isClientRectOnScreen()` method
-- Added `Konva.Util.degToRad` and `Konva.Util.radToDeg`
+- Added `Pamela.Util.degToRad` and `Pamela.Util.radToDeg`
 - Added `node.getRelativePointerPosition()`
 
 **Changes and fixes:**
@@ -216,21 +251,21 @@ group.find('Shape').forEach((shape) => shape.visible(false));
 - Full event system rewrite. Much better `pointer` events support.
 - Fix `TextPath` recalculations on `fontSize` change
 - Better typescript support. Now every module has its own `*.d.ts` file.
-- Removed `Konva.UA`, `Konva._parseUA` (it was used for old browser detection)
+- Removed `Pamela.UA`, `Pamela._parseUA` (it was used for old browser detection)
 - Fixed Arrow head position when an arrow has tension
 - `textPath.getKerning()` is removed
-- Fix `a` command parsing for `Konva.Path`
-- Fix fill pattern for `Konva.Text` when the pattern has an offset or rotation
-- `Konva.names` and `Konva.ids` are removed
-- `Konva.captureTouchEventsEnabled` is renamed to `Konva.capturePointerEventsEnabled`
+- Fix `a` command parsing for `Pamela.Path`
+- Fix fill pattern for `Pamela.Text` when the pattern has an offset or rotation
+- `Pamela.names` and `Pamela.ids` are removed
+- `Pamela.captureTouchEventsEnabled` is renamed to `Pamela.capturePointerEventsEnabled`
 
 ## 7.2.5
 
-- Fix transform update on `letterSpacing` change of `Konva.Text`
+- Fix transform update on `letterSpacing` change of `Pamela.Text`
 
 ## 7.2.4
 
-- Fix wrong `mouseleave` trigger for `Konva.Stage`
+- Fix wrong `mouseleave` trigger for `Pamela.Stage`
 
 ## 7.2.3
 
@@ -238,25 +273,25 @@ group.find('Shape').forEach((shape) => shape.visible(false));
 
 ## 7.2.2
 
-- Fix wrong size calculations for `Konva.Line` with tension
+- Fix wrong size calculations for `Pamela.Line` with tension
 - Fix `shape.intersects()` behavior when a node is dragged
-- Fix ellipsis rendering for `Konva.Text`
+- Fix ellipsis rendering for `Pamela.Text`
 
 ## 7.2.1
 
-- Fix correct rendering of `Konva.Label` when heigh of text is changed
-- Fix correct `transformstart` and `transformend` events when several nodes are attached with `Konva.Transformer`
+- Fix correct rendering of `Pamela.Label` when heigh of text is changed
+- Fix correct `transformstart` and `transformend` events when several nodes are attached with `Pamela.Transformer`
 
 ## 7.2.0
 
-- New property `fillAfterStrokeEnabled` for `Konva.Shape`. See API docs for more information.
-- Fix for `Konva.Transformer` when it may fail to draw.
+- New property `fillAfterStrokeEnabled` for `Pamela.Shape`. See API docs for more information.
+- Fix for `Pamela.Transformer` when it may fail to draw.
 - Fix rendering of `TextPath` one more time.
 
 ## 7.1.9
 
-- Fix autodrawing for `Konva.Transformer` when it is on a different layer
-- Fix `Konva.RegularPolygon` size calculations.
+- Fix autodrawing for `Pamela.Transformer` when it is on a different layer
+- Fix `Pamela.RegularPolygon` size calculations.
 
 ## 7.1.8
 
@@ -268,18 +303,18 @@ group.find('Shape').forEach((shape) => shape.visible(false));
 
 ## 7.1.6
 
-- Fix for correct image/dataURL/canvas exports for `Konva.Stage`.
+- Fix for correct image/dataURL/canvas exports for `Pamela.Stage`.
 
 ## 7.1.5
 
-- Performance fixes for dragging many nodes with `Konva.Transformer`.
+- Performance fixes for dragging many nodes with `Pamela.Transformer`.
 - Documentation updates
 
 ## 7.1.4
 
 - Perf fixes
 - Change events trigger flow, so adding new events INSIDE event callback will work correctly.
-- Fix double `dragend`, `dragstart`, `dragmove` triggers on `Konva.Transformer`
+- Fix double `dragend`, `dragstart`, `dragmove` triggers on `Pamela.Transformer`
 
 ## 7.1.3
 
@@ -287,22 +322,22 @@ group.find('Shape').forEach((shape) => shape.visible(false));
 
 ## 7.1.2
 
-- fix ellipses behavior for `Konva.Text`.
+- fix ellipses behavior for `Pamela.Text`.
 - fix scaled fill pattern for text.
 
 ## 7.1.1
 
-- fixes for `dragstart` event when `Konva.Transformer` is used. `dragstart` event will have correct native `evt` reference
-- Better unicode support in `Konva.Text` and `Konva.TextPath`. Emoji should work better now 👍
+- fixes for `dragstart` event when `Pamela.Transformer` is used. `dragstart` event will have correct native `evt` reference
+- Better unicode support in `Pamela.Text` and `Pamela.TextPath`. Emoji should work better now 👍
 
 ## 7.1.0
 
-- Multi row support for `ellipsis` config for `Konva.Text`
-- Better `Konva.Transfomer` behavior when single attached node is programmatically rotated.
+- Multi row support for `ellipsis` config for `Pamela.Text`
+- Better `Pamela.Transfomer` behavior when single attached node is programmatically rotated.
 
 ## 7.0.7
 
-- fixes for `dragstart` event when `Konva.Transformer` is used. `dragstart` will not bubble from transformer.
+- fixes for `dragstart` event when `Pamela.Transformer` is used. `dragstart` will not bubble from transformer.
 - `string` and `fill` properties validation can accept `CanvasGradient` as valid value
 
 ## 7.0.6
@@ -315,8 +350,8 @@ group.find('Shape').forEach((shape) => shape.visible(false));
 
 ## 7.0.4
 
-- Add `onUpdate` callbacks to `Konva.Tween` configuration and `node.to()` method.
-- Up to 6x faster initializations of objects, like `const shape = new Konva.Shape()`.
+- Add `onUpdate` callbacks to `Pamela.Tween` configuration and `node.to()` method.
+- Up to 6x faster initializations of objects, like `const shape = new Pamela.Shape()`.
 
 ## 7.0.3 - 2020-07-09
 
@@ -331,43 +366,43 @@ group.find('Shape').forEach((shape) => shape.visible(false));
 ## 7.0.1 - 2020-06-29
 
 - Fixes for different font families support.
-- Fixes for `Konva.Transformer` positions
+- Fixes for `Pamela.Transformer` positions
 - Types fixes for better Typescript support
 
 ## 7.0.0 - 2020-06-23
 
-- **BREAKING** `inherit` option is removed from `visible` and `listening`. They now just have boolean values `true` or `false`. If you do `group.listening(false);` then whole group and all its children will be removed from the hitGraph (and they will not listen to events). Probably 99% `Konva` applications will be not affected by this _breaking change_.
+- **BREAKING** `inherit` option is removed from `visible` and `listening`. They now just have boolean values `true` or `false`. If you do `group.listening(false);` then whole group and all its children will be removed from the hitGraph (and they will not listen to events). Probably 99% `Pamela` applications will be not affected by this _breaking change_.
 - **Many performance fixes and code size optimizations. Up to 70% performance boost for many moving nodes.**
 - `layer.hitGraphEnabled()` is deprecated. Just use `layer.listening(false)` instead
 - Better support for font families with spaces inside (like `Font Awesome 5`).
 - Fix wrong `dblclick` and `dbltap` triggers
-- Deprecate `Konva.FastLayer`. Use `new Konva.Layer({ listening: false });` instead.
-- `dragmove` event will be fired on `Konva.Transformer` too when you drag a node.
+- Deprecate `Pamela.FastLayer`. Use `new Pamela.Layer({ listening: false });` instead.
+- `dragmove` event will be fired on `Pamela.Transformer` too when you drag a node.
 - `dragmove` triggers only after ALL positions of dragging nodes are changed
 
 ## 6.0.0 - 2020-05-08
 
-- **BREAKING!** `boundBoxFunc` of `Konva.Transformer` works in absolute coordinates of whole transformer. Previously in was working in local coordinates of transforming node.
-- Many `Konva.Transformer` fixes. Now it works correctly when you transform several rotated shapes.
+- **BREAKING!** `boundBoxFunc` of `Pamela.Transformer` works in absolute coordinates of whole transformer. Previously in was working in local coordinates of transforming node.
+- Many `Pamela.Transformer` fixes. Now it works correctly when you transform several rotated shapes.
 - Fix for wrong `mouseleave` and `mouseout` fire on shape remove/destroy.
 
 ## 5.0.3 - 2020-05-01
 
-- Fixes for `boundBoxFunc` of `Konva.Transformer`.
+- Fixes for `boundBoxFunc` of `Pamela.Transformer`.
 
 ## 5.0.2 - 2020-04-23
 
-- Deatach fixes for `Konva.Transformer`
+- Deatach fixes for `Pamela.Transformer`
 
 ## 5.0.1 - 2020-04-22
 
-- Fixes for `Konva.Transformer` when parent scale is changed
-- Fixes for `Konva.Transformer` when parent is draggable
+- Fixes for `Pamela.Transformer` when parent scale is changed
+- Fixes for `Pamela.Transformer` when parent is draggable
 - Performance optimizations
 
 ## 5.0.0 - 2020-04-21
 
-- **New `Konva.Transformer` implementation!**. Old API should work. But I marked this release is `major` (breaking) just for smooth updates. Changes:
+- **New `Pamela.Transformer` implementation!**. Old API should work. But I marked this release is `major` (breaking) just for smooth updates. Changes:
   - Support of transforming multiple nodes at once: `tr.nodes([shape1, shape2])`.
   - `tr.node()`, `tr.setNode()`, `tr.attachTo()` methods are deprecated. Use `tr.nodes(array)` instead
   - Fixes for center scaling
@@ -388,15 +423,15 @@ group.find('Shape').forEach((shape) => shape.visible(false));
 
 ## 4.2.0 - 2020-03-14
 
-- Add `rotationSnapTolerance` property to `Konva.Transformer`.
-- Add `getActiveAnchor()` method to `Konva.Transformer`
-- Fix hit for non-closed `Konva.Path`
+- Add `rotationSnapTolerance` property to `Pamela.Transformer`.
+- Add `getActiveAnchor()` method to `Pamela.Transformer`
+- Fix hit for non-closed `Pamela.Path`
 - Some fixes for experimental Offscreen canvas support inside a worker
 
 ## 4.1.6 - 2020-02-25
 
-- Events fixes for `Konva.Transformer`
-- Now `Konva` will keep `id` in a cloned node
+- Events fixes for `Pamela.Transformer`
+- Now `Pamela` will keep `id` in a cloned node
 - Better error messages on tainted canvas issues
 
 ## 4.1.5 - 2020-02-16
@@ -406,7 +441,7 @@ group.find('Shape').forEach((shape) => shape.visible(false));
 ## 4.1.4 - 2020-02-10
 
 - Fix wrong internal caching of absolute attributes
-- Fix `Konva.Transformer` behavior on scaled with CSS stage
+- Fix `Pamela.Transformer` behavior on scaled with CSS stage
 
 ## 4.1.3 - 2020-01-30
 
@@ -420,20 +455,20 @@ group.find('Shape').forEach((shape) => shape.visible(false));
 
 ## 4.1.1 - 2020-01-07
 
-- Add ability to use `width = 0` and `height = 0` for `Konva.Image`.
-- Fix `cache()` method of `Konva.Arrow()`
-- Add `Transform` to `Konva` default exports. So `Konva.Transform` is available now.
+- Add ability to use `width = 0` and `height = 0` for `Pamela.Image`.
+- Fix `cache()` method of `Pamela.Arrow()`
+- Add `Transform` to `Pamela` default exports. So `Pamela.Transform` is available now.
 
 ## 4.1.0 - 2019-12-23
 
 - Make events work on some CSS transforms
 - Fix caching on float dimensions
 - Fix `mouseleave` event on stage.
-- Increase default anchor size for `Konva.Transformer` on touch devices
+- Increase default anchor size for `Pamela.Transformer` on touch devices
 
 ## 4.0.18 - 2019-11-20
 
-- Fix `path.getClientRect()` calculations for `Konva.Path`
+- Fix `path.getClientRect()` calculations for `Pamela.Path`
 - Fix wrong fire of `click` and `tap` events on stopped drag events.
 
 ## 4.0.17 - 2019-11-08
@@ -464,7 +499,7 @@ group.find('Shape').forEach((shape) => shape.visible(false));
 
 ## 4.0.12 - 2019-09-17
 
-- Fix some bugs when `Konva.Transformer` has `padding > 0`
+- Fix some bugs when `Pamela.Transformer` has `padding > 0`
 
 ## 4.0.10 - 2019-09-10
 
@@ -473,7 +508,7 @@ group.find('Shape').forEach((shape) => shape.visible(false));
 
 ## 4.0.9 - 2019-09-06
 
-- Fix `Konva.Transformer` behavior on mirrored nodes
+- Fix `Pamela.Transformer` behavior on mirrored nodes
 - Fix `stage.getPointerPosition()` logic.
 
 ## 4.0.8 - 2019-09-05
@@ -503,7 +538,7 @@ group.find('Shape').forEach((shape) => shape.visible(false));
 ## 4.0.3 - 2019-08-08
 
 - Slightly changed `mousemove` event flow. It triggers for first `mouseover` event too
-- Better `Konva.hitOnDragEnabled` support for mouse inputs
+- Better `Pamela.hitOnDragEnabled` support for mouse inputs
 
 ## 4.0.2 - 2019-08-08
 
@@ -511,12 +546,12 @@ group.find('Shape').forEach((shape) => shape.visible(false));
 
 ## 4.0.1 - 2019-08-07
 
-- Better `Konva.Arrow` + tension drawing
+- Better `Pamela.Arrow` + tension drawing
 - Typescript fixes
 
 ## 4.0.0 - 2019-08-05
 
-Basically the release doesn't have any breaking changes. You may only have issues if you are using something from `Konva.DD` object (which is private and never documented). Otherwise you should be fine. `Konva` has major upgrade about touch events system and drag&drop flow. The API is exactly the same. But the internal refactoring is huge so I decided to make a major version. Please upgrade carefully. Report about any issues you have.
+Basically the release doesn't have any breaking changes. You may only have issues if you are using something from `Pamela.DD` object (which is private and never documented). Otherwise you should be fine. `Pamela` has major upgrade about touch events system and drag&drop flow. The API is exactly the same. But the internal refactoring is huge so I decided to make a major version. Please upgrade carefully. Report about any issues you have.
 
 - Better multi-touch support. Now we can trigger several `touch` events on one or many nodes.
 - New drag&drop implementation. You can drag several shapes at once with several pointers.
@@ -529,7 +564,7 @@ Basically the release doesn't have any breaking changes. You may only have issue
 ## 3.4.0 - 2019-07-12
 
 - TS types fixes
-- Added support for different values for `cornerRadius` of `Konva.Rect`
+- Added support for different values for `cornerRadius` of `Pamela.Rect`
 
 ## 3.3.3 - 2019-06-07
 
@@ -553,8 +588,8 @@ Basically the release doesn't have any breaking changes. You may only have issue
 ## 3.2.7 - 2019-05-27
 
 - Typescript fixes
-- Experimental pointer events support. Do `Konva._pointerEventsEnabled = true;` to enable
-- Fix some `Konva.Transformer` bugs.
+- Experimental pointer events support. Do `Pamela._pointerEventsEnabled = true;` to enable
+- Fix some `Pamela.Transformer` bugs.
 
 ## 3.2.6 - 2019-05-09
 
@@ -562,7 +597,7 @@ Basically the release doesn't have any breaking changes. You may only have issue
 
 ## 3.2.5 - 2019-04-17
 
-- Show a warning when `Konva.Transformer` and attaching node have different parents.
+- Show a warning when `Pamela.Transformer` and attaching node have different parents.
 - Typescript fixes
 
 ## 3.2.4 - 2019-04-05
@@ -601,7 +636,7 @@ Basically the release doesn't have any breaking changes. You may only have issue
 
 ## 3.1.0 - 2019-02-27
 
-- Make `Konva` modular: `import Konva from 'konva/lib/Core';`;
+- Make `Pamela` modular: `import Pamela from 'konva/lib/Core';`;
 - Fix incorrect `Transformer` behavior
 - Fix drag&drop for touch devices
 
@@ -609,22 +644,22 @@ Basically the release doesn't have any breaking changes. You may only have issue
 
 ## Breaking
 
-Customs builds are temporary removed from npm package. You can not use `import Konva from 'konva/src/Core';`.
+Customs builds are temporary removed from npm package. You can not use `import Pamela from 'konva/src/Core';`.
 This feature will be added back later.
 
 ### Possibly breaking
 
-That changes are private and internal specific. They should not break most of `Konva` apps.
+That changes are private and internal specific. They should not break most of `Pamela` apps.
 
-- `Konva.Util.addMethods` is removed
-- `Konva.Util._removeLastLetter` is removed
-- `Konva.Util._getImage` is removed
+- `Pamela.Util.addMethods` is removed
+- `Pamela.Util._removeLastLetter` is removed
+- `Pamela.Util._getImage` is removed
 - `Konv.Util._getRGBAString` is removed
 - `Konv.Util._merge` is removed
 - Removed polyfill for `requestAnimationFrame`.
 - `id` and `name` properties defaults are empty strings, not `undefined`
 - internal `_cache` property was updated to use es2015 `Map` instead of `{}`.
-- `Konva.Validators` is removed.
+- `Pamela.Validators` is removed.
 
 ### Added
 
@@ -634,8 +669,8 @@ That changes are private and internal specific. They should not break most of `K
 - Show a warning for incorrect value for component setters.
 - Show a warning for incorrect value for `zIndex` property.
 - Show a warning when user is trying to reuse destroyed shape.
-- new publish method `measureSize(string)` for `Konva.Text`
-- You can configure what mouse buttons can be used for drag&drop. To enable right button you can use `Konva.dragButtons = [0, 1]`.
+- new publish method `measureSize(string)` for `Pamela.Text`
+- You can configure what mouse buttons can be used for drag&drop. To enable right button you can use `Pamela.dragButtons = [0, 1]`.
 - Now you can hide stage `stage.visible(false)`. It will set its container display style to "none".
 - New method `stage.setPointersPositions(event)`. Usually you don't need to use it manually.
 - New method `layer.toggleHitCanvas()` to show and debug hit areas
@@ -643,10 +678,10 @@ That changes are private and internal specific. They should not break most of `K
 ### Changed
 
 - Full rewrite to Typescript with tons of refactoring and small optimizations. The public API should be 100% the same
-- Fixed `patternImage` and `radialGradient` for `Konva.Text`
-- `Konva.Util._isObject` is renamed to `Konva.Util._isPlainObject`.
+- Fixed `patternImage` and `radialGradient` for `Pamela.Text`
+- `Pamela.Util._isObject` is renamed to `Pamela.Util._isPlainObject`.
 - A bit changed behavior of `removeId` (private method), now it doesn't clear node ref, if object is changed.
-- simplified `batchDraw` method (it doesn't use `Konva.Animation`) now.
+- simplified `batchDraw` method (it doesn't use `Pamela.Animation`) now.
 - Performance improvements for shapes will image patterns, linear and radial fills
 - `text.getTextHeight()` is deprecated. Use `text.height()` or `text.fontSize()` instead.
 - Private method `stage._setPointerPosition()` is deprecated. Use `stage.setPointersPositions(event)`;
@@ -657,10 +692,10 @@ That changes are private and internal specific. They should not break most of `K
 - Better implementation of `mouseover` event for stage
 - Fixed underline drawing for text with `lineHeight !== 1`
 - Fixed some caching behavior when a node has `globalCompositeOperation`.
-- Fixed automatic updates for `Konva.Transformer`
+- Fixed automatic updates for `Pamela.Transformer`
 - Fixed container change for a stage.
-- Fixed warning for `width` and `height` attributes for `Konva.Text`
-- Fixed gradient drawing for `Konva.Text`
+- Fixed warning for `width` and `height` attributes for `Pamela.Text`
+- Fixed gradient drawing for `Pamela.Text`
 - Fixed rendering with `strokeWidth = 0`
 
 ## 2.6.0 - 2018-12-14
@@ -672,7 +707,7 @@ That changes are private and internal specific. They should not break most of `K
 
 ### Added
 
-- New `ignoreStroke` for `Konva.Transformer`. Good to use when a shape has `strokeScaleEnabled = false`
+- New `ignoreStroke` for `Pamela.Transformer`. Good to use when a shape has `strokeScaleEnabled = false`
 
 ### Changed
 
@@ -688,7 +723,7 @@ That changes are private and internal specific. They should not break most of `K
 
 ### Added
 
-- New `anchorCornerRadius` for `Konva.Transformer`
+- New `anchorCornerRadius` for `Pamela.Transformer`
 
 ### Fixed
 
@@ -714,7 +749,7 @@ That changes are private and internal specific. They should not break most of `K
 
 - `getClientRect` for complex paths fixes
 - `getClientRect` calculation fix for groups
-- Update `Konva.Transformer` on `rotateEnabled` change
+- Update `Pamela.Transformer` on `rotateEnabled` change
 - Fix click stage event on dragend
 - Fix some Transformer cursor behavior
 
@@ -722,8 +757,8 @@ That changes are private and internal specific. They should not break most of `K
 
 ### Added
 
-- Centered resize with ALT key for `Konva.Transformer`
-- New `centeredScaling` for `Konva.Transformer`
+- Centered resize with ALT key for `Pamela.Transformer`
+- New `centeredScaling` for `Pamela.Transformer`
 
 ### Fixed
 
@@ -735,7 +770,7 @@ That changes are private and internal specific. They should not break most of `K
 ### Added
 
 - new methods `path.getLength()` and `path.getPointAtLength(val)`
-- `verticalAlign` for `Konva.Text`
+- `verticalAlign` for `Pamela.Text`
 
 ## 2.2.2 - 2018-08-21
 
@@ -749,17 +784,17 @@ That changes are private and internal specific. They should not break most of `K
 
 ### Added
 
-- New properties for `Konva.Transformer`: `borderStroke`, `borderStrokeWidth`, `borderDash`, `anchorStroke`, `anchorStrokeWidth`, `anchorSize`.
+- New properties for `Pamela.Transformer`: `borderStroke`, `borderStrokeWidth`, `borderDash`, `anchorStroke`, `anchorStrokeWidth`, `anchorSize`.
 
 ### Changed
 
-- Some properties of `Konva.Transformer` are renamed. `lineEnabled` -> `borderEnabled`. `rotateHandlerOffset` -> `rotateAnchorOffset`, `enabledHandlers` -> `enabledAnchors`.
+- Some properties of `Pamela.Transformer` are renamed. `lineEnabled` -> `borderEnabled`. `rotateHandlerOffset` -> `rotateAnchorOffset`, `enabledHandlers` -> `enabledAnchors`.
 
 ## 2.1.8 - 2018-08-01
 
 ### Fixed
 
-- Some `Konva.Transformer` fixes
+- Some `Pamela.Transformer` fixes
 - Typescript fixes
 - `stage.toDataURL()` fixes when it has hidden layers
 - `shape.toDataURL()` automatically adjust position and size of resulted image
@@ -794,33 +829,33 @@ That changes are private and internal specific. They should not break most of `K
 
 ### Fixed
 
-- Fixed `Konva.Text` justify drawing for a text with decoration
-- Added methods `data()`,`setData()` and `getData()` methods to `Konva.TextPath`
-- Correct cache reset for `Konva.Transformer`
+- Fixed `Pamela.Text` justify drawing for a text with decoration
+- Added methods `data()`,`setData()` and `getData()` methods to `Pamela.TextPath`
+- Correct cache reset for `Pamela.Transformer`
 
 ## 2.1.3 - 2018-05-17
 
 ### Fixed
 
-- `Konva.Transformer` automatically track shape changes
-- `Konva.Transformer` works with shapes with offset too
+- `Pamela.Transformer` automatically track shape changes
+- `Pamela.Transformer` works with shapes with offset too
 
 ## 2.1.2 - 2018-05-16
 
 ### Fixed
 
-- Cursor fixes for `Konva.Transformer`
-- Fixed lineHeight behavior for `Konva.Text`
-- Some performance optimizations for `Konva.Text`
-- Better wrap algorithm for `Konva.Text`
-- fixed `Konva.Arrow` with tension != 0
-- Some fixes for `Konva.Transformer`
+- Cursor fixes for `Pamela.Transformer`
+- Fixed lineHeight behavior for `Pamela.Text`
+- Some performance optimizations for `Pamela.Text`
+- Better wrap algorithm for `Pamela.Text`
+- fixed `Pamela.Arrow` with tension != 0
+- Some fixes for `Pamela.Transformer`
 
 ## 2.0.3 - 2018-04-21
 
 ### Added
 
-- Typescript defs for `Konva.Transformer`
+- Typescript defs for `Pamela.Transformer`
 - Typescript defs for `globalCompositeOperation`
 
 ## Changes
@@ -831,7 +866,7 @@ That changes are private and internal specific. They should not break most of `K
 ### Fixed
 
 - some bugs fixes for `group.getClientRect()`
-- `Konva.Arrow` will not draw dash for pointers
+- `Pamela.Arrow` will not draw dash for pointers
 - setAttr will trigger change event if new value is the same Object
 - better behavior of `dblclick` event when you click fast on different shapes
 - `stage.toDataURL` will use `pixelRatio = 1` by default.
@@ -840,23 +875,23 @@ That changes are private and internal specific. They should not break most of `K
 
 ### Fixed
 
-- Even more bugs fixes for `Konva.Transformer`
+- Even more bugs fixes for `Pamela.Transformer`
 
 ## 2.0.1 - 2018-03-15
 
 ### Fixed
 
-- Several bugs fixes for `Konva.Transformer`
+- Several bugs fixes for `Pamela.Transformer`
 
 ## 2.0.0 - 2018-03-15
 
 ### Added
 
-- new `Konva.Transformer`. It is a special group that allow simple resizing and rotation of a shape.
+- new `Pamela.Transformer`. It is a special group that allow simple resizing and rotation of a shape.
 - Add ability to remove event by callback `node.off('event', callback)`.
-- new `Konva.Filters.Contrast`.
-- new `Konva.Util.haveIntersection()` to detect simple collusion
-- add `Konva.Text.ellipsis` to add '…' to text string if width is fixed and wrap is set to 'none'
+- new `Pamela.Filters.Contrast`.
+- new `Pamela.Util.haveIntersection()` to detect simple collusion
+- add `Pamela.Text.ellipsis` to add '…' to text string if width is fixed and wrap is set to 'none'
 - add gradients for strokes
 
 ## Changed
@@ -900,13 +935,13 @@ That changes are private and internal specific. They should not break most of `K
 
 ### Fixed
 
-- Fixed `Konva.document is undefined`
+- Fixed `Pamela.document is undefined`
 
 ## 1.7.1 - 2017-10-11
 
 ### Changed
 
-- Konva for browser env and Konva for nodejs env are separate packages now. You can use `konva-node` for NodeJS env.
+- Pamela for browser env and Pamela for nodejs env are separate packages now. You can use `konva-node` for NodeJS env.
 
 ## 1.7.0 - 2017-10-08
 
@@ -955,13 +990,13 @@ That changes are private and internal specific. They should not break most of `K
 
 ### Changed
 
-- moved `globalCompositeOperation` property to `Konva.Node`
+- moved `globalCompositeOperation` property to `Pamela.Node`
 
 ## 1.6.0 - 2017-04-21
 
 ### Added
 
-- support of globalCompositeOperation for `Konva.Shape`
+- support of globalCompositeOperation for `Pamela.Shape`
 
 ### Fixed
 
@@ -969,39 +1004,39 @@ That changes are private and internal specific. They should not break most of `K
 
 ### Changed
 
-- Konva a bit changed a way to detect pointer position. Now it should be OK to apply css transform on Konva container. https://github.com/konvajs/konva/pull/215
+- Pamela a bit changed a way to detect pointer position. Now it should be OK to apply css transform on Pamela container. https://github.com/konvajs/konva/pull/215
 
 ## 1.5.0 - 2017-03-20
 
 ### Added
 
-- support for `lineDashOffset` property for `Konva.Shape`.
+- support for `lineDashOffset` property for `Pamela.Shape`.
 
 ## 1.4.0 - 2017-02-07
 
 ## Added
 
-- `textDecoration` of `Konva.Text` now supports `line-through`
+- `textDecoration` of `Pamela.Text` now supports `line-through`
 
 ## 1.3.0 - 2017-01-10
 
 ## Added
 
-- new align value for `Konva.Text` and `Konva.TextPath`: `justify`
-- new property for `Konva.Text` and `Konva.TextPath`: `textDecoration`. Right now it sports only '' (no decoration) and 'underline' values.
-- new property for `Konva.Text`: `letterSpacing`
-- new event `contentContextmenu` for `Konva.Stage`
-- `align` support for `Konva.TextPath`
+- new align value for `Pamela.Text` and `Pamela.TextPath`: `justify`
+- new property for `Pamela.Text` and `Pamela.TextPath`: `textDecoration`. Right now it sports only '' (no decoration) and 'underline' values.
+- new property for `Pamela.Text`: `letterSpacing`
+- new event `contentContextmenu` for `Pamela.Stage`
+- `align` support for `Pamela.TextPath`
 - new method `toCanvas()` for converting a node into canvas element
 
 ### Changed
 
-- changing a size of `Konva.Stage` will update it in async way (via `batchDraw`).
+- changing a size of `Pamela.Stage` will update it in async way (via `batchDraw`).
 - `shadowOffset` respect pixel ratio now
 
 ### Fixed
 
-- Fixed bug when `Konva.Tag` width was not changing its width dynamically
+- Fixed bug when `Pamela.Tag` width was not changing its width dynamically
 - Fixed "calling remove() for dragging shape will throw an error"
 - Fixed wrong opacity level for cached group with opacity
 - More consistent shadows on HDPI screens
@@ -1018,13 +1053,13 @@ That changes are private and internal specific. They should not break most of `K
 
 ## Added
 
-- new properties for `Konva.TextPath`: `letterSpacing` and `textBaseline`.
+- new properties for `Pamela.TextPath`: `letterSpacing` and `textBaseline`.
 
 ## 1.1.4 - 2016-09-13
 
 ### Fixed
 
-- Prevent throwing an error when text property of `Konva.Text` = undefined or null
+- Prevent throwing an error when text property of `Pamela.Text` = undefined or null
 
 ## 1.1.3 - 2016-09-12
 
@@ -1049,7 +1084,7 @@ That changes are private and internal specific. They should not break most of `K
 
 ## Added
 
-- new property of `Konva.Shape` - `preventDefault`.
+- new property of `Pamela.Shape` - `preventDefault`.
 
 ## 1.0.3 - 2016-08-14
 
@@ -1061,7 +1096,7 @@ That changes are private and internal specific. They should not break most of `K
 
 ## Changed
 
-- `Konva.Text` will interpret undefined `width` and `height` as `AUTO`
+- `Pamela.Text` will interpret undefined `width` and `height` as `AUTO`
 
 ## 1.0.1 - 2016-07-05
 
@@ -1098,7 +1133,7 @@ That changes are private and internal specific. They should not break most of `K
 
 - typescript definition in npm package
 - node@5.10.1, canvas@1.3.14, jsdom@8.5.0 support
-- `Konva.Path` will be filled when it is not closed
+- `Pamela.Path` will be filled when it is not closed
 - `Animation.start()` will not not immediate sync draw. This should improve performance a little.
 - Warning when node for `Tween` is not in layer yet.
 - `removeChildren()` remove only first level children. So it will not remove grandchildren.
@@ -1139,7 +1174,7 @@ That changes are private and internal specific. They should not break most of `K
 
 ### Fixed
 
-- correct `Konva.Arrow` drawing. Now it works better.
+- correct `Pamela.Arrow` drawing. Now it works better.
 - Better support for dragging when mouse out of stage
 - Better corner radius for `Label` shape
 - `contentTap` event for stage
@@ -1149,7 +1184,7 @@ That changes are private and internal specific. They should not break most of `K
 - event delegation. You can use it in this way: `layer.on('click', 'Circle', handler);`
 - new `node.findAncestors(selector)` and `node.findAncestor(selector)` functions
 - optional selector parameter for `stage.getIntersection` and `layer.getIntersection`
-- show warning message if several instances of Konva are added to page.
+- show warning message if several instances of Pamela are added to page.
 
 ### Changed
 
@@ -1162,19 +1197,19 @@ That changes are private and internal specific. They should not break most of `K
 ### Added
 
 - RGBA filter. Thanks to [@codefo](https://github.com/codefo)
-- `stroke` and `fill` support for `Konva.Sprite`
+- `stroke` and `fill` support for `Pamela.Sprite`
 
 ### Fixed
 
-- Correct calculation in `getClientRect` method of `Konva.Line` and `Konva.Container`.
+- Correct calculation in `getClientRect` method of `Pamela.Line` and `Pamela.Container`.
 - Correct `toObject()` behaviour for node with attrs with extended native prototypes
 - Fixed bug for caching where buffer canvas is required
 
 ### Changed
 
 - Dragging works much better. If your pointer is out of stage content dragging will still continue.
-- `Konva.Node.create` now works with objects.
-- `Konva.Tween` now supports tweening points to state with different length
+- `Pamela.Node.create` now works with objects.
+- `Pamela.Tween` now supports tweening points to state with different length
 
 ## 0.9.5 - 2015-05-28
 
@@ -1199,7 +1234,7 @@ That changes are private and internal specific. They should not break most of `K
 
 ### Added
 
-- new `Konva.Image.fromURL` method
+- new `Pamela.Image.fromURL` method
 
 ### Deprecated
 
@@ -1223,7 +1258,7 @@ That changes are private and internal specific. They should not break most of `K
 - performance optimization (remove some unnecessary draws)
 - more expected drawing when shape has opacity, stroke and shadow
 - HDPI for caching.
-- Cache should work much better. Now you don't need to pass bounding box {x,y,width,height} to `cache` method for all buildin Konva shapes. (only for your custom `Konva.Shape` instance).
+- Cache should work much better. Now you don't need to pass bounding box {x,y,width,height} to `cache` method for all buildin Pamela shapes. (only for your custom `Pamela.Shape` instance).
 - `Tween` now supports color properties (`fill`, `stroke`, `shadowColor`)
 
 ### Added
@@ -1253,8 +1288,8 @@ Differences from last official `KineticJS` release
   - `strokeScaleEnabled = false` is disabled for text as I can not find a way to implement this
   - `strokeScaleEnabled = false` for Line now creates a correct hit graph
   - working "this-example" as name for nodes
-  - Konva.Text() with no config will not throw exception
-  - Konva.Line() with no config will not throw exception
+  - Pamela.Text() with no config will not throw exception
+  - Pamela.Line() with no config will not throw exception
   - Correct stage resizing with `FastLayer`
   - `batchDraw` method for `FastLayer`
   - Correct mouseover/mouseout/mouseenter/mouseleave events for groups
@@ -1264,10 +1299,10 @@ Differences from last official `KineticJS` release
 - Enhancements
   - `cornerRadius` of Rect is limited by `width/2` and `height/2`
   - `black` is default fill for text
-  - true class extending. Now `rect instanceOf Konva.Shape` will return true
+  - true class extending. Now `rect instanceOf Pamela.Shape` will return true
   - while dragging you can redraw layer that is not under drag. hit graph will be updated in this case
   - now you can move object that is dragging into another layer.
-  - new `frameOffsets` attribute for `Konva.Sprite`
+  - new `frameOffsets` attribute for `Pamela.Sprite`
   - much better dragging performance
   - `browserify` support
   - applying opacity to cached node
