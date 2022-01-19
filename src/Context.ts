@@ -105,20 +105,20 @@ var CONTEXT_PROPERTIES = [
 const traceArrMax = 100;
 
 /**
- * Konva wrapper around native 2d canvas context. It has almost the same API of 2d context with some additional functions.
- * With core Konva shapes you don't need to use this object. But you will use it if you want to create
+ * Pamela wrapper around native 2d canvas context. It has almost the same API of 2d context with some additional functions.
+ * With core Pamela shapes you don't need to use this object. But you will use it if you want to create
  * a [custom shape](/docs/react/Custom_Shape.html) or a [custom hit regions](/docs/events/Custom_Hit_Region.html).
  * For full information about each 2d context API use [MDN documentation](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D)
  * @constructor
- * @memberof Konva
+ * @memberof Pamela
  * @example
- * const rect = new Konva.Shape({
+ * const rect = new Pamela.Shape({
  *    fill: 'red',
  *    width: 100,
  *    height: 100,
  *    sceneFunc: (ctx, shape) => {
  *      // ctx - is context wrapper
- *      // shape - is instance of Konva.Shape, so it equals to "rect" variable
+ *      // shape - is instance of Pamela.Shape, so it equals to "rect" variable
  *      ctx.rect(0, 0, shape.getAttr('width'), shape.getAttr('height'));
  *
  *      // automatically fill shape from props and draw hit region
@@ -189,27 +189,11 @@ export class Context {
     }
   }
 
-  // /**
-  //  * Draws rectangular borders for this shape
-  //  * @param shape Shape to draw borders for
-  //  */
-  // drawRectBorders(shape: Shape) {
-  //   // Check if borders are enabled
-  //   if (!shape.bordered()) return;
-  //
-  //   this._context.lineWidth = shape.borderWidth() || 1;
-  //   this._context.lineCap = shape.borderCap() || LineCap2.Butt;
-  //   this._context.strokeStyle = shape.borderColor() || 'black';
-  //   if (shape.borderDash())
-  //     this._context.setLineDash(shape.borderDash());
-  //   // Draw rounded rect
-  //   this.roundRect(0,
-  //     0,
-  //     shape.width(),
-  //     shape.height(),
-  //     shape.borderRadius() || BorderRadiusUtils.squared());
-  // }
-
+  /**
+   * Set the translation of this context
+   * @param x
+   * @param y
+   */
   setTranslation(x: number, y: number) {
     const matr = this._context.getTransform();
     matr.e = x;

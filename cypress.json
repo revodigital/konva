@@ -1,4 +1,4 @@
 {
   "pluginsFile": false,
-  "baseUrl": "http://localhost:3000/cypress/pages"
+  "baseUrl": "http://localhost:12345/cypress/pages"
 }
