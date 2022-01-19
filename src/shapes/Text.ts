@@ -148,12 +148,6 @@ export interface TextConfig extends ShapeConfig {
   enableNewLine?: boolean;
 
   /**
-   * When this option is true, font size will be also recalculated to make text fit the container boundaries.
-   * This calculation is triggered at every input
-   */
-  expandToFit?: boolean;
-
-  /**
    * Represents how textbox boundaries should grow while in
    * editing mode
    * and witch of them should remain fixed
@@ -249,7 +243,6 @@ export class Text extends Shape<TextConfig> {
   lockSize: GetSet<boolean, this>;
   spellcheckOnEdit: GetSet<boolean, this>;
   enableNewLine: GetSet<boolean, this>;
-  expandToFit: GetSet<boolean, this>;
   growPolicy: GetSet<GrowPolicy, this>;
   backgroundColor: GetSet<string, this>;
   fontFamily: GetSet<string, this>;
@@ -294,9 +287,6 @@ export class Text extends Shape<TextConfig> {
 
     if (this.lockSize() === undefined)
       this.lockSize(false);
-
-    if (this.expandToFit() === undefined)
-      this.expandToFit(true);
 
     if (this.bordered() === undefined)
       this.bordered(false);
@@ -392,7 +382,6 @@ export class Text extends Shape<TextConfig> {
   }
 
   private _onTransform(event: any) {
-    console.log("Transform");
     if(this.lockSize()) this.fitContainer();
   }
 
@@ -643,7 +632,7 @@ export class Text extends Shape<TextConfig> {
   private _onRemoveText(e: KeyboardEvent): void {
     const scale = this.getAbsoluteScale().x;
     // Check if text can be resized to fit container
-    if (this.expandToFit() === true) {
+    if (this.lockSize() === true) {
       const f = this.fitContainer();
       this._setTextAreaFontSize(f);
     }
@@ -742,7 +731,7 @@ export class Text extends Shape<TextConfig> {
     }
 
     // Check for possibility of font decrease when in lockSize mode
-    if (this.expandToFit())
+    if (this.lockSize())
       this.fitContainer();
   }
 
@@ -1142,11 +1131,14 @@ export class Text extends Shape<TextConfig> {
    * (shape width and height)
    */
   fitContainer(): number {
+    const scale = this.getAbsoluteScale().x;
     let ft = this.fontSize();
-    let ftr = this._fontSizeFits(ft);
-    let lastResult = undefined;
     // Check if current fontsize can fit
-    while (ftr !== 0 || lastResult === ftr) {
+    let ftr = this._fontSizeFits(ft);
+    // Direction of the growth or shrink.
+    let chr = ftr;
+
+    while (ftr !== 0 && chr === ftr) {
       // Increment or decrement font size
       if (ftr === -1)
         ft++;
@@ -1156,9 +1148,8 @@ export class Text extends Shape<TextConfig> {
 
       // Sync also textarea font
       if (this._textArea)
-        this._textArea.style.fontSize = pixel(ft);
+        this._textArea.style.fontSize = pixel(ft * scale);
 
-      lastResult = ftr;
       ftr = this._fontSizeFits(ft);
     }
 
@@ -1612,10 +1603,8 @@ Factory.addGetterSetter(Text, 'spellcheckOnEdit', false);
 Factory.addGetterSetter(Text, 'enableNewLine', false);
 
 /**
- * Enable / disable automatic fontsize grow to fit container
+ * Indicates if this textbox should be resized on
  */
-Factory.addGetterSetter(Text, 'expandToFit', false);
-
 Factory.addGetterSetter(Text, 'growPolicy', GrowPolicy.GrowHeight);
 
 /**
