@@ -37,6 +37,9 @@ import { SceneContext }                             from '../Context';
 import {
   EDITING_END, EditingEnd
 }                                                   from '../events/text/EditingEnd';
+import {
+  EDITING_START
+}                                                   from '../events/text/EditingStart';
 
 /**
  * Minimum font size
@@ -372,7 +375,7 @@ export class Text extends Shape<TextConfig> {
 
     // Fire editing start event
     if (this.getStage()) {
-      this.getStage().fire('text-editingstart',
+      this.getStage().fire(EDITING_START,
         { node: this, textArea: this._textArea });
     }
 
