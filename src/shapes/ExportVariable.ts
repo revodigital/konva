@@ -69,9 +69,9 @@ export class ExportVariable extends Shape<ExportVariableConfig> {
 
     context._context.fillStyle = 'black';
     if (!this.hideFX()) {
-      context._context.font = 'bold italic 20px Courier New';
+      context._context.font = 'bold italic 20px Times new Roman';
       space += context.measureText('f(x)').width;
-      context.fillText('f(x)', 10, centerY);
+      context.fillText('(x)', 10, centerY);
     }
     context._context.font = '15px Arial';
 
