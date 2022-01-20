@@ -385,7 +385,7 @@ export class Text extends Shape<TextConfig> {
   }
 
   private _onTransform(event: any) {
-    if(this.lockSize()) this.fitContainer();
+    if (this.lockSize()) this.fitContainer();
   }
 
   private _onOutsideClick(e: MouseEvent) {
@@ -777,6 +777,31 @@ export class Text extends Shape<TextConfig> {
       this.fontSize(fontSize);
     }
     return true;
+  }
+
+  /**
+   * Resize container of this text to make all fit.
+   * Differs from fitContainer, that resizes the font of the text.
+   */
+  public resize(): Size2D {
+    if (this.lockSize()) this.fitContainer();
+    else {
+      const measurement = this.getMeasurementHelper();
+      let size: Size2D = this.getSizeRect();
+
+      if (this.growPolicy() === GrowPolicy.GrowHeight) size.setHeight(300000);
+      else size.setWidth(300000);
+      const textMetrics = measurement.measureComplexText(size);
+      const { height, maxWidth } = textMetrics;
+
+      // Apply width grow
+      if (this.growPolicy() === GrowPolicy.GrowHeight && height > this.height()) this.height(
+        height + 10);
+      else if (this.growPolicy() === GrowPolicy.GrowWidth && maxWidth > this.width()) this.width(
+        maxWidth + 10);
+
+      return this.getSizeRect();
+    }
   }
 
   /**
