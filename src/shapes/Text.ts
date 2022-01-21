@@ -40,6 +40,9 @@ import {
 import {
   EDITING_START
 }                                                   from '../events/text/EditingStart';
+import {
+  CHANGED, ChangedEvent
+}                                                   from '../events/text/Changed';
 
 /**
  * Minimum font size
@@ -527,8 +530,8 @@ export class Text extends Shape<TextConfig> {
     window.removeEventListener('click', this._handleOutsideClick);
     this._textArea.parentNode.removeChild(this._textArea);
     this._textArea = undefined;
-    if (this.getStage())
-      this.getStage().fire(EDITING_END, { node: this } as EditingEnd);
+
+    this._fireChangedEvent();
   }
 
   getSelfRect(): { x: number; width: number; y: number; height: number } {
@@ -575,6 +578,8 @@ export class Text extends Shape<TextConfig> {
         }
       }
     }
+
+    this._fireChangedEvent();
   }
 
   /**
@@ -646,15 +651,31 @@ export class Text extends Shape<TextConfig> {
       if (this.growPolicy() === GrowPolicy.GrowHeight) {
         this.height(this.measureTextHeight() + (this.padding() * 2) + (this.lineHeight() || 1) * this.fontSize());
         this._resizeTextAreaHeight(this.height() * scale);
+
+        this._fireChangedEvent();
       } else {
         // Resize width
         this.width(this.getTextWidth() + (this.padding() * 2));
         this._resizeTextAreaWidth(this.width() * scale);
+
+
+        this._fireChangedEvent()
       }
     }
 
     // Update text
     this.text(this._textArea.value);
+
+  }
+
+  /**
+   * Fires the event to signal that this text has changed internally
+   * @private
+   */
+  private _fireChangedEvent() {
+    // Fire event for boundaries change (ChangedEvent)
+    if (this.getStage())
+      this.getStage().fire(CHANGED, { node: this });
   }
 
   /**
@@ -716,6 +737,7 @@ export class Text extends Shape<TextConfig> {
         // Resize height of shape and also of text area
         this.height(this.height() + newLineHeight);
         this._resizeTextAreaHeight(this.height() * scale);
+        this._fireChangedEvent();
       }
 
       // Check for grow width
@@ -723,6 +745,7 @@ export class Text extends Shape<TextConfig> {
         // Add some space left
         this.width(this.width() + newCharWidth);
         this._resizeTextAreaWidth(this.width() * scale);
+        this._fireChangedEvent();
       }
     } else if (overflowsHeight && this.lockSize()) {
       // If unable to decrease font (fontSize < 6pt) resize following
@@ -751,6 +774,8 @@ export class Text extends Shape<TextConfig> {
       this._resizeTextAreaHeight(newSize.getWidth());
       this.width(newSize.getWidth());
     }
+
+    this._fireChangedEvent();
   }
 
   /**
@@ -776,6 +801,10 @@ export class Text extends Shape<TextConfig> {
 
       this.fontSize(fontSize);
     }
+
+    // Fire event for boundaries change (ChangedEvent)
+    if (this.getStage())
+      this.getStage().fire(CHANGED, { node: this });
     return true;
   }
 
@@ -799,6 +828,11 @@ export class Text extends Shape<TextConfig> {
         height + 10);
       else if (this.growPolicy() === GrowPolicy.GrowWidth && maxWidth > this.width()) this.width(
         maxWidth + 10);
+
+
+      // Fire event for boundaries change (ChangedEvent)
+      if (this.getStage())
+        this.getStage().fire(CHANGED, { node: this });
 
       return this.getSizeRect();
     }
@@ -1181,6 +1215,10 @@ export class Text extends Shape<TextConfig> {
       ftr = this._fontSizeFits(ft);
     }
 
+
+    // Fire event for boundaries change (ChangedEvent)
+    if (this.getStage())
+      this.getStage().fire(CHANGED, { node: this });
     return ft;
   }
 
