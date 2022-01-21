@@ -56,11 +56,6 @@ export interface RichTextConfig extends ShapeConfig {
   lockSize?: boolean;
 
   /**
-   * Base text color
-   */
-  textColor?: string;
-
-  /**
    * Base font size
    */
   fontSize?: number;
@@ -96,6 +91,11 @@ export interface RichTextConfig extends ShapeConfig {
    * and witch of them should remain fixed
    */
   growPolicy?: GrowPolicy;
+
+  /**
+   * Text background color
+   */
+  backgroundColor?: string;
 }
 
 /**
@@ -107,7 +107,6 @@ export class RichText extends Shape<RichTextConfig> {
   lockSize: GetSet<boolean, this>;
   growPolicy: GetSet<GrowPolicy, this>;
   padding: GetSet<number, this>;
-  textColor: GetSet<string, this>;
   fontSize: GetSet<number, this>;
   fontStyle: GetSet<string, this>;
   fontVariant: GetSet<string, this>;
@@ -115,6 +114,7 @@ export class RichText extends Shape<RichTextConfig> {
   fontDecoration: GetSet<string, this>;
   sourceType: GetSet<RichTextSource, this>;
   horizontalAlignment: GetSet<HorizontalAlignment, this>;
+  backgroundColor: GetSet<string, this>;
 
   private _lastContent = '';
   private _lastSize: Size2D;
@@ -149,13 +149,13 @@ export class RichText extends Shape<RichTextConfig> {
     // Format complete document, adding formatting options
     const doc = `
     <div id="document" style="
-    color: ${ this.textColor() || 'black' };
+    color: ${ this.fill() || 'black' };
     margin: ${ this.padding() || 0 }px; 
     font-family: ${ this.fontFamily() || 'arial' };
     font-variant: ${ this.fontVariant() || '' }};
     text-align: ${ HAlign.toHtmlTextAlign(this.horizontalAlignment()) || 'left' };
     text-decoration: ${ this.fontDecoration() || '' };
-    background-color: ${ this.fill() || 'transparent' }; 
+    background-color: ${ this.backgroundColor() || 'transparent' }; 
     font-size: ${ fontSize || 12 }px
     ">${ this.htmlContent() }</div>
     `;
@@ -174,12 +174,15 @@ export class RichText extends Shape<RichTextConfig> {
   }
 
   private _drawBackground(context: SceneContext) {
-    if (this.hasFill() || this.hasStroke()) {
-      context.beginPath();
-      context.rect(0, 0, this.width(), this.height());
-      context.closePath();
-      context.fillStrokeShape(this);
-    }
+    // if (this.hasFill() || this.hasStroke()) {
+    //   context.beginPath();
+    //   context.rect(0, 0, this.width(), this.height());
+    //   context.closePath();
+    //   context.fillStrokeShape(this);
+    // }
+
+    context._context.fillStyle = this.backgroundColor();
+    context.fillRect(0, 0, this.width(), this.height());
   }
 
   async _sceneFunc(context: SceneContext) {
@@ -337,11 +340,6 @@ Factory.addGetterSetter(RichText, 'padding');
 Factory.addGetterSetter(RichText, 'lockSize');
 
 /**
- * Get / set text color
- */
-Factory.addGetterSetter(RichText, 'textColor');
-
-/**
  * Get / set font size
  */
 Factory.addGetterSetter(RichText, 'fontSize');
@@ -385,6 +383,11 @@ Factory.addGetterSetter(RichText, 'horizontalAlignment');
  * Get / set grow policy
  */
 Factory.addGetterSetter(RichText, 'growPolicy');
+
+/**
+ * Get / set background color
+ */
+Factory.addGetterSetter(RichText, 'backgroundColor');
 
 
 RichText.prototype.className = 'RichText';

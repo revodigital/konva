@@ -35,13 +35,10 @@ import { normalizeFontFamily }                      from '../TextUtils';
 import { TextMeasurementHelper, TextMetricsHelper } from '../TextMeasurement';
 import { SceneContext }                             from '../Context';
 import {
-  EDITING_END, EditingEnd
-}                                                   from '../events/text/EditingEnd';
-import {
   EDITING_START
 }                                                   from '../events/text/EditingStart';
 import {
-  CHANGED, ChangedEvent
+  CHANGED
 }                                                   from '../events/text/Changed';
 
 /**
