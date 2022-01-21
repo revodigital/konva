@@ -64,6 +64,36 @@ export interface BarcodeConfig extends ShapeConfig {
   displayValue?: boolean;
 }
 
+/**
+ * Pamela shape to draw a Barcode into the stage.
+ * Just specify the **code**, the **encoding** and some **boundaries**,
+ * pamela will do the rest. Supported specifications are:
+ *
+ * -    CODE128
+ *         CODE128 (automatic mode switching)
+ *         CODE128 A/B/C (force mode)
+ * -    EAN
+ *         EAN-13
+ *         EAN-8
+ *         EAN-5
+ *         EAN-2
+ *         UPC (A)
+ *         UPC (E)
+ *  -   CODE39
+ *  -   ITF
+ *         ITF
+ *         ITF-14
+ *  -   MSI
+ *         MSI10
+ *         MSI11
+ *         MSI1010
+ *         MSI1110
+ *   -  Pharmacode
+ *   -  Codabar
+ *
+ *   The library used to generate barcode images is:
+ *   https://www.npmjs.com/package/jsbarcode
+ */
 export class Barcode extends Shape<BarcodeConfig> {
   code: GetSet<string, this>;
   transparentBackground: GetSet<boolean, this>;
@@ -207,12 +237,24 @@ export class Barcode extends Shape<BarcodeConfig> {
   }
 }
 
+/**
+ * Get / set the code
+ */
 Factory.addGetterSetter(Barcode, 'code');
 
+/**
+ * Get / set transparentBackground
+ */
 Factory.addGetterSetter(Barcode, 'transparentBackground');
 
+/**
+ * Get / set codeLineWidth
+ */
 Factory.addGetterSetter(Barcode, 'codeLineWidth');
 
+/**
+ * Get / set encoding
+ */
 Factory.addGetterSetter(Barcode, 'encoding');
 
 Factory.addGetterSetter(Barcode, 'showContent');
