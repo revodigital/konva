@@ -340,7 +340,7 @@ export class Text extends Shape<TextConfig> {
     this._textArea.style.fontWeight = this.fontStyle();
     this._textArea.style.textDecoration = this.textDecoration();
     this._textArea.style.border = 'none';
-    this._textArea.style.padding = pixel(this.padding());
+    this._textArea.style.padding = pixel(this.padding() * 2);
     this._textArea.style.margin = '0px';
     this._textArea.style.overflow = 'hidden';
     this._textArea.style.background = this.backgroundColor();
@@ -512,7 +512,7 @@ export class Text extends Shape<TextConfig> {
       newHeight = Math.ceil(newHeight);
     }
 
-    this._textArea.style.height = pixel(newHeight - (this.padding() * 2));
+    this._textArea.style.height = pixel(newHeight - (this.padding() * 4));
   }
 
   /**
@@ -655,14 +655,12 @@ export class Text extends Shape<TextConfig> {
         this.width(this.getTextWidth() + (this.padding() * 2));
         this._resizeTextAreaWidth(this.width() * scale);
 
-
-        this._fireChangedEvent()
+        this._fireChangedEvent();
       }
     }
 
     // Update text
     this.text(this._textArea.value);
-
   }
 
   /**
@@ -708,7 +706,7 @@ export class Text extends Shape<TextConfig> {
     let scale = this.getAbsoluteScale().x;
 
     // Apply current height and width using also scale
-    this._resizeTextAreaWidth(this.width() * scale);
+    this._resizeTextAreaWidth((this.getPaddedWidth() + this.padding()) * scale);
 
     // Create measurement helper
     const measurementHelp = this.getMeasurementHelper();
@@ -754,8 +752,8 @@ export class Text extends Shape<TextConfig> {
     }
 
     // Check for possibility of font decrease when in lockSize mode
-    if (this.lockSize())
-      this.fitContainer();
+    // if (this.lockSize())
+    //   this.fitContainer();
   }
 
   /**
@@ -782,9 +780,12 @@ export class Text extends Shape<TextConfig> {
   private _decreaseFontSizeToFit(measurement: TextMeasurementHelper, box: Size2D): boolean {
     const scale = this.getAbsoluteScale().x;
     let metrics = measurement.measureComplexText(box);
-    let fontSize = this.fontSize() * scale;
+    let fontSize = this.fontSize();
 
-    while (scale * (metrics.height + (fontSize * this.lineHeight())) > (this.height() - this.padding()) * scale) {
+    console.log(metrics);
+    console.log(box);
+    while ((metrics.height) >= this.getPaddedHeight()) {
+      console.log("Decrease to ", fontSize);
       if (fontSize < 7) return false;
 
       fontSize--;
@@ -1180,7 +1181,7 @@ export class Text extends Shape<TextConfig> {
     const measurement = this.getMeasurementHelper();
     const h = measurement.measureComplexText(this.getSizeRect()).height;
 
-    if (h <= this.height() && h > this.height() - (this.fontSize() * this.lineHeight())) return 0;
+    if (h <= this.height() && h > this.height() - (this.fontSize() * this.lineHeight()) - (this.padding() * 2)) return 0;
     else if (h >= this.height() + this.padding() * 2) return 1;
     else return -1;
   }
