@@ -92,8 +92,8 @@ export class Cell extends TextConfiguration {
       ctx._context.fillStyle = this.fill;
       ctx.fillRect(this.edges.topLeft.x + space,
         this.edges.topLeft.y + space,
-        this.edges.getWidth(),
-        this.edges.getHeight());
+        this.edges.getWidth() - space,
+        this.edges.getHeight() - space);
     }
 
     if (this.border && this.border.bordered) this._renderBorders(ctx);
