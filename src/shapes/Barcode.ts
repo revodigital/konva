@@ -137,12 +137,13 @@ export class Barcode extends Shape<BarcodeConfig> {
       });
     }
 
+    // Clear previous stuff
+    context.clearRect(0, 0, this.width(), this.height());
     context.fillStrokeShape(this);
 
     // Draw barcode image
-    if (this._imageBuffer && !this._resizing) {
+    if (this._imageBuffer && !this._resizing)
       context.drawImage(this._imageBuffer, 0, 0);
-    }
   }
 
   _hitFunc(context) {
