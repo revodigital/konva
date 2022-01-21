@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.4.1 (21/1/2022)
+**Implements** *resize* function for *Text*, to recalculate its boundaries
+to make text fit. Corrects performance issues and increases code quality.
+
 ## 1.4.0 (19/1/2022)
 **Implements** new shape *ExportVariable*, to draw a **variable** into the stage.
 It has a yellow background by default, and it can render variable name, via *variableName* field.
