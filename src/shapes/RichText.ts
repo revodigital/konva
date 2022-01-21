@@ -131,19 +131,6 @@ export class RichText extends Shape<RichTextConfig> {
 
     if (this.growPolicy() === undefined) this.growPolicy(GrowPolicy.GrowHeight);
     this._resizing = false;
-
-    this.on('transformstart', (e) => this._onStartResize());
-    this.on('transformend', (e) => this._onEndResize());
-  }
-
-  private _onStartResize() {
-    this._resizing = true;
-  }
-
-  private _onEndResize() {
-    this._resizing = false;
-    this.draw();
-    this.draw();
   }
 
   /**
