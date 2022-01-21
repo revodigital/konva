@@ -83,16 +83,21 @@ export class Cell extends TextConfiguration {
     if(this.edges.getWidth() === 0 || this.edges.getHeight() === 0) return;
 
     if (this.fill !== 'transparent') {
+      let space: number = 0;
+      if(this.border) {
+        space = this.border.borderWidth || 0;
+        space /= 2;
+      }
+
       ctx._context.fillStyle = this.fill;
-      ctx.fillRect(this.edges.topLeft.x,
-        this.edges.topLeft.y,
+      ctx.fillRect(this.edges.topLeft.x + space,
+        this.edges.topLeft.y + space,
         this.edges.getWidth(),
         this.edges.getHeight());
     }
 
-    this._renderText(ctx);
-
     if (this.border && this.border.bordered) this._renderBorders(ctx);
+    this._renderText(ctx);
   }
 
   /**

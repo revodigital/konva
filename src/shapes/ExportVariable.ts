@@ -22,7 +22,6 @@ export class ExportVariable extends Shape<ExportVariableConfig> {
 
     if (!this.width()) this.width(130);
     if (!this.height()) this.height(40);
-    if (!this.fill()) this.fill('yellow');
     if (!this.stroke()) this.stroke('black');
     if (!this.strokeWidth()) this.strokeWidth(2);
     if (this.assigned() === undefined) this.assigned(false);
