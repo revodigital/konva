@@ -340,7 +340,7 @@ export class Text extends Shape<TextConfig> {
     this._textArea.style.fontWeight = this.fontStyle();
     this._textArea.style.textDecoration = this.textDecoration();
     this._textArea.style.border = 'none';
-    this._textArea.style.padding = pixel(this.padding() * 2);
+    this._textArea.style.padding = pixel(this.padding());
     this._textArea.style.margin = '0px';
     this._textArea.style.overflow = 'hidden';
     this._textArea.style.background = this.backgroundColor();
@@ -706,7 +706,7 @@ export class Text extends Shape<TextConfig> {
     let scale = this.getAbsoluteScale().x;
 
     // Apply current height and width using also scale
-    this._resizeTextAreaWidth((this.getPaddedWidth() + this.padding()) * scale);
+    this._resizeTextAreaWidth((this.width()) * scale);
 
     // Create measurement helper
     const measurementHelp = this.getMeasurementHelper();
@@ -719,7 +719,7 @@ export class Text extends Shape<TextConfig> {
     const newCharWidth = this.fontSize() * this.lineHeight();
 
     // True if this text is overflowing on height
-    const overflowsHeight: boolean = (textMetrics.height) >= (this.height() - (this.padding() * 2));
+    const overflowsHeight: boolean = (textMetrics.height) >= this.getPaddedHeight();
     // True if this text is overflowing on width
     const overflowsWidth: boolean = rangeOf((this.width() - (this.fontSize() * this.lineHeight()) - (this.padding() * 2)),
       (this.width() - (this.padding() * 2)),
@@ -731,15 +731,16 @@ export class Text extends Shape<TextConfig> {
       if (overflowsHeight && this.growPolicy() === GrowPolicy.GrowHeight) {
         // Resize height of shape and also of text area
         this.height(this.height() + newLineHeight);
-        this._resizeTextAreaHeight(this.height() * scale);
+        this._resizeTextAreaHeight(this.height() + this.padding() * scale);
         this._fireChangedEvent();
       }
 
       // Check for grow width
       if (overflowsWidth && this.growPolicy() === GrowPolicy.GrowWidth) {
         // Add some space left
-        this.width(this.width() + newCharWidth);
-        this._resizeTextAreaWidth(this.width() * scale);
+        const w = this.width() + newCharWidth;
+        this.width(w);
+        this._resizeTextAreaWidth(w * scale);
         this._fireChangedEvent();
       }
     } else if (overflowsHeight && this.lockSize()) {
@@ -1004,7 +1005,6 @@ export class Text extends Shape<TextConfig> {
       (length ? letterSpacing * (length - 1) : 0)
     );
   }
-
 
   /**
    * Drawing function
