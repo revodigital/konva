@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.5.0 (24/1/2022)
+Corrects *Text* editing problems and *Table* borders bugs. Adds *CHANGED*
+event on the stage, fired when text auto-resizes to make all fit.
+
 ## 1.4.1 (21/1/2022)
 **Implements** *resize* function for *Text*, to recalculate its boundaries
 to make text fit. Corrects performance issues and increases code quality.
