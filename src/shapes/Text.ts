@@ -828,7 +828,6 @@ export class Text extends Shape<TextConfig> {
       else if (this.growPolicy() === GrowPolicy.GrowWidth && maxWidth > this.width()) this.width(
         maxWidth + 10);
 
-
       // Fire event for boundaries change (ChangedEvent)
       if (this.getStage())
         this.getStage().fire(CHANGED, { node: this });

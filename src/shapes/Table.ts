@@ -46,12 +46,12 @@ import {
 }                             from '../layout/RowLayoutGroup';
 
 export interface TableConfig extends ShapeConfig {
-  header: IColumn[];
-  rows: IRow[];
+  header?: IColumn[];
+  rows?: IRow[];
 
   headerFill?: string;
   headerText?: ITextConfiguration;
-  headerHeight: number | 'auto';
+  headerHeight?: number | 'auto';
   externalBorder?: BorderConfig;
   internalBorder?: BorderConfig;
 }
@@ -173,7 +173,7 @@ export class Table extends Shape<TableConfig> {
   }
 
   private _renderTableBorders(layout: TableLayout, ctx: CanvasRenderingContext2D): void {
-    if(!this.externalBorder() || !this.externalBorder().bordered) return;
+    if(!this.externalBorder() || !this.externalBorder().bordered || this.externalBorder().borderWidth === 0) return;
     // Draw table borders
     ctx.beginPath();
     ctx.moveTo(0,

@@ -158,6 +158,7 @@ export class Cell extends TextConfiguration {
   private _renderBorders(ctx: SceneContext): void {
     if(!this.border) return;
     if(!this.border.bordered) return;
+    if(this.border.borderWidth === 0) return;
 
     ctx._context.lineCap = this.border.borderCap;
     ctx._context.strokeStyle = this.border.borderColor;
