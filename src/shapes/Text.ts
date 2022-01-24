@@ -1011,6 +1011,9 @@ export class Text extends Shape<TextConfig> {
    * @param context
    */
   private _sceneFunc(context: SceneContext) {
+    // Ensure everything is cleared
+    context.clearRect(0, 0, this.width(), this.height());
+
     // Draw shape fill
     this._drawBackground(context);
 
