@@ -609,12 +609,13 @@ export class Text extends Shape<TextConfig> {
   }
 
   /**
-   * Draws background
+   * Draws background if there is any
    * @param context
    * @private
    */
   private _drawBackground(context: SceneContext): void {
     if (!this.backgroundColor()) return;
+    if(this.backgroundColor() === 'transparent') return;
 
     context._context.fillStyle = this.backgroundColor();
     context.fillRect(0, 0, this.width(), this.height());
