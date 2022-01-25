@@ -40,6 +40,9 @@ import {
 import {
   CHANGED
 }                                                   from '../events/text/Changed';
+import {
+  HorizontalAlignment
+}                                                   from '../configuration/Alignment';
 
 /**
  * Minimum font size
@@ -118,7 +121,7 @@ export interface TextConfig extends ShapeConfig {
   fontStyle?: string;
   fontVariant?: string;
   textDecoration?: string;
-  align?: string;
+  align?: HorizontalAlignment;
   verticalAlign?: string;
   padding?: number;
   lineHeight?: number;
@@ -252,7 +255,7 @@ export class Text extends Shape<TextConfig> {
   fontSize: GetSet<number, this>;
   fontStyle: GetSet<string, this>;
   fontVariant: GetSet<string, this>;
-  align: GetSet<string, this>;
+  align: GetSet<HorizontalAlignment, this>;
   letterSpacing: GetSet<number, this>;
   verticalAlign: GetSet<string, this>;
   padding: GetSet<number, this>;

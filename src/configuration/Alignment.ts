@@ -13,10 +13,22 @@
  * Represents an horizontal alignment
  */
 export enum HorizontalAlignment {
-  Center,
-  Left,
-  Right,
-  None
+  /**
+   * Align text center
+   */
+  Center = "center",
+  /**
+   * Align text left
+   */
+  Left = "left",
+  /**
+   * Align text right
+   */
+  Right = "right",
+  /**
+   * Align text using justify alghorithm
+   */
+  Justify = "justify"
 }
 
 /**

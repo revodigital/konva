@@ -3,6 +3,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.5.2 (25/1/2022)
+Standardizes *Text* alignment using *HorizontalAlignment* enumeration.
+
 ## 1.5.1 (25/1/2022)
 Re-introduces *Text* transparent background, using 'transparent' value on the 
 *backgroundColor* property. Increases code quality.
