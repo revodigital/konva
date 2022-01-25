@@ -62,8 +62,17 @@ type globalCompositeOperationType =
  * Represents a button to control the drag behavior of this node
  */
 export interface DragButton {
+  /**
+   * Allowed dragging button (0 left, 1 wheel, 2 right)
+   */
   button: number;
+  /**
+   * Should ctrlKey be pressed? By default it is not
+   */
   ctrlKey?: boolean;
+  /**
+   * Should alt key be pressed? By default it is not
+   */
   altKey?: boolean;
 }
 
@@ -123,10 +132,22 @@ export interface NodeConfig {
   offset?: Vector2d;
   offsetX?: number;
   offsetY?: number;
+  /**
+   * Enable / disable dragging behavior
+   */
   draggable?: boolean;
+  /**
+   * Customize dragging distance
+   */
   dragDistance?: number;
   dragBoundFunc?: (this: Node, pos: Vector2d) => Vector2d;
+  /**
+   * Dragging buttons configuration
+   */
   dragbuttons?: DragButton[];
+  /**
+   * Indicate if events should not be expanded to parent
+   */
   preventDefault?: boolean;
   globalCompositeOperation?: globalCompositeOperationType;
   filters?: Array<Filter>;
@@ -2553,6 +2574,9 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     return elem ? elem.dragStatus === 'dragging' : false;
   }
 
+  /**
+   * Listens to click events to check if they should trigger a drag start or not
+   */
   _listenDrag() {
     this._dragCleanup();
 
