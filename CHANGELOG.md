@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.5.1 (25/1/2022)
+Re-introduces *Text* transparent background, using 'transparent' value on the 
+*backgroundColor* property. Increases code quality.
+
 ## 1.5.0 (24/1/2022)
 Corrects *Text* editing problems and *Table* borders bugs. Adds *CHANGED*
 event on the stage, fired when text auto-resizes to make all fit.
