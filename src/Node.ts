@@ -9,23 +9,23 @@
  * Description:
  */
 
-import { Util, Transform } from './Util';
-import { Factory } from './Factory';
+import { Util, Transform }                from './Util';
+import { Factory }                        from './Factory';
 import { SceneCanvas, HitCanvas, Canvas } from './Canvas';
 import { Pamela }                         from './Global';
 import { Container }                      from './Container';
-import { GetSet, Vector2d, IRect } from './types';
-import { DD }                      from './DragAndDrop';
+import { GetSet, Vector2d, IRect }        from './types';
+import { DD }                             from './DragAndDrop';
 import {
   getNumberValidator,
   getStringValidator,
   getBooleanValidator,
-}                                  from './Validators';
-import { Stage }                   from './Stage';
-import { Context }                 from './Context';
-import { Shape }                   from './Shape';
-import { Layer }                   from './Layer';
-import { Size2D }                  from './common/Size2D';
+}                                         from './Validators';
+import { Stage }                          from './Stage';
+import { Context }                        from './Context';
+import { Shape }                          from './Shape';
+import { Layer }                          from './Layer';
+import { Size2D }                         from './common/Size2D';
 
 export type Filter = (this: Node, imageData: ImageData) => void;
 
@@ -58,9 +58,54 @@ type globalCompositeOperationType =
   | 'color'
   | 'luminosity';
 
+/**
+ * Represents a button to control the drag behavior of this node
+ */
+export interface DragButton {
+  button: number;
+  ctrlKey?: boolean;
+  altKey?: boolean;
+}
+
+/**
+ * Middleware to authorize a dragging button
+ * @param event Event to check
+ * @param guards Allowed dragging buttons
+ */
+export const authorizeDragButton = (event: KonvaEventObject<MouseEvent>, guards: DragButton[]): boolean => {
+  const button = event.evt.button;
+
+  if (button === undefined) return;
+
+  for (const g of guards) {
+    if (g.button === button) {
+      if (!g.altKey && !g.ctrlKey) return true;
+
+      // This button is authorized, lets check modifiers
+      const alt = g.altKey;
+      const ctrl = g.ctrlKey;
+
+      const shouldAlt = alt === true;
+      const shouldCtrl = ctrl === true;
+      let altCheck;
+      let ctrlCheck;
+
+      if (!shouldAlt) altCheck = true;
+      else altCheck = shouldAlt && event.evt.altKey;
+
+      if (!shouldCtrl) ctrlCheck = true;
+      else ctrlCheck = shouldCtrl && event.evt.ctrlKey;
+
+      return ctrlCheck && altCheck;
+    }
+  }
+  return false;
+};
+
 export interface NodeConfig {
   // allow any custom attribute
   [index: string]: any;
+
   x?: number;
   y?: number;
   width?: number;
@@ -81,7 +126,7 @@ export interface NodeConfig {
   draggable?: boolean;
   dragDistance?: number;
   dragBoundFunc?: (this: Node, pos: Vector2d) => Vector2d;
-  dragbuttons?: number[];
+  dragbuttons?: DragButton[];
   preventDefault?: boolean;
   globalCompositeOperation?: globalCompositeOperationType;
   filters?: Array<Filter>;
@@ -202,6 +247,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
       this._cache.clear();
     }
   }
+
   _getCache(attr: string, privateGetter: Function) {
     var cache = this._cache.get(attr);
 
@@ -236,6 +282,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   _getCanvasCache() {
     return this._cache.get(CANVAS);
   }
+
   /*
    * when the logic for a cached result depends on ancestor propagation, use this
    * method to clear self and children cache
@@ -247,6 +294,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
       this.fire('absoluteTransformChange');
     }
   }
+
   /**
    * clear cached canvas
    * @method
@@ -261,6 +309,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     this._requestDraw();
     return this;
   }
+
   /**
    *  cache node to improve drawing performance, apply filters, or create more accurate
    *  hit regions. For all basic shapes size of cache canvas will be automatically detected.
@@ -438,7 +487,9 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   }
 
   abstract drawScene(canvas?: Canvas, top?: Node): void;
+
   abstract drawHit(canvas?: Canvas, top?: Node): void;
+
   /**
    * Return client rectangle {x, y, width, height} of node. This rectangle also include all styling (strokes, shadows, etc).
    * The purpose of the method is similar to getBoundingClientRect API of the DOM.
@@ -485,6 +536,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     // redefine in Container and Shape
     throw new Error('abstract "getClientRect" method call');
   }
+
   _transformedRect(rect: IRect, top: Node) {
     var points = [
       { x: rect.x, y: rect.y },
@@ -512,6 +564,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
       height: maxY - minY,
     };
   }
+
   _drawCachedSceneCanvas(context: Context) {
     context.save();
     context._applyOpacity(this);
@@ -533,6 +586,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
 
     context.restore();
   }
+
   _drawCachedHitCanvas(context: Context) {
     var canvasCache = this._getCanvasCache(),
       hitCanvas = canvasCache.hit;
@@ -547,6 +601,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     );
     context.restore();
   }
+
   _getCachedSceneCanvas() {
     var filters = this.filters(),
       cachedCanvas = this._getCanvasCache(),
@@ -590,8 +645,8 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
             if (typeof filter !== 'function') {
               Util.error(
                 'Filter should be type of function, but got ' +
-                  typeof filter +
-                  ' instead. Please check correct filters'
+                typeof filter +
+                ' instead. Please check correct filters'
               );
               continue;
             }
@@ -601,8 +656,8 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
         } catch (e) {
           Util.error(
             'Unable to apply filter. ' +
-              e.message +
-              ' This post my help you https://konvajs.org/docs/posts/Tainted_Canvas.html.'
+            e.message +
+            ' This post my help you https://konvajs.org/docs/posts/Tainted_Canvas.html.'
           );
         }
 
@@ -613,6 +668,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     }
     return sceneCanvas;
   }
+
   /**
    * bind events to the node. KonvaJS supports mouseover, mousemove,
    *  mouseout, mouseenter, mouseleave, mousedown, mouseup, wheel, contextmenu, click, dblclick, touchstart, touchmove,
@@ -715,6 +771,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
 
     return this;
   }
+
   /**
    * remove event bindings from the node. Pass in a string of
    *  event types delimmited by a space to remove multiple event
@@ -772,6 +829,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     }
     return this;
   }
+
   // some event aliases for third party integration like HammerJS
   dispatchEvent(evt: any) {
     var e = {
@@ -782,6 +840,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     this.fire(evt.type, e);
     return this;
   }
+
   addEventListener(type: string, handler: (e: Event) => void) {
     // we have to pass native event to handler
     this.on(type, function (evt) {
@@ -789,10 +848,12 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     });
     return this;
   }
+
   removeEventListener(type: string) {
     this.off(type);
     return this;
   }
+
   // like node.on
   _delegate(event: string, selector: string, handler: (e: Event) => void) {
     var stopNode = this;
@@ -805,6 +866,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
       }
     });
   }
+
   /**
    * remove a node from parent, but don't destroy. You can reuse the node later.
    * @method
@@ -823,6 +885,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     this._remove();
     return this;
   }
+
   _clearCaches() {
     this._clearSelfAndDescendantCache(ABSOLUTE_TRANSFORM);
     this._clearSelfAndDescendantCache(ABSOLUTE_OPACITY);
@@ -831,6 +894,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     this._clearSelfAndDescendantCache(VISIBLE);
     this._clearSelfAndDescendantCache(LISTENING);
   }
+
   _remove() {
     // every cached attr that is calculated via node tree
     // traversal must be cleared when removing a node
@@ -844,6 +908,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
       this.parent = null;
     }
   }
+
   /**
    * remove and destroy a node. Kill it and delete forever! You should not reuse node after destroy().
    * If the node is a container (Group, Stage or Layer) it will destroy all children too.
@@ -856,6 +921,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     this.remove();
     return this;
   }
+
   /**
    * get attr
    * @method
@@ -873,6 +939,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     // otherwise get directly
     return this.attrs[attr];
   }
+
   /**
    * get ancestors
    * @method
@@ -894,6 +961,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
 
     return ancestors;
   }
+
   /**
    * get attrs object literal
    * @method
@@ -903,6 +971,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   getAttrs() {
     return this.attrs || {};
   }
+
   /**
    * set multiple attrs at once using an object literal
    * @method
@@ -938,6 +1007,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
 
     return this;
   }
+
   /**
    * determine if node is listening for events by taking into account ancestors.
    *
@@ -956,6 +1026,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   isListening() {
     return this._getCache(LISTENING, this._isListening);
   }
+
   _isListening(relativeTo?: Node): boolean {
     const listening = this.listening();
     if (!listening) {
@@ -968,6 +1039,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
       return true;
     }
   }
+
   /**
    * determine if node is visible by taking into account ancestors.
    *
@@ -985,6 +1057,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   isVisible() {
     return this._getCache(VISIBLE, this._isVisible);
   }
+
   _isVisible(relativeTo?: Node): boolean {
     const visible = this.visible();
     if (!visible) {
@@ -997,6 +1070,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
       return true;
     }
   }
+
   shouldDrawHit(top?: Node, skipDragCheck = false) {
     if (top) {
       return this._isVisible(top) && this._isListening(top);
@@ -1028,6 +1102,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     this.visible(true);
     return this;
   }
+
   /**
    * hide node.  Hidden nodes are no longer detectable
    * @method
@@ -1038,9 +1113,11 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     this.visible(false);
     return this;
   }
+
   getZIndex() {
     return this.index || 0;
   }
+
   /**
    * get absolute z-index which takes into account sibling
    *  and ancestor indices
@@ -1077,12 +1154,14 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
         addChildren(nodes);
       }
     }
+
     if (that.nodeType !== UPPER_STAGE) {
       addChildren(that.getStage().getChildren());
     }
 
     return index;
   }
+
   /**
    * get node depth in node tree.  Returns an integer.
    *  e.g. Stage depth will always be 0.  Layers will always be 1.  Groups and Shapes will always
@@ -1124,12 +1203,14 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     });
     return this;
   }
+
   getPosition() {
     return {
       x: this.x(),
       y: this.y(),
     };
   }
+
   /**
    * get position of first pointer (like mouse or first touch) relative to local coordinates of current node
    * @method
@@ -1157,6 +1238,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     // now we can find relative point
     return transform.point(pos);
   }
+
   /**
    * get absolute position of a node. That function can be used to calculate absolute position, but relative to any ancestor
    * @method
@@ -1197,6 +1279,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
 
     return absoluteTransform.getTranslation();
   }
+
   setAbsolutePosition(pos: Vector2d) {
     var origTrans = this._clearTransform();
 
@@ -1223,6 +1306,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
 
     return this;
   }
+
   _setTransform(trans) {
     var key;
 
@@ -1232,6 +1316,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     // this._clearCache(TRANSFORM);
     // this._clearSelfAndDescendantCache(ABSOLUTE_TRANSFORM);
   }
+
   _clearTransform() {
     var trans = {
       x: this.x(),
@@ -1258,6 +1343,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     // return original transform
     return trans;
   }
+
   /**
    * move node by an amount relative to its current position
    * @method
@@ -1290,6 +1376,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     this.setPosition({ x: x, y: y });
     return this;
   }
+
   _eachAncestorReverse(func, top) {
     var family = [],
       parent = this.getParent(),
@@ -1316,6 +1403,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
       func(family[n]);
     }
   }
+
   /**
    * rotate node by an amount in degrees relative to its current rotation
    * @method
@@ -1327,6 +1415,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     this.rotation(this.rotation() + theta);
     return this;
   }
+
   /**
    * move node to the top of its siblings
    * @method
@@ -1344,6 +1433,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     this.parent._setChildrenIndices();
     return true;
   }
+
   /**
    * move node up
    * @method
@@ -1365,6 +1455,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     }
     return false;
   }
+
   /**
    * move node down
    * @method
@@ -1385,6 +1476,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     }
     return false;
   }
+
   /**
    * move node to the bottom of its siblings
    * @method
@@ -1405,6 +1497,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     }
     return false;
   }
+
   setZIndex(zIndex) {
     if (!this.parent) {
       Util.warn('Node has no parent. zIndex parameter is ignored.');
@@ -1413,10 +1506,10 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     if (zIndex < 0 || zIndex >= this.parent.children.length) {
       Util.warn(
         'Unexpected value ' +
-          zIndex +
-          ' for zIndex property. zIndex is just index of a node in children of its parent. Expected value is from 0 to ' +
-          (this.parent.children.length - 1) +
-          '.'
+        zIndex +
+        ' for zIndex property. zIndex is just index of a node in children of its parent. Expected value is from 0 to ' +
+        (this.parent.children.length - 1) +
+        '.'
       );
     }
     var index = this.index;
@@ -1425,6 +1518,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     this.parent._setChildrenIndices();
     return this;
   }
+
   /**
    * get absolute opacity
    * @method
@@ -1434,6 +1528,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   getAbsoluteOpacity() {
     return this._getCache(ABSOLUTE_OPACITY, this._getAbsoluteOpacity);
   }
+
   _getAbsoluteOpacity() {
     var absOpacity = this.opacity();
     var parent = this.getParent();
@@ -1442,6 +1537,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     }
     return absOpacity;
   }
+
   /**
    * move node to another container
    * @method
@@ -1460,6 +1556,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     }
     return this;
   }
+
   /**
    * convert Node into an object for serialization.  Returns an object.
    * @method
@@ -1500,6 +1597,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     obj.className = this.getClassName();
     return Util._prepareToStringify(obj);
   }
+
   /**
    * convert Node into a JSON string.  Returns a JSON string.
    * @method
@@ -1509,6 +1607,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   toJSON() {
     return JSON.stringify(this.toObject());
   }
+
   /**
    * get parent container
    * @method
@@ -1518,6 +1617,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   getParent() {
     return this.parent;
   }
+
   /**
    * get all ancestors (parent then parent of the parent, etc) of the node
    * @method
@@ -1548,9 +1648,11 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     }
     return res;
   }
+
   isAncestorOf(node: Node) {
     return false;
   }
+
   /**
    * get ancestor (parent or parent of the parent, etc) of the node that match passed selector
    * @method
@@ -1566,6 +1668,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   findAncestor(selector?: string, includeSelf?: boolean, stopNode?: Container) {
     return this.findAncestors(selector, includeSelf, stopNode)[0];
   }
+
   // is current node match passed selector?
   _isMatch(selector: string | Function) {
     if (!selector) {
@@ -1584,8 +1687,8 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
       if (!Util.isValidSelector(sel)) {
         Util.warn(
           'Selector "' +
-            sel +
-            '" is invalid. Allowed selectors examples are "#foo", ".bar" or "Group".'
+          sel +
+          '" is invalid. Allowed selectors examples are "#foo", ".bar" or "Group".'
         );
         Util.warn(
           'If you have a custom shape with such className, please change it to start with upper letter like "Triangle".'
@@ -1608,6 +1711,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     }
     return false;
   }
+
   /**
    * get layer ancestor
    * @method
@@ -1618,6 +1722,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     var parent = this.getParent();
     return parent ? parent.getLayer() : null;
   }
+
   /**
    * get stage ancestor
    * @method
@@ -1636,6 +1741,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
       return undefined;
     }
   }
+
   /**
    * fire event
    * @method
@@ -1671,6 +1777,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     }
     return this;
   }
+
   /**
    * get absolute transform of the node which takes into
    *  account its ancestor transforms
@@ -1690,6 +1797,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
       ) as Transform;
     }
   }
+
   _getAbsoluteTransform(top?: Node) {
     var at: Transform;
     // we we need position relative to an ancestor, we will iterate for all
@@ -1731,6 +1839,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
       return at;
     }
   }
+
   /**
    * get absolute scale of the node which takes into
    *  account its ancestor scales
@@ -1761,6 +1870,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
       y: attrs.scaleY,
     };
   }
+
   /**
    * get absolute rotation of the node which takes into
    *  account its ancestor rotations
@@ -1782,6 +1892,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     // return rotation;
     return this.getAbsoluteTransform().decompose().rotation;
   }
+
   /**
    * get transform of the node
    * @method
@@ -1791,6 +1902,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   getTransform() {
     return this._getCache(TRANSFORM, this._getTransform) as Transform;
   }
+
   _getTransform(): Transform {
     var m: Transform = this._cache.get(TRANSFORM) || new Transform();
     m.reset();
@@ -1828,6 +1940,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
 
     return m;
   }
+
   /**
    * clone node.  Returns a new Node instance with identical attributes.  You can also override
    *  the node properties with an object literal, enabling you to use an existing node as a template
@@ -1858,7 +1971,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
       attrs[key] = obj[key];
     }
 
-    var node = new (<any>this.constructor)(attrs);
+    var node = new (<any> this.constructor)(attrs);
     // copy over listeners
     for (key in this.eventListeners) {
       allListeners = this.eventListeners[key];
@@ -1880,6 +1993,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     }
     return node;
   }
+
   _toKonvaCanvas(config) {
     config = config || {};
 
@@ -1907,6 +2021,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
 
     return canvas;
   }
+
   /**
    * converts node into an canvas element.
    * @method
@@ -1927,6 +2042,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   toCanvas(config?) {
     return this._toKonvaCanvas(config)._canvas;
   }
+
   /**
    * Creates a composite data URL (base64 string). If MIME type is not
    * specified, then "image/png" will result. For "image/jpeg", specify a quality
@@ -1968,6 +2084,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     }
     return url;
   }
+
   /**
    * converts node into an image.  Since the toImage
    *  method is asynchronous, a callback is required.  toImage is most commonly used
@@ -2015,6 +2132,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
       callback(img);
     });
   }
+
   setSize(size) {
     this.width(size.width);
     this.height(size.height);
@@ -2034,6 +2152,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
       height: this.height(),
     };
   }
+
   /**
    * get class name, which may return Stage, Layer, Group, or shape class names like Rect, Circle, Text, etc.
    * @method
@@ -2043,6 +2162,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   getClassName() {
     return this.className || this.nodeType;
   }
+
   /**
    * get the node type, which may return Stage, Layer, Group, or Shape
    * @method
@@ -2052,6 +2172,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
   getType() {
     return this.nodeType;
   }
+
   getDragDistance(): number {
     // compare with undefined because we need to track 0 value
     if (this.attrs.dragDistance !== undefined) {
@@ -2062,6 +2183,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
       return Pamela.dragDistance;
     }
   }
+
   _off(type, name?, callback?) {
     var evtListeners = this.eventListeners[type],
       i,
@@ -2090,12 +2212,14 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
       }
     }
   }
+
   _fireChangeEvent(attr, oldVal, newVal) {
     this._fire(attr + CHANGE, {
       oldVal: oldVal,
       newVal: newVal,
     });
   }
+
   /**
    * add name to node
    * @method
@@ -2115,6 +2239,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     }
     return this;
   }
+
   /**
    * check is node has name
    * @method
@@ -2139,6 +2264,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     var names = (fullName || '').split(/\s/g);
     return names.indexOf(name) !== -1;
   }
+
   /**
    * remove name from node
    * @method
@@ -2160,6 +2286,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     }
     return this;
   }
+
   /**
    * set attr
    * @method
@@ -2181,12 +2308,14 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     }
     return this;
   }
+
   _requestDraw() {
     if (Pamela.autoDrawEnabled) {
       const drawNode = this.getLayer() || this.getStage();
       drawNode?.batchDraw();
     }
   }
+
   _setAttr(key, val) {
     var oldVal = this.attrs[key];
     if (oldVal === val && !Util.isObject(val)) {
@@ -2202,6 +2331,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     }
     this._requestDraw();
   }
+
   _setComponentAttr(key, component, val) {
     var oldVal;
     if (val !== undefined) {
@@ -2216,6 +2346,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
       this._fireChangeEvent(key, oldVal, val);
     }
   }
+
   _fireAndBubble(eventType, evt, compareShape?) {
     if (evt && this.nodeType === SHAPE) {
       evt.target = this;
@@ -2225,8 +2356,8 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
       (eventType === MOUSEENTER || eventType === MOUSELEAVE) &&
       ((compareShape &&
         (this === compareShape ||
-          (this.isAncestorOf && this.isAncestorOf(compareShape)))) ||
-        (this.nodeType === 'Stage' && !compareShape));
+         (this.isAncestorOf && this.isAncestorOf(compareShape)))) ||
+       (this.nodeType === 'Stage' && !compareShape));
 
     if (!shouldStop) {
       this._fire(eventType, evt);
@@ -2277,6 +2408,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
 
     return listeners[eventType];
   }
+
   _fire(eventType, evt) {
     evt = evt || {};
     evt.currentTarget = this;
@@ -2298,6 +2430,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
       }
     }
   }
+
   /**
    * draw both scene and hit graphs.  If the node being drawn is the stage, all of the layers will be cleared and redrawn
    * @method
@@ -2424,14 +2557,13 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     this._dragCleanup();
 
     this.on('mousedown.konva touchstart.konva', function (evt) {
-      var shouldCheckButton = evt.evt['button'] !== undefined;
 
       // Allowed dragging buttons
       const allowedButtons = this.dragbuttons() || Pamela.dragButtons;
 
-      var canDrag =
-        !shouldCheckButton || allowedButtons.indexOf(evt.evt['button']) >= 0;
-      if (!canDrag) {
+      // Authorize dragging
+      const canDrag = !authorizeDragButton(evt, allowedButtons);
+      if (canDrag) {
         return;
       }
       if (this.isDragging()) {
@@ -2539,7 +2671,7 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
 
   dragBoundFunc: GetSet<(this: Node, pos: Vector2d) => Vector2d, this>;
   draggable: GetSet<boolean, this>;
-  dragbuttons: GetSet<number[], this>;
+  dragbuttons: GetSet<DragButton[], this>;
   dragDistance: GetSet<number, this>;
   embossBlend: GetSet<boolean, this>;
   embossDirection: GetSet<string, this>;
@@ -2617,8 +2749,8 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     if (!Pamela[className]) {
       Util.warn(
         'Can not find a node with class name "' +
-          className +
-          '". Fallback to "Shape".'
+        className +
+        '". Fallback to "Shape".'
       );
       className = 'Shape';
     }
