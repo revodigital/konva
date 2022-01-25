@@ -784,10 +784,7 @@ export class Text extends Shape<TextConfig> {
     let metrics = measurement.measureComplexText(box);
     let fontSize = this.fontSize();
 
-    console.log(metrics);
-    console.log(box);
     while ((metrics.height) >= this.getPaddedHeight()) {
-      console.log("Decrease to ", fontSize);
       if (fontSize < 7) return false;
 
       fontSize--;
@@ -1011,9 +1008,6 @@ export class Text extends Shape<TextConfig> {
    * @param context
    */
   private _sceneFunc(context: SceneContext) {
-    // Ensure everything is cleared
-    context.clearRect(0, 0, this.width(), this.height());
-
     // Draw shape fill
     this._drawBackground(context);
 
