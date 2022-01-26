@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2022-2022. Revo Digital
+ * ---
+ * Author: gabriele
+ * File: ExportVariable.ts
+ * Project: pamela
+ * Committed last: 2022/1/26 @ 97
+ * ---
+ * Description:
+ */
+
 import { Shape, ShapeConfig } from '../Shape';
 import { GetSet }             from '../types';
 import { SceneContext }       from '../Context';

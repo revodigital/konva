@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2022. Revo Digital
+ * Copyright (c) 2022-2022. Revo Digital
  * ---
  * Author: gabriele
  * File: LineCap.ts
  * Project: pamela
- * Committed last: 2022/1/3 @ 1249
+ * Committed last: 2022/1/26 @ 97
  * ---
  * Description:
  */

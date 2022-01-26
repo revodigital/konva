@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 2022. Revo Digital
+ * Copyright (c) 2022-2022. Revo Digital
  * ---
  * Author: gabriele
  * File: LineDash.ts
  * Project: pamela
- * Committed last: 2022/1/3 @ 1356
+ * Committed last: 2022/1/26 @ 97
  * ---
- * Description: Configuration helpers for line dash
+ * Description:
  */
 
 export type LineDashConfiguration = number[];
