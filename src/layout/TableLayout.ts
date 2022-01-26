@@ -173,10 +173,6 @@ export class TableLayout implements ITableLayout {
 
       this.rowsPercentages.push(val);
       rsum += val;
-
-      // Error throw
-      if (rsum > 100) throw new InvalidPercentage(rsum,
-        `invalid percentage sum for rows. row ${ y } overflows`);
     }
 
     // Calculate auto height for rows

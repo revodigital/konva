@@ -124,6 +124,7 @@ export class Layer extends Container<Group | Shape> {
     this.getHitCanvas().getContext().clear(bounds);
     return this;
   }
+
   // extend Node.prototype.setZIndex
   setZIndex(index) {
     super.setZIndex(index);

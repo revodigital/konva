@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head></head>
+    <script type="module">
+        import { Layer } from 'src/Layer.js';
+        import { Rect }  from 'src/shapes/Rect.js';
+        import { Stage}  from 'src/Stage.js';
+
+        const s = new Stage({
+          container: 'root',
+          width: 300,
+          height: 300
+        });
+
+        const l = new Layer();
+        l.add(new Rect({
+          width: 200,
+          height: 200,
+          fill: 'blue'
+        }))
+        s.add(l);
+        l.draw();
+    </script>
+    <body>
+        <div id="root"></div>
+    </body>
+</html>

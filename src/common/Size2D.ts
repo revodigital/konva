@@ -50,6 +50,10 @@ export class Size2D {
     return (this.getWidth() > size.getWidth() || this.getHeight() > size.getHeight());
   }
 
+  public canBeContainedBy(size: Size2D): boolean {
+    return (this.width <= size.getWidth() && this.height <= size.getHeight());
+  }
+
   public overflowsHeight(height: number): boolean {
     return this.getHeight() > height;
   }

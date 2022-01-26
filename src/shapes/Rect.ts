@@ -13,8 +13,9 @@ import { Factory } from '../Factory';
 import { Shape, ShapeConfig } from '../Shape';
 import { _registerNode } from '../Global';
 
-import { GetSet } from '../types';
+import { GetSet }                             from '../types';
 import { getNumberOrArrayOfNumbersValidator } from '../Validators';
+import { SceneContext }                       from '../Context';
 export interface RectConfig extends ShapeConfig {
   cornerRadius?: number | number[];
 }
@@ -38,7 +39,7 @@ export interface RectConfig extends ShapeConfig {
  * });
  */
 export class Rect extends Shape<RectConfig> {
-  _sceneFunc(context) {
+  _sceneFunc(context: SceneContext) {
     var cornerRadius = this.cornerRadius(),
       width = this.width(),
       height = this.height();
@@ -98,7 +99,6 @@ export class Rect extends Shape<RectConfig> {
     }
     context.closePath();
     context.fillStrokeShape(this);
-    context.drawRectBorders(this);
   }
 
   cornerRadius: GetSet<number | number[], this>;

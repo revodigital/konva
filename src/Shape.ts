@@ -283,13 +283,6 @@ export class Shape<Config extends ShapeConfig = ShapeConfig> extends Node<Config
   }
 
   /**
-   * Returns size of this shape as a Size2D
-   */
-  getSizeRect(): Size2D {
-    return Size2D.fromBounds(this.width(), this.height());
-  }
-
-  /**
    * returns whether or not a shadow will be rendered
    * @method
    * @name Pamela.Shape#hasShadow

@@ -21,6 +21,9 @@ import { BarcodeLayout }      from '../layout/BarcodeLayout';
 import { Image }              from './Image';
 import * as JsBarcode         from 'jsbarcode';
 import { _registerNode }      from '../Global';
+import {
+  INVALID_CDECS, InvalidCodeOrSpecification
+}                             from '../events/barcode/InvalidCodeOrSpecification';
 
 export interface BarcodeConfig extends ShapeConfig {
   /**
@@ -35,8 +38,9 @@ export interface BarcodeConfig extends ShapeConfig {
 
   /**
    * Indicates width of code line
+   * Default is 1
    */
-  codeLineWidth: number;
+  codeLineWidth?: number;
 
   /**
    * Encoding of generated barcode
@@ -50,57 +54,126 @@ export interface BarcodeConfig extends ShapeConfig {
   showContent?: boolean;
 
   /**
-   * Text formatting for content
-   */
-  contentOptions?: ITextConfiguration;
-  /**
    * Placeholder text used when no code is provided
    */
-  placeHolder: string;
+  placeHolder?: string;
 
   /**
-   * Placeholder text configuration
+   * Enable / disable value rendering
    */
-  placeHolderOptions?: ITextConfiguration;
+  displayValue?: boolean;
 }
 
+/**
+ * Pamela shape to draw a Barcode into the stage.
+ * Just specify the **code**, the **encoding** and some **boundaries**,
+ * pamela will do the rest. Supported specifications are:
+ *
+ * -    CODE128
+ *         CODE128 (automatic mode switching)
+ *         CODE128 A/B/C (force mode)
+ * -    EAN
+ *         EAN-13
+ *         EAN-8
+ *         EAN-5
+ *         EAN-2
+ *         UPC (A)
+ *         UPC (E)
+ *  -   CODE39
+ *  -   ITF
+ *         ITF
+ *         ITF-14
+ *  -   MSI
+ *         MSI10
+ *         MSI11
+ *         MSI1010
+ *         MSI1110
+ *   -  Pharmacode
+ *   -  Codabar
+ *
+ *   The library used to generate barcode images is:
+ *   https://www.npmjs.com/package/jsbarcode
+ */
 export class Barcode extends Shape<BarcodeConfig> {
   code: GetSet<string, this>;
   transparentBackground: GetSet<boolean, this>;
-  codeLineWidth?: GetSet<number, this>;
-  encoding?: GetSet<string, this>;
-  showContent?: GetSet<boolean, this>;
-  contentOptions?: GetSet<ITextConfiguration, this>;
+  codeLineWidth: GetSet<number, this>;
+  encoding: GetSet<string, this>;
+  showContent: GetSet<boolean, this>;
   placeHolder: GetSet<string, this>;
-  placeHolderOptions?: GetSet<ITextConfiguration, this>;
+  displayValue: GetSet<boolean, this>;
 
   _imageBuffer: CanvasImageSource;
   _oldCode: string;
   _oldEncoding: string;
+  _oldDS: boolean;
+  _resizing: boolean;
 
+  _initFunc(config?: BarcodeConfig) {
+    super._initFunc(config);
+    this._oldCode = this.code();
+    this._oldEncoding = this.encoding();
+    // Apply default values
+    if (!this.placeHolder()) this.placeHolder('test-code');
+    if (!this.code()) this.code(this.placeHolder());
+    if (!this.encoding()) this.encoding('CODE39');
+    if (!this.codeLineWidth()) this.codeLineWidth(1);
+    if (!this.displayValue()) this.displayValue(false);
+
+
+    this._oldDS = this.displayValue();
+    this._resizing = false;
+
+    // Add event listeners
+    this.on('transformstart', () => {
+      this._resizing = true;
+    });
+    this.on('transformend', (event) => {
+      // Delete cache after transform
+      this._imageBuffer = undefined;
+      this._resizing = false;
+      this.draw();
+    });
+  }
 
   async _sceneFunc(context: Context): Promise<void> {
-    if (!this.height()) return;
+    // Reload cache if encoding or code has changed
+    // TODO: Use better chaching pattern
+    if (this._oldEncoding !== this.encoding() || this._oldCode !== this.code() || !this._imageBuffer) {
+      this._imageBuffer = undefined;
+      this._loadBarcodeImage().then(({ image, link }) => {
+        this._resizing = true;
+        this._oldCode = this.code();
+        this._oldEncoding = this.encoding();
+        this._oldDS = this.displayValue();
+        // Draw barcode only if there is an image
+        if (image) {
+          this.width(image.width());
+          this.height(image.height());
+          this._imageBuffer = image.image();
+          this._resizing = false;
+          this.draw();
+        } else {
+          // Fire error event
+          if (this.getStage()) this.getStage().fire(INVALID_CDECS,
+            {
+              image: image,
+              barcode: this,
+              code: this.code(),
+              encoding: this.encoding(),
+              generatedUrl: link
+            });
+        }
+      });
+    }
 
-    // Calculate layout
-    const layout = new BarcodeLayout({
-      width: this.width() || 50,
-      height: this.height() || 50
-    });
-
-    // Check if there is a code to render
-    if (!this.code()) this._renderPlaceholder(layout, context._context);
-    else if (this.code() && this.encoding()) {
-      // Check cache presence
-      if (!this._imageBuffer)
-        await this._loadBarcodeImage();
-
-      if (this._oldEncoding !== this.encoding() || this._oldCode !== this.code())
-        await this._loadBarcodeImage();
-
-      context.drawImage(this._imageBuffer, 0, 0);
-    } else throw new InvalidBarcodeConfiguration('invalid barcode options');
+    // Clear previous stuff
+    context.clearRect(0, 0, this.width(), this.height());
     context.fillStrokeShape(this);
+
+    // Draw barcode image
+    if (this._imageBuffer && !this._resizing)
+      context.drawImage(this._imageBuffer, 0, 0);
   }
 
   _hitFunc(context) {
@@ -114,49 +187,44 @@ export class Barcode extends Shape<BarcodeConfig> {
   }
 
   /**
-   * Renders the placeholder
-   * @param ctx The drawing context
-   * @param layout The barcode layout
+   * Load the barcode image from the calculated link
    */
-  _renderPlaceholder(layout: BarcodeLayout, ctx: CanvasRenderingContext2D): void {
-    const center = layout.getCenter();
-    const textMeasure = ctx.measureText(this.placeHolder());
-
-    ctx.textAlign = 'center';
-    ctx.fillText(this.placeHolder(),
-      center.x,
-      center.y + (textMeasure.actualBoundingBoxAscent / 2));
-  }
-
-  async _loadBarcodeImage(): Promise<void> {
+  async _loadBarcodeImage(): Promise<{ image: Image, link: string }> {
     return new Promise((resolve) => {
       const barcodeImageUrl = this._generateBarCodeUrl(this.code(),
         this.encoding());
+
+      // Generate image only if barcode is correct
+      if (!barcodeImageUrl) {
+        resolve({ image: undefined, link: undefined });
+        return;
+      }
+
+      // Load my image
       Image.fromURL(barcodeImageUrl, (image: Image) => {
-        this._imageBuffer = image.image();
-        this._oldCode = this.code();
-        this._oldEncoding = this.encoding();
-        this.width(image.width());
-        this.height(image.height());
-        resolve();
+        resolve({ image: image, link: barcodeImageUrl });
       });
     });
   }
 
-  _generateBarCodeUrl(code: string, encoding: string): string {
+  _generateBarCodeUrl(code: string, encoding: string): string | undefined {
     let canvas = document.createElement('canvas');
     const backgroundColor = this.transparentBackground() ? '#00000000' : this.fill() as string;
-    JsBarcode(canvas,
-      code,
-      {
-        format: encoding,
-        margin: 0,
-        width: this.codeLineWidth(),
-        height: this.height(),
-        displayValue: false,
-        background: backgroundColor
-      });
-    return canvas.toDataURL('image/png');
+    try {
+      JsBarcode(canvas,
+        code,
+        {
+          format: encoding,
+          margin: 0,
+          width: this.codeLineWidth(),
+          height: this.height(),
+          displayValue: this.displayValue(),
+          background: backgroundColor
+        });
+      return canvas.toDataURL('image/png');
+    } catch (e) {
+      return undefined;
+    }
   }
 
   getSelfRect(): { x: number; width: number; y: number; height: number } {
@@ -169,23 +237,31 @@ export class Barcode extends Shape<BarcodeConfig> {
   }
 }
 
+/**
+ * Get / set the code
+ */
 Factory.addGetterSetter(Barcode, 'code');
 
+/**
+ * Get / set transparentBackground
+ */
 Factory.addGetterSetter(Barcode, 'transparentBackground');
 
+/**
+ * Get / set codeLineWidth
+ */
 Factory.addGetterSetter(Barcode, 'codeLineWidth');
 
+/**
+ * Get / set encoding
+ */
 Factory.addGetterSetter(Barcode, 'encoding');
 
 Factory.addGetterSetter(Barcode, 'showContent');
 
-Factory.addGetterSetter(Barcode, 'contentOptions');
-
 Factory.addGetterSetter(Barcode, 'placeHolder');
 
-Factory.addGetterSetter(Barcode, 'placeHolder');
-
-Factory.addGetterSetter(Barcode, 'placeHolderOptions');
+Factory.addGetterSetter(Barcode, 'displayValue');
 
 Barcode.prototype.className = 'Barcode';
 _registerNode(Barcode);

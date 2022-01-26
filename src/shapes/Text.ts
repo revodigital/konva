@@ -34,6 +34,15 @@ import {
 import { normalizeFontFamily }                      from '../TextUtils';
 import { TextMeasurementHelper, TextMetricsHelper } from '../TextMeasurement';
 import { SceneContext }                             from '../Context';
+import {
+  EDITING_START
+}                                                   from '../events/text/EditingStart';
+import {
+  CHANGED
+}                                                   from '../events/text/Changed';
+import {
+  HorizontalAlignment
+}                                                   from '../configuration/Alignment';
 
 /**
  * Minimum font size
@@ -112,7 +121,7 @@ export interface TextConfig extends ShapeConfig {
   fontStyle?: string;
   fontVariant?: string;
   textDecoration?: string;
-  align?: string;
+  align?: HorizontalAlignment;
   verticalAlign?: string;
   padding?: number;
   lineHeight?: number;
@@ -143,12 +152,6 @@ export interface TextConfig extends ShapeConfig {
    * otherwise it will be impossible to create custom line breaks.
    */
   enableNewLine?: boolean;
-
-  /**
-   * When this option is true, font size will be also recalculated to make text fit the container boundaries.
-   * This calculation is triggered at every input
-   */
-  expandToFit?: boolean;
 
   /**
    * Represents how textbox boundaries should grow while in
@@ -246,14 +249,13 @@ export class Text extends Shape<TextConfig> {
   lockSize: GetSet<boolean, this>;
   spellcheckOnEdit: GetSet<boolean, this>;
   enableNewLine: GetSet<boolean, this>;
-  expandToFit: GetSet<boolean, this>;
   growPolicy: GetSet<GrowPolicy, this>;
   backgroundColor: GetSet<string, this>;
   fontFamily: GetSet<string, this>;
   fontSize: GetSet<number, this>;
   fontStyle: GetSet<string, this>;
   fontVariant: GetSet<string, this>;
-  align: GetSet<string, this>;
+  align: GetSet<HorizontalAlignment, this>;
   letterSpacing: GetSet<number, this>;
   verticalAlign: GetSet<string, this>;
   padding: GetSet<number, this>;
@@ -263,6 +265,7 @@ export class Text extends Shape<TextConfig> {
   wrap: GetSet<string, this>;
   ellipsis: GetSet<boolean, this>;
   placeholder: GetSet<string, this>;
+  _handleOutsideClick = (e: MouseEvent) => this._onOutsideClick(e,);
 
   /**
    * Creates a new Text shape
@@ -282,6 +285,8 @@ export class Text extends Shape<TextConfig> {
     // Editing listeners
     this.on('dblclick', (e) => this._onEditingStart(e));
 
+    this.on('transform', (e) => this._onTransform(e));
+
     // Default values
     if (!this.growPolicy())
       this.growPolicy(GrowPolicy.GrowWidth);
@@ -289,14 +294,11 @@ export class Text extends Shape<TextConfig> {
     if (this.lockSize() === undefined)
       this.lockSize(false);
 
-    if (this.expandToFit() === undefined)
-      this.expandToFit(true);
-
     if (this.bordered() === undefined)
       this.bordered(false);
 
     // Initial text expanding
-    if (this.expandToFit()) this.fitContainer();
+    if (this.lockSize()) this.fitContainer();
   }
 
   /**
@@ -324,15 +326,22 @@ export class Text extends Shape<TextConfig> {
       x: this.getStage().container().offsetLeft + textPosition.x + 2,
       y: this.getStage().container().offsetTop + textPosition.y + 2,
     };
+    let scale;
+    if (this.getStage())
+      scale = this.getStage().scaleX();
+    else scale = 1;
+
     // Apply styles
     this._textArea.value = this.text();
     this._textArea.placeholder = this.placeholder() || 'Inserire del testo';
     this._textArea.style.position = 'absolute';
     this._textArea.style.top = areaPosition.y + 'px';
     this._textArea.style.left = areaPosition.x + 'px';
-    this._textArea.style.width = pixel(this.getPaddedWidth());
-    this._textArea.style.height = pixel(this.getPaddedHeight());
-    this._textArea.style.fontSize = pixel(this.fontSize());
+    this._textArea.style.width = pixel(this.getPaddedWidth() * scale);
+    this._textArea.style.height = pixel(this.getPaddedHeight() * scale);
+    this._textArea.style.fontSize = pixel(this.fontSize() * scale);
+    this._textArea.style.fontWeight = this.fontStyle();
+    this._textArea.style.textDecoration = this.textDecoration();
     this._textArea.style.border = 'none';
     this._textArea.style.padding = pixel(this.padding());
     this._textArea.style.margin = '0px';
@@ -366,6 +375,29 @@ export class Text extends Shape<TextConfig> {
     this._textArea.addEventListener('keydown', (e) => this._onInputKeyDown(e));
     this._textArea.addEventListener('paste',
       (e) => this._beforeClipboardPaste(e));
+
+    // Fire editing start event
+    if (this.getStage()) {
+      this.getStage().fire(EDITING_START,
+        { node: this, textArea: this._textArea });
+    }
+
+    setTimeout(() => {
+      window.addEventListener('click', this._handleOutsideClick);
+    });
+  }
+
+  private _onTransform(event: any) {
+    if (this.lockSize()) this.fitContainer();
+  }
+
+  private _onOutsideClick(e: MouseEvent) {
+    if (e.target !== this._textArea) {
+      this._onEditingEnd();
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      e.stopPropagation();
+    }
   }
 
   /**
@@ -410,7 +442,7 @@ export class Text extends Shape<TextConfig> {
 
     // Check for exiting events
     else if (eventIsExit(e))
-      this._onExitInput(e);
+      this._onExitInput();
 
     // Stop propagation from other listeners
     e.stopImmediatePropagation();
@@ -483,7 +515,7 @@ export class Text extends Shape<TextConfig> {
       newHeight = Math.ceil(newHeight);
     }
 
-    this._textArea.style.height = pixel(newHeight - (this.padding() * 2));
+    this._textArea.style.height = pixel(newHeight - (this.padding() * 4));
   }
 
   /**
@@ -495,8 +527,11 @@ export class Text extends Shape<TextConfig> {
     this.show();
 
     // Remove text area
+    window.removeEventListener('click', this._handleOutsideClick);
     this._textArea.parentNode.removeChild(this._textArea);
     this._textArea = undefined;
+
+    this._fireChangedEvent();
   }
 
   getSelfRect(): { x: number; width: number; y: number; height: number } {
@@ -543,6 +578,8 @@ export class Text extends Shape<TextConfig> {
         }
       }
     }
+
+    this._fireChangedEvent();
   }
 
   /**
@@ -550,7 +587,7 @@ export class Text extends Shape<TextConfig> {
    * (enter or outside press) Closes editing mode and saves edited text
    * @param e
    */
-  private _onExitInput(e: KeyboardEvent): void {
+  _onExitInput(): void {
     // Sync shape text with textarea
     this.text(this._textArea.value);
     this._hideTextArea();
@@ -564,7 +601,7 @@ export class Text extends Shape<TextConfig> {
    * @private
    */
   private _setTextAreaFontSize(ft: number): void {
-    this._textArea.style.fontSize = `${ ft }px`;
+    this._textArea.style.fontSize = `${ ft * this.getAbsoluteScale().x }px`;
   }
 
   /**
@@ -575,12 +612,13 @@ export class Text extends Shape<TextConfig> {
   }
 
   /**
-   * Draws background
+   * Draws background if there is any
    * @param context
    * @private
    */
   private _drawBackground(context: SceneContext): void {
     if (!this.backgroundColor()) return;
+    if(this.backgroundColor() === 'transparent') return;
 
     context._context.fillStyle = this.backgroundColor();
     context.fillRect(0, 0, this.width(), this.height());
@@ -601,8 +639,9 @@ export class Text extends Shape<TextConfig> {
    * @param e
    */
   private _onRemoveText(e: KeyboardEvent): void {
+    const scale = this.getAbsoluteScale().x;
     // Check if text can be resized to fit container
-    if (this.expandToFit() === true) {
+    if (this.lockSize() === true) {
       const f = this.fitContainer();
       this._setTextAreaFontSize(f);
     }
@@ -611,17 +650,31 @@ export class Text extends Shape<TextConfig> {
     if (this.lockSize() === false) {
       // Resize height
       if (this.growPolicy() === GrowPolicy.GrowHeight) {
-        this.height(this.measureTextHeight() + (this.padding() * 2));
-        this._resizeTextAreaHeight(this.height());
+        this.height(this.measureTextHeight() + (this.padding() * 2) + (this.lineHeight() || 1) * this.fontSize());
+        this._resizeTextAreaHeight(this.height() * scale);
+
+        this._fireChangedEvent();
       } else {
         // Resize width
         this.width(this.getTextWidth() + (this.padding() * 2));
-        this._resizeTextAreaWidth(this.width());
+        this._resizeTextAreaWidth(this.width() * scale);
+
+        this._fireChangedEvent();
       }
     }
 
     // Update text
     this.text(this._textArea.value);
+  }
+
+  /**
+   * Fires the event to signal that this text has changed internally
+   * @private
+   */
+  private _fireChangedEvent() {
+    // Fire event for boundaries change (ChangedEvent)
+    if (this.getStage())
+      this.getStage().fire(CHANGED, { node: this });
   }
 
   /**
@@ -657,7 +710,7 @@ export class Text extends Shape<TextConfig> {
     let scale = this.getAbsoluteScale().x;
 
     // Apply current height and width using also scale
-    this._resizeTextAreaWidth(this.width() * scale);
+    this._resizeTextAreaWidth((this.width()) * scale);
 
     // Create measurement helper
     const measurementHelp = this.getMeasurementHelper();
@@ -670,10 +723,10 @@ export class Text extends Shape<TextConfig> {
     const newCharWidth = this.fontSize() * this.lineHeight();
 
     // True if this text is overflowing on height
-    const overflowsHeight: boolean = textMetrics.height + newLineHeight > this.height() - (this.padding() * 2);
+    const overflowsHeight: boolean = (textMetrics.height) >= this.getPaddedHeight();
     // True if this text is overflowing on width
-    const overflowsWidth: boolean = rangeOf(this.width() - (this.fontSize() * this.lineHeight()) - (this.padding() * 2),
-      this.width() - (this.padding() * 2),
+    const overflowsWidth: boolean = rangeOf((this.width() - (this.fontSize() * this.lineHeight()) - (this.padding() * 2)),
+      (this.width() - (this.padding() * 2)),
       textMetrics.maxWidth);
 
     // Let size grow if allowed
@@ -682,14 +735,17 @@ export class Text extends Shape<TextConfig> {
       if (overflowsHeight && this.growPolicy() === GrowPolicy.GrowHeight) {
         // Resize height of shape and also of text area
         this.height(this.height() + newLineHeight);
-        this._resizeTextAreaHeight(this.height());
+        this._resizeTextAreaHeight(this.height() + this.padding() * scale);
+        this._fireChangedEvent();
       }
 
       // Check for grow width
       if (overflowsWidth && this.growPolicy() === GrowPolicy.GrowWidth) {
         // Add some space left
-        this.width(this.width() + newCharWidth);
-        this._resizeTextAreaWidth(this.width());
+        const w = this.width() + newCharWidth;
+        this.width(w);
+        this._resizeTextAreaWidth(w * scale);
+        this._fireChangedEvent();
       }
     } else if (overflowsHeight && this.lockSize()) {
       // If unable to decrease font (fontSize < 6pt) resize following
@@ -701,8 +757,8 @@ export class Text extends Shape<TextConfig> {
     }
 
     // Check for possibility of font decrease when in lockSize mode
-    if (this.expandToFit())
-      this.fitContainer();
+    // if (this.lockSize())
+    //   this.fitContainer();
   }
 
   /**
@@ -718,6 +774,8 @@ export class Text extends Shape<TextConfig> {
       this._resizeTextAreaHeight(newSize.getWidth());
       this.width(newSize.getWidth());
     }
+
+    this._fireChangedEvent();
   }
 
   /**
@@ -725,10 +783,11 @@ export class Text extends Shape<TextConfig> {
    * @private
    */
   private _decreaseFontSizeToFit(measurement: TextMeasurementHelper, box: Size2D): boolean {
+    const scale = this.getAbsoluteScale().x;
     let metrics = measurement.measureComplexText(box);
     let fontSize = this.fontSize();
 
-    while (metrics.height + (fontSize * this.lineHeight()) > this.height() - this.padding()) {
+    while ((metrics.height) >= this.getPaddedHeight()) {
       if (fontSize < 7) return false;
 
       fontSize--;
@@ -738,11 +797,44 @@ export class Text extends Shape<TextConfig> {
 
       // Set fontsize to shape and textarea
       if (this._textArea)
-        this._textArea.style.fontSize = `${ fontSize }px`;
+        this._textArea.style.fontSize = `${ fontSize * scale }px`;
 
       this.fontSize(fontSize);
     }
+
+    // Fire event for boundaries change (ChangedEvent)
+    if (this.getStage())
+      this.getStage().fire(CHANGED, { node: this });
     return true;
+  }
+
+  /**
+   * Resize container of this text to make all fit.
+   * Differs from fitContainer, that resizes the font of the text.
+   */
+  public resize(): Size2D {
+    if (this.lockSize()) this.fitContainer();
+    else {
+      const measurement = this.getMeasurementHelper();
+      let size: Size2D = this.getSizeRect();
+
+      if (this.growPolicy() === GrowPolicy.GrowHeight) size.setHeight(300000);
+      else size.setWidth(300000);
+      const textMetrics = measurement.measureComplexText(size);
+      const { height, maxWidth } = textMetrics;
+
+      // Apply width grow
+      if (this.growPolicy() === GrowPolicy.GrowHeight && height > this.height()) this.height(
+        height + 10);
+      else if (this.growPolicy() === GrowPolicy.GrowWidth && maxWidth > this.width()) this.width(
+        maxWidth + 10);
+
+      // Fire event for boundaries change (ChangedEvent)
+      if (this.getStage())
+        this.getStage().fire(CHANGED, { node: this });
+
+      return this.getSizeRect();
+    }
   }
 
   /**
@@ -873,7 +965,6 @@ export class Text extends Shape<TextConfig> {
           this._partialTextY = translateY + lineTranslateY;
           this._partialText = letter;
           context.fillStrokeShape(this);
-          context.drawRectBorders(this);
           lineTranslateX += this.measureSize(letter).width + letterSpacing;
         }
       } else {
@@ -882,7 +973,6 @@ export class Text extends Shape<TextConfig> {
         this._partialText = text;
 
         context.fillStrokeShape(this);
-        context.drawRectBorders(this);
       }
       context.restore();
       if (textArrLen > 1) {
@@ -915,7 +1005,6 @@ export class Text extends Shape<TextConfig> {
       (length ? letterSpacing * (length - 1) : 0)
     );
   }
-
 
   /**
    * Drawing function
@@ -1089,10 +1178,11 @@ export class Text extends Shape<TextConfig> {
    * @private
    */
   private _fontSizeFits(fontSize: number): -1 | 1 | 0 {
-    const h = this.measureTextHeightByFontSize(fontSize);
+    const measurement = this.getMeasurementHelper();
+    const h = measurement.measureComplexText(this.getSizeRect()).height;
 
-    if (h <= this.height() && h > this.height() - (this.fontSize() * this.lineHeight())) return 0;
-    else if (h > this.height()) return 1;
+    if (h <= this.height() && h > this.height() - (this.fontSize() * this.lineHeight()) - (this.padding() * 2)) return 0;
+    else if (h >= this.height() + this.padding() * 2) return 1;
     else return -1;
   }
 
@@ -1101,10 +1191,14 @@ export class Text extends Shape<TextConfig> {
    * (shape width and height)
    */
   fitContainer(): number {
+    const scale = this.getAbsoluteScale().x;
     let ft = this.fontSize();
-    let ftr = this._fontSizeFits(ft);
     // Check if current fontsize can fit
-    while (ftr !== 0) {
+    let ftr = this._fontSizeFits(ft);
+    // Direction of the growth or shrink.
+    let chr = ftr;
+
+    while (ftr !== 0 && chr === ftr) {
       // Increment or decrement font size
       if (ftr === -1)
         ft++;
@@ -1114,11 +1208,15 @@ export class Text extends Shape<TextConfig> {
 
       // Sync also textarea font
       if (this._textArea)
-        this._textArea.style.fontSize = pixel(ft);
+        this._textArea.style.fontSize = pixel(ft * scale);
 
       ftr = this._fontSizeFits(ft);
     }
 
+
+    // Fire event for boundaries change (ChangedEvent)
+    if (this.getStage())
+      this.getStage().fire(CHANGED, { node: this });
     return ft;
   }
 
@@ -1139,6 +1237,7 @@ export class Text extends Shape<TextConfig> {
     return (fontSize * this.textArr.length * this.lineHeight()) +
            this.padding() * 2;
   }
+
   /**
    * Calculates font size to make text fit into the given rectangle.
    * @param size Rectangle size
@@ -1568,10 +1667,8 @@ Factory.addGetterSetter(Text, 'spellcheckOnEdit', false);
 Factory.addGetterSetter(Text, 'enableNewLine', false);
 
 /**
- * Enable / disable automatic fontsize grow to fit container
+ * Indicates if this textbox should be resized on
  */
-Factory.addGetterSetter(Text, 'expandToFit', false);
-
 Factory.addGetterSetter(Text, 'growPolicy', GrowPolicy.GrowHeight);
 
 /**
