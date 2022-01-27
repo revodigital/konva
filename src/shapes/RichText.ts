@@ -96,6 +96,11 @@ export interface RichTextConfig extends ShapeConfig {
    * Text background color
    */
   backgroundColor?: string;
+
+  /**
+   * Specifies additional css to style the generated html document
+   */
+  style?: string;
 }
 
 /**
@@ -115,6 +120,7 @@ export class RichText extends Shape<RichTextConfig> {
   sourceType: GetSet<RichTextSource, this>;
   horizontalAlignment: GetSet<HorizontalAlignment, this>;
   backgroundColor: GetSet<string, this>;
+  style: GetSet<string, this>;
 
   private _lastContent = '';
   private _lastSize: Size2D;
@@ -389,6 +395,10 @@ Factory.addGetterSetter(RichText, 'growPolicy');
  */
 Factory.addGetterSetter(RichText, 'backgroundColor');
 
+/**
+ * Get / set document css style
+ */
+Factory.addGetterSetter(RichText, 'style');
 
 RichText.prototype.className = 'RichText';
 _registerNode(RichText);

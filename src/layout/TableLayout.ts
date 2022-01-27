@@ -9,15 +9,15 @@
  * Description:
  */
 
-import { CellLayout }   from './CellLayout';
+import { CellLayout }                   from './CellLayout';
 import { CellPosition }                 from '../common/CellPosition';
 import { ColumnRowLayoutConfiguration } from './ColumnRowLayoutConfiguration';
 import {
   InvalidConfiguration
 }                                       from '../exceptions/InvalidConfiguration';
-import { PointRectangle2D }  from '../common/PointRectangle2D';
-import { RowLayout }         from './RowLayout';
-import { InvalidPercentage } from '../exceptions/InvalidPercentage';
+import { PointRectangle2D }             from '../common/PointRectangle2D';
+import { RowLayout }                    from './RowLayout';
+import { InvalidPercentage }            from '../exceptions/InvalidPercentage';
 
 export interface ITableLayout {
   rowsPercentages: number[];
@@ -112,8 +112,6 @@ export class TableLayout implements ITableLayout {
    * @param rows Rows number
    */
   initLayout(cols: number, rows: number): void {
-    if (cols < 0 || rows < 0) throw new Error('Invalid column or row count. ');
-
     const rPerc = 100 / rows;
     const cPerc = 100 / cols;
 
@@ -128,7 +126,7 @@ export class TableLayout implements ITableLayout {
    */
   parseFromConfiguration(config: ColumnRowLayoutConfiguration): void {
     // Validate values
-    if (!config.isValid()) throw new InvalidConfiguration(config);
+    if (!config.isValid()) {return;}
 
     // Calculate auto width for columns
     const autoRows = config.rowGroup.getAutoRowCount();
@@ -152,9 +150,6 @@ export class TableLayout implements ITableLayout {
 
       this.columnPercentages.push(val);
       csum += val;
-
-      if (csum > 100) throw new InvalidPercentage(csum,
-        `invalid percentage for column ${ x }.`);
     }
 
     this.rowsPercentages = [];
