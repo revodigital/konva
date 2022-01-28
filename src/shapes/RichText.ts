@@ -19,6 +19,7 @@ import { drawHTML, Options }           from 'next-rasterizehtml';
 import { Size2D }                      from '../common/Size2D';
 import { HAlign, HorizontalAlignment } from '../configuration/Alignment';
 import { GrowPolicy }                  from './Text';
+import { PointRectangle2D }            from '../common/PointRectangle2D';
 
 /**
  * Represents the type of a rich text source
@@ -215,9 +216,22 @@ export class RichText extends Shape<RichTextConfig> {
 
     this._drawBackground(context);
 
+
     if (this._image)
       context.drawImage(this._image, 0, 0);
 
+    // Draw shape borders
+    context.closePath();
+    const edges = PointRectangle2D.calculateFromStart(this.width(),
+      this.height());
+    context.beginPath();
+    context.moveTo(edges.topLeft.x, edges.topLeft.y);
+    context.lineTo(edges.topRight.x, edges.topRight.y);
+    context.lineTo(edges.bottomRight.x, edges.bottomRight.y);
+    context.lineTo(edges.bottomLeft.x, edges.bottomLeft.y);
+    context.lineTo(edges.topLeft.x, edges.topLeft.y);
+    context.strokeShape(this);
+    context.closePath();
   }
 
   private _loadFreeImage(doc: string) {
