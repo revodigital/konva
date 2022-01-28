@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file. This
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.5.10 (28/1/2022)
+Fixes several bugs, such as: 
+* Barcode not showing content
+* Barcode without transparent background
+* RichText not rendering borders
+* RichText cutting text when resized
+* Table header drawing problems
+* Table borders drawing problems
+
+Also **removes** unuseful exceptions for barcode and table. They are replaced with **stage** events.  
+**Adds** a new pullrequest template, to make it clearer.  
+**Unifies** all **text-alignment** properties under the same enumeration: _HorizontalAlignment_.
+**Refactors** _RichText_ coloring process. Now **backgroundColor** is the color of the background and **fill** is the color of the text, the same as **Text**.
+
 ## 1.5.3 (25/1/2022)
 
 Implements advanced dragging behavior customization. Now you can specify combos
