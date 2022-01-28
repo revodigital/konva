@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2021. Revo Digital
+ * Copyright (c) 2021-2022. Revo Digital
  * ---
  * Author: gabriele
  * File: factory.ts
  * Project: pamela
- * Committed last: 2021/12/14 @ 1715
+ * Committed last: 2022/1/26 @ 98
  * ---
  * Description:
  */

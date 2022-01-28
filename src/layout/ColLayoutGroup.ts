@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2021-2021. Revo Digital
+ * Copyright (c) 2021-2022. Revo Digital 
  * ---
  * Author: gabriele
  * File: ColLayoutGroup.ts
- * Project: pamela
- * Committed last: 2021/11/20 @ 956
+ * Project: pamela 
+ * Committed last: 2022/1/26 @ 97
  * ---
  * Description:
  */

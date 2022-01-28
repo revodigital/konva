@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 2021-2021. Revo Digital
+ * Copyright (c) 2021-2022. Revo Digital
  * ---
- * Author: Gabri
+ * Author: gabriele
  * File: column.ts
- * Project: complex-shapes
- * Committed last: 2021/10/18 @ 1259
+ * Project: pamela
+ * Committed last: 2022/1/26 @ 97
  * ---
- * Description: Implements the Column class for representing a table column.
+ * Description:
  */
 
 import { TextConfiguration, ITextConfiguration } from '../configuration/TextConfiguration';

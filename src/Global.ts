@@ -1,14 +1,17 @@
 /*
- * Copyright (c) 2021. Revo Digital
+ * Copyright (c) 2021-2022. Revo Digital 
  * ---
  * Author: gabriele
  * File: Global.ts
- * Project: pamela
- * Committed last: 2021/12/6 @ 159
+ * Project: pamela 
+ * Committed last: 2022/1/26 @ 97
  * ---
  * Description:
  */
+import { DragButton } from './Node';
+
 var PI_OVER_180 = Math.PI / 180;
+
 /**
  * @namespace Pamela
  */
@@ -18,8 +21,8 @@ function detectBrowser() {
     typeof window !== 'undefined' &&
     // browser case
     ({}.toString.call(window) === '[object Window]' ||
-      // electron case
-      {}.toString.call(window) === '[object global]')
+     // electron case
+     {}.toString.call(window) === '[object global]')
   );
 }
 
@@ -27,13 +30,13 @@ declare const WorkerGlobalScope: any;
 
 export const glob: any =
   typeof global !== 'undefined'
-    ? global
-    : typeof window !== 'undefined'
+  ? global
+  : typeof window !== 'undefined'
     ? window
     : typeof WorkerGlobalScope !== 'undefined'
-        // eslint-disable-next-line no-restricted-globals
-    ? self
-    : {};
+      // eslint-disable-next-line no-restricted-globals
+      ? self
+      : {};
 
 export const Pamela = {
   _global: glob,
@@ -145,7 +148,7 @@ export const Pamela = {
    * // enable left and right mouse buttons
    * Konva.dragButtons = [0, 2];
    */
-  dragButtons: [0, 1],
+  dragButtons: [{ button: 0 }, { button: 2 }] as DragButton[],
 
   /**
    * returns whether or not drag and drop is currently active

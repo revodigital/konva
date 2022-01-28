@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2022-2022. Revo Digital
+ * ---
+ * Author: gabriele
+ * File: commands.js
+ * Project: pamela
+ * Committed last: 2022/1/26 @ 98
+ * ---
+ * Description:
+ */
+
 // ***********************************************
 // This example commands.js shows you how to
 // create various custom commands and overwrite

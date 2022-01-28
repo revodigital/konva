@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 2021. Revo Digital
+ * Copyright (c) 2021-2022. Revo Digital
  * ---
  * Author: gabriele
  * File: BorderOptions.ts
- * Project: complexshapestest
- * Committed last: 2021/10/22 @ 2154
+ * Project: pamela
+ * Committed last: 2022/1/26 @ 97
  * ---
- * Description: Implements the BorderOptions class
+ * Description:
  */
 
 import { LineDashConfiguration } from './LineDash';

@@ -4,10 +4,10 @@ Pamela is an HTML5 Canvas JavaScript framework that enables high performance ani
 
 You can draw things onto the stage, add event listeners to them, move them, scale them, and rotate them independently from other shapes to support high performance animations, even if your application uses thousands of shapes. Served hot with a side of awesomeness.
 
-This repository began as a GitHub fork of KonvaJs
-- **Visit:** The [Home Page](http://konvajs.org/) and follow on [Twitter](https://twitter.com/lavrton)
-- **Discover:** [Tutorials](http://konvajs.org/docs), [API Documentation](http://konvajs.org/api)
-- **Help:** [StackOverflow](http://stackoverflow.com/questions/tagged/konvajs), [Discord Chat](https://discord.gg/8FqZwVT)
+This repository began as a GitHub fork of PamelaJs
+- **Visit:** The [Home Page](http://Pamelajs.org/) and follow on [Twitter](https://twitter.com/lavrton)
+- **Discover:** [Tutorials](http://Pamelajs.org/docs), [API Documentation](http://Pamelajs.org/api)
+- **Help:** [StackOverflow](http://stackoverflow.com/questions/tagged/Pamelajs), [Discord Chat](https://discord.gg/8FqZwVT)
 
 # Quick Look
 
@@ -54,9 +54,9 @@ Pamela works in all modern mobile and desktop browsers. A browser need to be cap
 
 At the current moment `Pamela` doesn't work in IE11 directly. To make it work you just need to provide some polyfills such as `Array.prototype.find`, `String.prototype.trimLeft`, `String.prototype.trimRight`, `Array.from`.
 
-# Loading and installing Konva
+# Loading and installing Pamela
 
-Konva supports UMD loading. So you can use all possible variants to load the framework into your project:
+Pamela supports UMD loading. So you can use all possible variants to load the framework into your project:
 
 ### Install with npm:
 
@@ -79,7 +79,7 @@ a commonjs module.
 
 # Change log
 
-See [CHANGELOG.md](https://github.com/konvajs/konva/blob/master/CHANGELOG.md).
+See [CHANGELOG.md](https://github.com/Pamelajs/Pamela/blob/master/CHANGELOG.md).
 
 ## Building the Pamela Framework
 Since **Pamela** is written in typescript, you can simply run
@@ -115,23 +115,23 @@ in particular if you have a bug fix, enhancement, or a new shape (see `src/shape
 
 ### Financial Contributors
 
-Become a financial contributor and help us sustain our community. [[Contribute](https://opencollective.com/konva/contribute)]
+Become a financial contributor and help us sustain our community. [[Contribute](https://opencollective.com/Pamela/contribute)]
 
 #### Individuals
 
-<a href="https://opencollective.com/konva"><img src="https://opencollective.com/konva/individuals.svg?width=890"></a>
+<a href="https://opencollective.com/Pamela"><img src="https://opencollective.com/Pamela/individuals.svg?width=890"></a>
 
 #### Organizations
 
-Support this project with your organization. Your logo will show up here with a link to your website. [[Contribute](https://opencollective.com/konva/contribute)]
+Support this project with your organization. Your logo will show up here with a link to your website. [[Contribute](https://opencollective.com/Pamela/contribute)]
 
-<a href="https://opencollective.com/konva/organization/0/website"><img src="https://opencollective.com/konva/organization/0/avatar.svg"></a>
-<a href="https://opencollective.com/konva/organization/1/website"><img src="https://opencollective.com/konva/organization/1/avatar.svg"></a>
-<a href="https://opencollective.com/konva/organization/2/website"><img src="https://opencollective.com/konva/organization/2/avatar.svg"></a>
-<a href="https://opencollective.com/konva/organization/3/website"><img src="https://opencollective.com/konva/organization/3/avatar.svg"></a>
-<a href="https://opencollective.com/konva/organization/4/website"><img src="https://opencollective.com/konva/organization/4/avatar.svg"></a>
-<a href="https://opencollective.com/konva/organization/5/website"><img src="https://opencollective.com/konva/organization/5/avatar.svg"></a>
-<a href="https://opencollective.com/konva/organization/6/website"><img src="https://opencollective.com/konva/organization/6/avatar.svg"></a>
-<a href="https://opencollective.com/konva/organization/7/website"><img src="https://opencollective.com/konva/organization/7/avatar.svg"></a>
-<a href="https://opencollective.com/konva/organization/8/website"><img src="https://opencollective.com/konva/organization/8/avatar.svg"></a>
-<a href="https://opencollective.com/konva/organization/9/website"><img src="https://opencollective.com/konva/organization/9/avatar.svg"></a>
+<a href="https://opencollective.com/Pamela/organization/0/website"><img src="https://opencollective.com/Pamela/organization/0/avatar.svg"></a>
+<a href="https://opencollective.com/Pamela/organization/1/website"><img src="https://opencollective.com/Pamela/organization/1/avatar.svg"></a>
+<a href="https://opencollective.com/Pamela/organization/2/website"><img src="https://opencollective.com/Pamela/organization/2/avatar.svg"></a>
+<a href="https://opencollective.com/Pamela/organization/3/website"><img src="https://opencollective.com/Pamela/organization/3/avatar.svg"></a>
+<a href="https://opencollective.com/Pamela/organization/4/website"><img src="https://opencollective.com/Pamela/organization/4/avatar.svg"></a>
+<a href="https://opencollective.com/Pamela/organization/5/website"><img src="https://opencollective.com/Pamela/organization/5/avatar.svg"></a>
+<a href="https://opencollective.com/Pamela/organization/6/website"><img src="https://opencollective.com/Pamela/organization/6/avatar.svg"></a>
+<a href="https://opencollective.com/Pamela/organization/7/website"><img src="https://opencollective.com/Pamela/organization/7/avatar.svg"></a>
+<a href="https://opencollective.com/Pamela/organization/8/website"><img src="https://opencollective.com/Pamela/organization/8/avatar.svg"></a>
+<a href="https://opencollective.com/Pamela/organization/9/website"><img src="https://opencollective.com/Pamela/organization/9/avatar.svg"></a>
