@@ -156,6 +156,7 @@ export class RichText extends Shape<RichTextConfig> {
     // Format complete document, adding formatting options
     const doc = `
     <div id="document" style="
+    ${ this.style() };
     color: ${ this.fill() || 'black' };
     margin: ${ this.padding() || 0 }px; 
     font-family: ${ this.fontFamily() || 'arial' };
@@ -181,13 +182,6 @@ export class RichText extends Shape<RichTextConfig> {
   }
 
   private _drawBackground(context: SceneContext) {
-    // if (this.hasFill() || this.hasStroke()) {
-    //   context.beginPath();
-    //   context.rect(0, 0, this.width(), this.height());
-    //   context.closePath();
-    //   context.fillStrokeShape(this);
-    // }
-
     context._context.fillStyle = this.backgroundColor();
     context.fillRect(0, 0, this.width(), this.height());
   }
@@ -215,7 +209,6 @@ export class RichText extends Shape<RichTextConfig> {
     }
 
     this._drawBackground(context);
-
 
     if (this._image)
       context.drawImage(this._image, 0, 0);
@@ -260,6 +253,21 @@ export class RichText extends Shape<RichTextConfig> {
         this.draw();
       }
     });
+  }
+
+  /**
+   * Sets the content of a richtext and re-draws it
+   * @param source Content to set
+   * @param type Source type (Html or markdown are supported)
+   */
+  public setContent(source: string, type: RichTextSource) {
+    if(type === RichTextSource.Markdown) this.markdownContent(source);
+    else this.htmlContent(source);
+    this.sourceType(type);
+
+    // Invalidate cache
+    this._image = undefined;
+    this.draw();
   }
 
   private _loadFittedImage(doc: string) {
