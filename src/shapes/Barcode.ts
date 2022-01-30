@@ -164,13 +164,6 @@ export class Barcode extends Shape<BarcodeConfig> {
 
     this._resizing = false;
     this._writeCache();
-
-    this.on('transformend', (event) => {
-// Delete cache after transform
-      this._imageBuffer = undefined;
-      //this._resizing = false;
-      this.draw();
-    });
   }
 
   async _sceneFunc(context: Context): Promise<void> {
