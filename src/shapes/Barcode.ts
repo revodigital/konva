@@ -60,6 +60,16 @@ export interface BarcodeConfig extends ShapeConfig {
    * Enable / disable value rendering
    */
   displayValue?: boolean;
+
+  /**
+   * Barcode background color (default is transparent). Fill is used for barcode color
+   */
+  backgroundColor?: string;
+
+  /**
+   * Content font size
+   */
+  contentFontSize?: number;
 }
 
 interface BarcodeCache {
@@ -105,6 +115,8 @@ export class Barcode extends Shape<BarcodeConfig> {
   encoding: GetSet<string, this>;
   placeHolder: GetSet<string, this>;
   displayValue: GetSet<boolean, this>;
+  backgroundColor: GetSet<string, this>;
+  contentFontSize: GetSet<number, this>;
 
   _imageBuffer: Image;
   _textBuffer: Text;
@@ -138,19 +150,17 @@ export class Barcode extends Shape<BarcodeConfig> {
     if (!this.encoding()) this.encoding('CODE39');
     if (!this.codeLineWidth()) this.codeLineWidth(1);
     if (!this.displayValue()) this.displayValue(false);
+    if (!this.backgroundColor()) this.backgroundColor('transparent');
+    if (this.contentFontSize() === undefined) this.contentFontSize(15);
+    if (!this.fill()) this.fill('black');
 
     this._resizing = false;
-
     this._writeCache();
 
-    // Add event listeners
-    this.on('transformstart', () => {
-      this._resizing = true;
-    });
     this.on('transformend', (event) => {
-      // Delete cache after transform
+// Delete cache after transform
       this._imageBuffer = undefined;
-      this._resizing = false;
+      //this._resizing = false;
       this.draw();
     });
   }
@@ -161,31 +171,33 @@ export class Barcode extends Shape<BarcodeConfig> {
       this._imageBuffer = undefined;
 
       this._loadBarcodeImage().then(({ image, link }) => {
-        this._resizing = true;
         // Draw barcode only if there is an image
         if (image) {
           this._imageBuffer = image;
-          this._resizing = false;
+          this._imageBuffer.scaleX(this.width() / image.width());
           this._writeCache();
 
           // Create cache if not present when needed
-          if(this.displayValue()) {
+          if (this.displayValue()) {
             if (!this._textBuffer)
               this._textBuffer = new Text({});
 
             // Assign properties
             this._textBuffer.x(0);
             this._textBuffer.y(this._imageBuffer.height() + 1);
-            this._textBuffer.width(this._imageBuffer.width());
+            this._textBuffer.width(this.width());
             this._textBuffer.text(this.code().toUpperCase());
+            this._textBuffer.listening(false);
+            this._textBuffer.draggable(false);
+            this._textBuffer.perfectDrawEnabled(false);
             this._textBuffer.align(HorizontalAlignment.Center);
-            this._textBuffer.fontSize(15);
+            this._textBuffer.fontSize(this.contentFontSize() || 15);
             this._textBuffer.height(50);
+            this._textBuffer.editable(false);
+            this._textBuffer.fill(this.fill());
           }
 
-          // Resize shape internally
-          this.width(this._imageBuffer.width());
-          this.height(this._imageBuffer.height() + (this._textBuffer ? this._textBuffer.fontSize() : 0));
+          this._requestDraw();
         } else {
           // Fire error event
           if (this.getStage()) this.getStage().fire(INVALID_CDECS,
@@ -201,6 +213,8 @@ export class Barcode extends Shape<BarcodeConfig> {
     }
 
     // Draw borders and background
+    context._context.fillStyle = this.backgroundColor();
+    context.fillRect(0, 0, this.width(), this.height());
     context.closePath();
     const edges = PointRectangle2D.calculateFromStart(this.width(),
       this.height());
@@ -212,7 +226,7 @@ export class Barcode extends Shape<BarcodeConfig> {
     context.lineTo(edges.topLeft.x, edges.topLeft.y);
     context.strokeShape(this);
     context.closePath();
-    context.fillStrokeShape(this);
+    context.strokeShape(this);
 
     // Draw barcode image
     if (this._imageBuffer && !this._resizing) {
@@ -257,7 +271,7 @@ export class Barcode extends Shape<BarcodeConfig> {
 
   _generateBarCodeUrl(code: string, encoding: string): string | undefined {
     let canvas = document.createElement('canvas');
-    const backgroundColor = this.transparentBackground() ? '#00000000' : this.fill() as string;
+    const backgroundColor = this.transparentBackground() ? '#00000000' : this.backgroundColor() as string;
     try {
       JsBarcode(canvas,
         code,
@@ -265,9 +279,10 @@ export class Barcode extends Shape<BarcodeConfig> {
           format: encoding,
           margin: 0,
           width: this.codeLineWidth(),
-          height: this.height() - 50,
+          height: this.height() - this.contentFontSize(),
           displayValue: false,
-          background: backgroundColor
+          background: backgroundColor,
+          lineColor: this.fill() || 'black'
         });
       return canvas.toDataURL('image/png');
     } catch (e) {
@@ -308,6 +323,16 @@ Factory.addGetterSetter(Barcode, 'encoding');
 Factory.addGetterSetter(Barcode, 'placeHolder');
 
 Factory.addGetterSetter(Barcode, 'displayValue');
+
+/**
+ * Get / set background color
+ */
+Factory.addGetterSetter(Barcode, 'backgroundColor');
+
+/**
+ * Get / set content font size
+ */
+Factory.addGetterSetter(Barcode, 'contentFontSize');
 
 Barcode.prototype.className = 'Barcode';
 _registerNode(Barcode);
