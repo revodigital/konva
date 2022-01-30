@@ -77,6 +77,8 @@ interface BarcodeCache {
   code: string;
   encoding: string;
   showContent: boolean;
+  backgroundColor: string;
+  fill: string;
 }
 
 /**
@@ -130,6 +132,8 @@ export class Barcode extends Shape<BarcodeConfig> {
       code: this.code(),
       encoding: this.encoding(),
       showContent: this.displayValue(),
+      backgroundColor: this.backgroundColor(),
+      fill: this.fill()
     };
   }
 
@@ -139,7 +143,11 @@ export class Barcode extends Shape<BarcodeConfig> {
 
   _cacheChanged(): boolean {
     const temp = this._getInternalCache();
-    return (this.props_cache.code !== temp.code || this.props_cache.showContent !== temp.showContent || this.props_cache.encoding !== temp.encoding);
+    return (this.props_cache.code !== temp.code ||
+            this.props_cache.showContent !== temp.showContent ||
+            this.props_cache.encoding !== temp.encoding ||
+            this.props_cache.backgroundColor !== temp.backgroundColor ||
+            this.props_cache.fill !== temp.fill);
   }
 
   _initFunc(config?: BarcodeConfig) {
@@ -194,6 +202,28 @@ export class Barcode extends Shape<BarcodeConfig> {
     // Draw borders and background
     context._context.fillStyle = this.backgroundColor();
     context.fillRect(0, 0, this.width(), this.height());
+
+    // Draw barcode image
+    if (this._imageBuffer && !this._resizing) {
+      // Draw the image
+      context.drawImage(this._imageBuffer,
+        0,
+        0,
+        this.width(),
+        this.height() - (this.displayValue() ? (this.contentFontSize() + 3) : 0));
+    }
+
+    if (this.displayValue()) {
+      context._context.fillStyle = this.fill() || 'black';
+      context._context.font = `${ this.contentFontSize() }px Arial`;
+      context._context.textAlign = 'center';
+      const textW = context.measureText(this.code());
+      context._context.fillText(this.code().toUpperCase(),
+        this.width() / 2,
+        this.height() - 5,
+        this.width());
+    }
+
     context.closePath();
     const edges = PointRectangle2D.calculateFromStart(this.width(),
       this.height());
@@ -205,28 +235,6 @@ export class Barcode extends Shape<BarcodeConfig> {
     context.lineTo(edges.topLeft.x, edges.topLeft.y);
     context.strokeShape(this);
     context.closePath();
-    context.strokeShape(this);
-
-    // Draw barcode image
-    if (this._imageBuffer && !this._resizing) {
-      // Draw the image
-      context.drawImage(this._imageBuffer,
-        0,
-        0,
-        this.width(),
-        this.height() - (this.displayValue() ? this.contentFontSize() : 0));
-    }
-
-    if (this.displayValue()) {
-      context._context.fillStyle = this.fill() || 'black';
-      context._context.font = `${ this.contentFontSize() }px Arial`;
-      context._context.textAlign = 'center';
-      const textW = context.measureText(this.code());
-      context._context.fillText(this.code(),
-        this.width() / 2,
-        this.height() - 2,
-        this.width());
-    }
   }
 
   _hitFunc(context) {
