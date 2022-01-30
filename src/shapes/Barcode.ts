@@ -22,6 +22,7 @@ import {
 import { Text }                from './Text';
 import { HorizontalAlignment } from '../configuration/Alignment';
 import { PointRectangle2D }    from '../common/PointRectangle2D';
+import { callbackify }         from 'util';
 
 export interface BarcodeConfig extends ShapeConfig {
   /**
@@ -118,8 +119,7 @@ export class Barcode extends Shape<BarcodeConfig> {
   backgroundColor: GetSet<string, this>;
   contentFontSize: GetSet<number, this>;
 
-  _imageBuffer: Image;
-  _textBuffer: Text;
+  _imageBuffer: CanvasImageSource;
   _resizing: boolean;
 
   // Internal props cache
@@ -173,29 +173,8 @@ export class Barcode extends Shape<BarcodeConfig> {
       this._loadBarcodeImage().then(({ image, link }) => {
         // Draw barcode only if there is an image
         if (image) {
-          this._imageBuffer = image;
-          this._imageBuffer.scaleX(this.width() / image.width());
+          this._imageBuffer = image.image();
           this._writeCache();
-
-          // Create cache if not present when needed
-          if (this.displayValue()) {
-            if (!this._textBuffer)
-              this._textBuffer = new Text({});
-
-            // Assign properties
-            this._textBuffer.x(0);
-            this._textBuffer.y(this._imageBuffer.height() + 1);
-            this._textBuffer.width(this.width());
-            this._textBuffer.text(this.code().toUpperCase());
-            this._textBuffer.listening(false);
-            this._textBuffer.draggable(false);
-            this._textBuffer.perfectDrawEnabled(false);
-            this._textBuffer.align(HorizontalAlignment.Center);
-            this._textBuffer.fontSize(this.contentFontSize() || 15);
-            this._textBuffer.height(50);
-            this._textBuffer.editable(false);
-            this._textBuffer.fill(this.fill());
-          }
 
           this._requestDraw();
         } else {
@@ -231,10 +210,15 @@ export class Barcode extends Shape<BarcodeConfig> {
     // Draw barcode image
     if (this._imageBuffer && !this._resizing) {
       // Draw the image
-      this._imageBuffer.drawScene(this.getCanvas(), this);
-      // Draw text content
-      if (this.displayValue() && this._textBuffer)
-        this._textBuffer.drawScene(this.getCanvas(), this);
+      context.drawImage(this._imageBuffer, 0, 0, this.width(), this.height() - this.contentFontSize());
+    }
+
+    if (this.displayValue()) {
+      context._context.fillStyle = this.fill() || 'black';
+      context._context.font = `${this.contentFontSize()}px Arial`;
+      context._context.textAlign = "center";
+      const textW = context.measureText(this.code());
+      context._context.fillText(this.code(), this.width() / 2, this.height() - 2, this.width());
     }
   }
 
