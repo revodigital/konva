@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2021. Revo Digital
+ * Copyright (c) 2021-2022. Revo Digital
  * ---
  * Author: gabriele
  * File: Barcode.ts
  * Project: pamela
- * Committed last: 2021/12/20 @ 1034
+ * Committed last: 2022/1/26 @ 97
  * ---
  * Description:
  */
@@ -64,6 +64,12 @@ export interface BarcodeConfig extends ShapeConfig {
   displayValue?: boolean;
 }
 
+interface BarcodeCache {
+  code: string;
+  encoding: string;
+  showContent: boolean;
+}
+
 /**
  * Pamela shape to draw a Barcode into the stage.
  * Just specify the **code**, the **encoding** and some **boundaries**,
@@ -104,15 +110,30 @@ export class Barcode extends Shape<BarcodeConfig> {
   displayValue: GetSet<boolean, this>;
 
   _imageBuffer: CanvasImageSource;
-  _oldCode: string;
-  _oldEncoding: string;
-  _oldDS: boolean;
   _resizing: boolean;
+
+  // Internal props cache
+  props_cache: BarcodeCache;
+
+  _getInternalCache(): BarcodeCache {
+    return {
+      code: this.code(),
+      encoding: this.encoding(),
+      showContent: this.displayValue(),
+    };
+  }
+
+  _writeCache() {
+    this.props_cache = this._getInternalCache();
+  }
+
+  _cacheChanged(): boolean {
+    const temp = this._getInternalCache();
+    return (this.props_cache.code !== temp.code || this.props_cache.showContent !== temp.showContent || this.props_cache.encoding !== temp.encoding);
+  }
 
   _initFunc(config?: BarcodeConfig) {
     super._initFunc(config);
-    this._oldCode = this.code();
-    this._oldEncoding = this.encoding();
     // Apply default values
     if (!this.placeHolder()) this.placeHolder('test-code');
     if (!this.code()) this.code(this.placeHolder());
@@ -120,9 +141,9 @@ export class Barcode extends Shape<BarcodeConfig> {
     if (!this.codeLineWidth()) this.codeLineWidth(1);
     if (!this.displayValue()) this.displayValue(false);
 
-
-    this._oldDS = this.displayValue();
     this._resizing = false;
+
+    this._writeCache();
 
     // Add event listeners
     this.on('transformstart', () => {
@@ -138,20 +159,17 @@ export class Barcode extends Shape<BarcodeConfig> {
 
   async _sceneFunc(context: Context): Promise<void> {
     // Reload cache if encoding or code has changed
-    // TODO: Use better chaching pattern
-    if (this._oldEncoding !== this.encoding() || this._oldCode !== this.code() || !this._imageBuffer) {
+    if (this._cacheChanged() || !this._imageBuffer) {
       this._imageBuffer = undefined;
       this._loadBarcodeImage().then(({ image, link }) => {
         this._resizing = true;
-        this._oldCode = this.code();
-        this._oldEncoding = this.encoding();
-        this._oldDS = this.displayValue();
         // Draw barcode only if there is an image
         if (image) {
           this.width(image.width());
           this.height(image.height());
           this._imageBuffer = image.image();
           this._resizing = false;
+          this._writeCache();
           this.draw();
         } else {
           // Fire error event
@@ -168,7 +186,6 @@ export class Barcode extends Shape<BarcodeConfig> {
     }
 
     // Clear previous stuff
-    context.clearRect(0, 0, this.width(), this.height());
     context.fillStrokeShape(this);
 
     // Draw barcode image

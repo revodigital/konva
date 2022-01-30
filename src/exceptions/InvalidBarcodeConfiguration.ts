@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2021. Revo Digital
+ * Copyright (c) 2021-2022. Revo Digital 
  * ---
  * Author: gabriele
  * File: InvalidBarcodeConfiguration.ts
- * Project: complexshapestest
- * Committed last: 2021/10/29 @ 1646
+ * Project: pamela 
+ * Committed last: 2022/1/26 @ 97
  * ---
  * Description:
  */

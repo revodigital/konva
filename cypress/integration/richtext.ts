@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2022. Revo Digital
+ * Copyright (c) 2022-2022. Revo Digital
  * ---
  * Author: gabriele
  * File: richtext.ts
  * Project: pamela
- * Committed last: 2022/1/4 @ 1818
+ * Committed last: 2022/1/26 @ 98
  * ---
  * Description:
  */

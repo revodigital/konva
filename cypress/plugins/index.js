@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2022-2022. Revo Digital
+ * ---
+ * Author: gabriele
+ * File: index.js
+ * Project: pamela
+ * Committed last: 2022/1/26 @ 98
+ * ---
+ * Description:
+ */
+
 /// <reference types="cypress" />
 // ***********************************************************
 // This example plugins/index.ts can be used to load plugins

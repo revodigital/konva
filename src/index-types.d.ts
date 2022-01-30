@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2021. Revo Digital
+ * Copyright (c) 2021-2022. Revo Digital
  * ---
  * Author: gabriele
  * File: index-types.d.ts
  * Project: pamela
- * Committed last: 2021/12/6 @ 159
+ * Committed last: 2022/1/26 @ 98
  * ---
  * Description:
  */
@@ -38,6 +38,7 @@ import { Sepia }        from './filters/Sepia';
 import { Solarize }     from './filters/Solarize';
 import { Threshold }    from './filters/Threshold';
 import { isMainThread } from 'worker_threads';
+import { DragButton }   from './Node';
 
 /**
  * Default Pamela namespace
@@ -50,7 +51,7 @@ declare namespace Pamela {
   export let angleDeg: boolean;
   export let showWarnings: boolean;
   export let capturePointerEventsEnabled: boolean;
-  export let dragButtons: Array<number>;
+  export let dragButtons: Array<DragButton>;
   export let hitOnDragEnabled: boolean;
   export const isDragging: () => boolean;
   export const isDragReady: () => boolean;
@@ -60,6 +61,8 @@ declare namespace Pamela {
   export const Node: typeof import('./Node').Node;
   export type Node = import('./Node').Node;
   export type NodeConfig = import('./Node').NodeConfig;
+
+  export type DragButton = import('./Node').DragButton;
 
   export type KonvaEventObject<EventType> = import('./Node').KonvaEventObject<EventType>;
 

@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 2021. Revo Digital
+ * Copyright (c) 2021-2022. Revo Digital
  * ---
  * Author: gabriele
  * File: Alignment.ts
- * Project: complexshapestest
- * Committed last: 2021/10/18 @ 1643
+ * Project: pamela
+ * Committed last: 2022/1/26 @ 97
  * ---
- * Description: Defines the enum Alignment
+ * Description:
  */
 
 /**

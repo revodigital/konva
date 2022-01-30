@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2022. Revo Digital
+ * Copyright (c) 2022-2022. Revo Digital
  * ---
  * Author: gabriele
  * File: RichText.ts
  * Project: pamela
- * Committed last: 2022/1/4 @ 1739
+ * Committed last: 2022/1/26 @ 97
  * ---
  * Description:
  */
@@ -19,6 +19,7 @@ import { drawHTML, Options }           from 'next-rasterizehtml';
 import { Size2D }                      from '../common/Size2D';
 import { HAlign, HorizontalAlignment } from '../configuration/Alignment';
 import { GrowPolicy }                  from './Text';
+import { PointRectangle2D }            from '../common/PointRectangle2D';
 
 /**
  * Represents the type of a rich text source
@@ -96,6 +97,11 @@ export interface RichTextConfig extends ShapeConfig {
    * Text background color
    */
   backgroundColor?: string;
+
+  /**
+   * Specifies additional css to style the generated html document
+   */
+  style?: string;
 }
 
 /**
@@ -115,6 +121,7 @@ export class RichText extends Shape<RichTextConfig> {
   sourceType: GetSet<RichTextSource, this>;
   horizontalAlignment: GetSet<HorizontalAlignment, this>;
   backgroundColor: GetSet<string, this>;
+  style: GetSet<string, this>;
 
   private _lastContent = '';
   private _lastSize: Size2D;
@@ -149,6 +156,7 @@ export class RichText extends Shape<RichTextConfig> {
     // Format complete document, adding formatting options
     const doc = `
     <div id="document" style="
+    ${ this.style() };
     color: ${ this.fill() || 'black' };
     margin: ${ this.padding() || 0 }px; 
     font-family: ${ this.fontFamily() || 'arial' };
@@ -174,13 +182,6 @@ export class RichText extends Shape<RichTextConfig> {
   }
 
   private _drawBackground(context: SceneContext) {
-    // if (this.hasFill() || this.hasStroke()) {
-    //   context.beginPath();
-    //   context.rect(0, 0, this.width(), this.height());
-    //   context.closePath();
-    //   context.fillStrokeShape(this);
-    // }
-
     context._context.fillStyle = this.backgroundColor();
     context.fillRect(0, 0, this.width(), this.height());
   }
@@ -212,6 +213,18 @@ export class RichText extends Shape<RichTextConfig> {
     if (this._image)
       context.drawImage(this._image, 0, 0);
 
+    // Draw shape borders
+    context.closePath();
+    const edges = PointRectangle2D.calculateFromStart(this.width(),
+      this.height());
+    context.beginPath();
+    context.moveTo(edges.topLeft.x, edges.topLeft.y);
+    context.lineTo(edges.topRight.x, edges.topRight.y);
+    context.lineTo(edges.bottomRight.x, edges.bottomRight.y);
+    context.lineTo(edges.bottomLeft.x, edges.bottomLeft.y);
+    context.lineTo(edges.topLeft.x, edges.topLeft.y);
+    context.strokeShape(this);
+    context.closePath();
   }
 
   private _loadFreeImage(doc: string) {
@@ -240,6 +253,21 @@ export class RichText extends Shape<RichTextConfig> {
         this.draw();
       }
     });
+  }
+
+  /**
+   * Sets the content of a richtext and re-draws it
+   * @param source Content to set
+   * @param type Source type (Html or markdown are supported)
+   */
+  public setContent(source: string, type: RichTextSource) {
+    if(type === RichTextSource.Markdown) this.markdownContent(source);
+    else this.htmlContent(source);
+    this.sourceType(type);
+
+    // Invalidate cache
+    this._image = undefined;
+    this.draw();
   }
 
   private _loadFittedImage(doc: string) {
@@ -389,6 +417,10 @@ Factory.addGetterSetter(RichText, 'growPolicy');
  */
 Factory.addGetterSetter(RichText, 'backgroundColor');
 
+/**
+ * Get / set document css style
+ */
+Factory.addGetterSetter(RichText, 'style');
 
 RichText.prototype.className = 'RichText';
 _registerNode(RichText);

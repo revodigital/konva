@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
 #
-# Copyright (c) 2021. Revo Digital
+# Copyright (c) 2021-2022. Revo Digital
 # ---
 # Author: gabriele
 # File: release.sh
 # Project: pamela
-# Committed last: 2021/12/6 @ 1457
+# Committed last: 2022/1/26 @ 98
 # ---
 # Description:
 #

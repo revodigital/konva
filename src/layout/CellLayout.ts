@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 2021. Revo Digital
+ * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: Gabri
+ * Author: gabriele
  * File: CellLayout.ts
- * Project: complex-shapes-dev
- * Committed last: 2021/10/20 @ 1647
+ * Project: pamela 
+ * Committed last: 2022/1/26 @ 97
  * ---
- * Description: Implements the CellLayout class
+ * Description:
  */
 
 import { PointRectangle2D } from '../common/PointRectangle2D';

@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2022-2022. Revo Digital
+ * ---
+ * Author: gabriele
+ * File: index.js
+ * Project: pamela
+ * Committed last: 2022/1/26 @ 98
+ * ---
+ * Description:
+ */
+
 // ***********************************************************
 // This example support/index.ts is processed and
 // loaded automatically before your test files.

@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2021. Revo Digital
+ * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: Gabri
+ * Author: gabriele
  * File: ColumnLayout.ts
- * Project: complex-shapes-dev
- * Committed last: 2021/10/20 @ 179
+ * Project: pamela 
+ * Committed last: 2022/1/26 @ 97
  * ---
  * Description:
  */

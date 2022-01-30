@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 2021. Revo Digital
+ * Copyright (c) 2021-2022. Revo Digital
  * ---
  * Author: gabriele
  * File: Table.ts
  * Project: pamela
- * Committed last: 2021/12/14 @ 117
+ * Committed last: 2022/1/26 @ 97
  * ---
- * Description: Implements Table shape
+ * Description:
  */
 
 import { Shape, ShapeConfig } from '../Shape';
