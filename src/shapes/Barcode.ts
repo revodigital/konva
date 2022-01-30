@@ -210,15 +210,22 @@ export class Barcode extends Shape<BarcodeConfig> {
     // Draw barcode image
     if (this._imageBuffer && !this._resizing) {
       // Draw the image
-      context.drawImage(this._imageBuffer, 0, 0, this.width(), this.height() - this.contentFontSize());
+      context.drawImage(this._imageBuffer,
+        0,
+        0,
+        this.width(),
+        this.height() - (this.displayValue() ? this.contentFontSize() : 0));
     }
 
     if (this.displayValue()) {
       context._context.fillStyle = this.fill() || 'black';
-      context._context.font = `${this.contentFontSize()}px Arial`;
-      context._context.textAlign = "center";
+      context._context.font = `${ this.contentFontSize() }px Arial`;
+      context._context.textAlign = 'center';
       const textW = context.measureText(this.code());
-      context._context.fillText(this.code(), this.width() / 2, this.height() - 2, this.width());
+      context._context.fillText(this.code(),
+        this.width() / 2,
+        this.height() - 2,
+        this.width());
     }
   }
 
