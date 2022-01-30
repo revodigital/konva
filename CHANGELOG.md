@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file. This
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.6.0 (30/1/2022)
+Fixes Barcode drawing problems and implements **showContent** property
+to show / hide it's code. Implements also text formatting configuration for barcode content.
+Fixes Barcode resizing problems, to it is fully resizable using width and or scale.
+
 ## 1.5.10 (28/1/2022)
 Fixes several bugs, such as: 
 * Barcode not showing content
