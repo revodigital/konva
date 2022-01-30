@@ -9,21 +9,19 @@
  * Description:
  */
 
-import { Shape, ShapeConfig } from '../Shape';
-import { ITextConfiguration } from '../configuration/TextConfiguration';
-import { GetSet }             from '../types';
-import { Factory }            from '../Factory';
-import { Context }            from '../Context';
+import { Shape, ShapeConfig }  from '../Shape';
+import { GetSet }              from '../types';
+import { Factory }             from '../Factory';
+import { Context }             from '../Context';
+import { Image }               from './Image';
+import * as JsBarcode          from 'jsbarcode';
+import { _registerNode }       from '../Global';
 import {
-  InvalidBarcodeConfiguration
-}                             from '../exceptions/InvalidBarcodeConfiguration';
-import { BarcodeLayout }      from '../layout/BarcodeLayout';
-import { Image }              from './Image';
-import * as JsBarcode         from 'jsbarcode';
-import { _registerNode }      from '../Global';
-import {
-  INVALID_CDECS, InvalidCodeOrSpecification
-}                             from '../events/barcode/InvalidCodeOrSpecification';
+  INVALID_CDECS
+}                              from '../events/barcode/InvalidCodeOrSpecification';
+import { Text }                from './Text';
+import { HorizontalAlignment } from '../configuration/Alignment';
+import { PointRectangle2D }    from '../common/PointRectangle2D';
 
 export interface BarcodeConfig extends ShapeConfig {
   /**
@@ -105,11 +103,11 @@ export class Barcode extends Shape<BarcodeConfig> {
   transparentBackground: GetSet<boolean, this>;
   codeLineWidth: GetSet<number, this>;
   encoding: GetSet<string, this>;
-  showContent: GetSet<boolean, this>;
   placeHolder: GetSet<string, this>;
   displayValue: GetSet<boolean, this>;
 
-  _imageBuffer: CanvasImageSource;
+  _imageBuffer: Image;
+  _textBuffer: Text;
   _resizing: boolean;
 
   // Internal props cache
@@ -161,16 +159,33 @@ export class Barcode extends Shape<BarcodeConfig> {
     // Reload cache if encoding or code has changed
     if (this._cacheChanged() || !this._imageBuffer) {
       this._imageBuffer = undefined;
+
       this._loadBarcodeImage().then(({ image, link }) => {
         this._resizing = true;
         // Draw barcode only if there is an image
         if (image) {
-          this.width(image.width());
-          this.height(image.height());
-          this._imageBuffer = image.image();
+          this._imageBuffer = image;
           this._resizing = false;
           this._writeCache();
-          this.draw();
+
+          // Create cache if not present when needed
+          if(this.displayValue()) {
+            if (!this._textBuffer)
+              this._textBuffer = new Text({});
+
+            // Assign properties
+            this._textBuffer.x(0);
+            this._textBuffer.y(this._imageBuffer.height() + 1);
+            this._textBuffer.width(this._imageBuffer.width());
+            this._textBuffer.text(this.code().toUpperCase());
+            this._textBuffer.align(HorizontalAlignment.Center);
+            this._textBuffer.fontSize(15);
+            this._textBuffer.height(50);
+          }
+
+          // Resize shape internally
+          this.width(this._imageBuffer.width());
+          this.height(this._imageBuffer.height() + (this._textBuffer ? this._textBuffer.fontSize() : 0));
         } else {
           // Fire error event
           if (this.getStage()) this.getStage().fire(INVALID_CDECS,
@@ -185,12 +200,28 @@ export class Barcode extends Shape<BarcodeConfig> {
       });
     }
 
-    // Clear previous stuff
+    // Draw borders and background
+    context.closePath();
+    const edges = PointRectangle2D.calculateFromStart(this.width(),
+      this.height());
+    context.beginPath();
+    context.moveTo(edges.topLeft.x, edges.topLeft.y);
+    context.lineTo(edges.topRight.x, edges.topRight.y);
+    context.lineTo(edges.bottomRight.x, edges.bottomRight.y);
+    context.lineTo(edges.bottomLeft.x, edges.bottomLeft.y);
+    context.lineTo(edges.topLeft.x, edges.topLeft.y);
+    context.strokeShape(this);
+    context.closePath();
     context.fillStrokeShape(this);
 
     // Draw barcode image
-    if (this._imageBuffer && !this._resizing)
-      context.drawImage(this._imageBuffer, 0, 0);
+    if (this._imageBuffer && !this._resizing) {
+      // Draw the image
+      this._imageBuffer.drawScene(this.getCanvas(), this);
+      // Draw text content
+      if (this.displayValue() && this._textBuffer)
+        this._textBuffer.drawScene(this.getCanvas(), this);
+    }
   }
 
   _hitFunc(context) {
@@ -234,8 +265,8 @@ export class Barcode extends Shape<BarcodeConfig> {
           format: encoding,
           margin: 0,
           width: this.codeLineWidth(),
-          height: this.height(),
-          displayValue: this.displayValue(),
+          height: this.height() - 50,
+          displayValue: false,
           background: backgroundColor
         });
       return canvas.toDataURL('image/png');
@@ -273,8 +304,6 @@ Factory.addGetterSetter(Barcode, 'codeLineWidth');
  * Get / set encoding
  */
 Factory.addGetterSetter(Barcode, 'encoding');
-
-Factory.addGetterSetter(Barcode, 'showContent');
 
 Factory.addGetterSetter(Barcode, 'placeHolder');
 
