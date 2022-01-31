@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file. This
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.6.3 (30/1/2022)
+Fixes *Barcode* performance and exporting issues. Solves caching problems on *backgroundColor* and *fill*.  
+Solves *flashing* problem on resize end, now *Barcode* is fully resizable using scale-based or size-based scaling policies. 
+Increases *Barcode* border rendering quality.
+
 ## 1.6.0 (30/1/2022)
 Fixes Barcode drawing problems and implements **showContent** property
 to show / hide it's code. Implements also text formatting configuration for barcode content.
