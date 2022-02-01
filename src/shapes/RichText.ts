@@ -137,6 +137,8 @@ export class RichText extends Shape<RichTextConfig> {
     if (this.sourceType() === undefined) this.sourceType(RichTextSource.Markdown);
 
     if (this.growPolicy() === undefined) this.growPolicy(GrowPolicy.GrowHeight);
+    if (this.padding() === undefined) this.padding(0);
+
     this._resizing = false;
   }
 
@@ -210,8 +212,13 @@ export class RichText extends Shape<RichTextConfig> {
 
     this._drawBackground(context);
 
-    if (this._image)
-      context.drawImage(this._image, 0, 0);
+    if (this._image) {
+      context.rect(0, 0, this.width(), this.height());
+      context.clip();
+      context.drawImage(this._image,
+        this.padding() === 0 ? -4 : 0,
+        this.padding() === 0 ? -16 : 0);
+    }
 
     // Draw shape borders
     context.closePath();
@@ -241,11 +248,6 @@ export class RichText extends Shape<RichTextConfig> {
     drawHTML(doc,
       null,
       options).then(result => {
-      // Resize if needed
-      if (result.image.width > this.width())
-        this.width(result.image.width);
-      if (result.image.height > this.height())
-        this.height(result.image.height);
       // Save image into cache
       if (result.errors.length === 0) {
         this._resizing = false;
@@ -261,7 +263,7 @@ export class RichText extends Shape<RichTextConfig> {
    * @param type Source type (Html or markdown are supported)
    */
   public setContent(source: string, type: RichTextSource) {
-    if(type === RichTextSource.Markdown) this.markdownContent(source);
+    if (type === RichTextSource.Markdown) this.markdownContent(source);
     else this.htmlContent(source);
     this.sourceType(type);
 
@@ -319,9 +321,6 @@ export class RichText extends Shape<RichTextConfig> {
         // Recalculate text rect
         textRect = Size2D.fromBounds(img.width, img.height);
       }
-      // Resize if needed
-      if (textRect.overflows(selfRect) && ft === 6)
-        this._onResize(selfRect, textRect);
     } else if (!onlyDecrease) {
       // Increase font size
       while (textRect.canBeContainedBy(selfRect)) {
@@ -344,11 +343,6 @@ export class RichText extends Shape<RichTextConfig> {
     return (await drawHTML(doc,
       null,
       options)).image;
-  }
-
-  private _onResize(oldRect: Size2D, newRect: Size2D): void {
-    this.width(newRect.getWidth());
-    this.height(newRect.getHeight());
   }
 }
 
