@@ -16,11 +16,13 @@ import { _registerNode }       from '../Global';
 import { SceneContext }        from '../Context';
 import { Marked }              from '@ts-stack/markdown';
 import { drawHTML, Options }   from 'next-rasterizehtml';
-import { Size2D }              from '../common/Size2D';
+import { Size2D, sizeOf }      from '../common/Size2D';
 import { HorizontalAlignment } from '../configuration/Alignment';
 import { GrowPolicy }          from './Text';
 import { RichTextMetrics }     from '../TextMeasurement';
 import { PointRectangle2D }    from '../common/PointRectangle2D';
+
+export const UNLIMITED = 300000;
 
 /**
  * Represents the type of a rich text source
@@ -228,8 +230,8 @@ export class RichText extends Shape<RichTextConfig> {
         this.height() - this.padding());
       context.clip();
       context.drawImage(this._image,
-        this.padding(),
-        this.padding());
+        this.padding() - 6,
+        this.padding() - 3);
     }
 
     // Draw shape borders
@@ -249,14 +251,21 @@ export class RichText extends Shape<RichTextConfig> {
   private _loadFreeImage(doc: string) {
     // Draw html into null canvas, get the image and draw
     this._resizing = true;
-    // Calculate only 1 time the image and request draw
-    const size = this.measureMultiStyleTextSize(doc);
+    // Calculate only 1 time the image and request dra
 
     // Resize richtext
-    if (this.growPolicy() === GrowPolicy.GrowWidth && size.overflowsWidth(this.getSizeRect()))
-      this.width(size.getWidth());
-    else if (this.growPolicy() === GrowPolicy.GrowHeight && size.overflowsHeight(
-      this.getSizeRect())) this.height(size.getHeight());
+    if (this.growPolicy() === GrowPolicy.GrowWidth) {
+      const size = this.measureMultiStyleTextSize(doc,
+        sizeOf(UNLIMITED, this.height()));
+      if (size.overflowsWidth(this.getSizeRect()))
+        this.width(size.getWidth());
+    } else {
+      const size = this.measureMultiStyleTextSize(doc,
+        sizeOf(this.width(), UNLIMITED));
+      console.log(size);
+      if (size.overflowsHeight(this.getSizeRect()))
+        this.height(size.getHeight());
+    }
 
     // it as shape body
     drawHTML(doc,
@@ -366,14 +375,19 @@ export class RichText extends Shape<RichTextConfig> {
    * Measures a multistyle text using dom element
    * @param doc Document to measure
    */
-  public measureMultiStyleText(doc: string): RichTextMetrics {
+  public measureMultiStyleText(doc: string, size: Size2D): RichTextMetrics {
     let element = document.createElement('div');
+    if (size.getWidth() !== UNLIMITED)
+      element.style.width = size.getWidth() + 'px';
+
+    if (size.getHeight() !== UNLIMITED)
+      element.style.height = size.getHeight() + 'px';
     element.innerHTML = doc;
     document.body.append(element);
 
     const mes = {
       width: element.offsetWidth,
-      height: element.offsetHeight,
+      height: element.offsetHeight + 30,
     };
 
     document.body.removeChild(element);
@@ -381,8 +395,8 @@ export class RichText extends Shape<RichTextConfig> {
     return mes;
   }
 
-  public measureMultiStyleTextSize(doc: string): Size2D {
-    return Size2D.fromSize(this.measureMultiStyleText(doc));
+  public measureMultiStyleTextSize(doc: string, size: Size2D): Size2D {
+    return Size2D.fromSize(this.measureMultiStyleText(doc, size));
   }
 }
 
