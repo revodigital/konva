@@ -204,6 +204,11 @@ export class Barcode extends Shape<BarcodeConfig> {
         0,
         this.width(),
         this.height() - (this.displayValue() ? (this.contentFontSize() + 3) : 0));
+
+      const scale = this.width() / (this._imageBuffer.width as number);
+      // Invalidate cache when scale is too high
+      console.log(scale);
+      if (scale >= 2) {this._imageBuffer = undefined; this.codeLineWidth(this.codeLineWidth() + 1)}
     }
 
     if (this.displayValue()) {
