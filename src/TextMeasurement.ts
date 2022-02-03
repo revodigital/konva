@@ -325,6 +325,10 @@ export class TextMeasurementHelper {
     var width = this.getTextWidth(line);
     return this.textArr.push({ text: line, width: width });
   }
+}
 
+export interface RichTextMetrics {
+  width: number;
+  height: number;
 }
 

@@ -9,17 +9,18 @@
  * Description:
  */
 
-import { Shape, ShapeConfig }          from '../Shape';
-import { GetSet }                      from '../types';
-import { Factory }                     from '../Factory';
-import { _registerNode }               from '../Global';
-import { SceneContext }                from '../Context';
-import { Marked }                      from '@ts-stack/markdown';
-import { drawHTML, Options }           from 'next-rasterizehtml';
-import { Size2D }                      from '../common/Size2D';
-import { HAlign, HorizontalAlignment } from '../configuration/Alignment';
-import { GrowPolicy }                  from './Text';
-import { PointRectangle2D }            from '../common/PointRectangle2D';
+import { Shape, ShapeConfig }  from '../Shape';
+import { GetSet }              from '../types';
+import { Factory }             from '../Factory';
+import { _registerNode }       from '../Global';
+import { SceneContext }        from '../Context';
+import { Marked }              from '@ts-stack/markdown';
+import { drawHTML, Options }   from 'next-rasterizehtml';
+import { Size2D }              from '../common/Size2D';
+import { HorizontalAlignment } from '../configuration/Alignment';
+import { GrowPolicy }          from './Text';
+import { RichTextMetrics }     from '../TextMeasurement';
+import { PointRectangle2D }    from '../common/PointRectangle2D';
 
 /**
  * Represents the type of a rich text source
@@ -157,13 +158,19 @@ export class RichText extends Shape<RichTextConfig> {
 
     // Format complete document, adding formatting options
     const doc = `
+    <style>
+    p {
+        margin: 0;
+        padding: 0;
+    }
+</style>
     <div id="document" style="
     ${ this.style() };
     color: ${ this.fill() || 'black' };
-    margin: ${ this.padding() || 0 }px; 
     font-family: ${ this.fontFamily() || 'arial' };
+    padding: 0;
     font-variant: ${ this.fontVariant() || '' }};
-    text-align: ${ HAlign.toHtmlTextAlign(this.horizontalAlignment()) || 'left' };
+    text-align: left;
     text-decoration: ${ this.fontDecoration() || '' };
     background-color: ${ this.backgroundColor() || 'transparent' }; 
     font-size: ${ fontSize || 12 }px
@@ -210,14 +217,19 @@ export class RichText extends Shape<RichTextConfig> {
         this._loadFittedImage(doc);
     }
 
+    // Draw background
     this._drawBackground(context);
 
     if (this._image) {
-      context.rect(0, 0, this.width(), this.height());
+      context.beginPath();
+      context.rect(this.padding(),
+        this.padding(),
+        this.width() - this.padding(),
+        this.height() - this.padding());
       context.clip();
       context.drawImage(this._image,
-        this.padding() === 0 ? -4 : 0,
-        this.padding() === 0 ? -16 : 0);
+        this.padding(),
+        this.padding());
     }
 
     // Draw shape borders
@@ -236,18 +248,23 @@ export class RichText extends Shape<RichTextConfig> {
 
   private _loadFreeImage(doc: string) {
     // Draw html into null canvas, get the image and draw
-    let options: Options;
     this._resizing = true;
     // Calculate only 1 time the image and request draw
-    if (this.growPolicy() === GrowPolicy.GrowHeight) options = {
-      width: this.width(),
-    };
-    else options = { height: this.height() };
+    const size = this.measureMultiStyleTextSize(doc);
+
+    // Resize richtext
+    if (this.growPolicy() === GrowPolicy.GrowWidth && size.overflowsWidth(this.getSizeRect()))
+      this.width(size.getWidth());
+    else if (this.growPolicy() === GrowPolicy.GrowHeight && size.overflowsHeight(
+      this.getSizeRect())) this.height(size.getHeight());
 
     // it as shape body
     drawHTML(doc,
       null,
-      options).then(result => {
+      {
+        width: this.width() - this.padding(),
+        height: this.height() - this.padding()
+      }).then(result => {
       // Save image into cache
       if (result.errors.length === 0) {
         this._resizing = false;
@@ -343,6 +360,29 @@ export class RichText extends Shape<RichTextConfig> {
     return (await drawHTML(doc,
       null,
       options)).image;
+  }
+
+  /**
+   * Measures a multistyle text using dom element
+   * @param doc Document to measure
+   */
+  public measureMultiStyleText(doc: string): RichTextMetrics {
+    let element = document.createElement('div');
+    element.innerHTML = doc;
+    document.body.append(element);
+
+    const mes = {
+      width: element.offsetWidth,
+      height: element.offsetHeight,
+    };
+
+    document.body.removeChild(element);
+
+    return mes;
+  }
+
+  public measureMultiStyleTextSize(doc: string): Size2D {
+    return Size2D.fromSize(this.measureMultiStyleText(doc));
   }
 }
 
