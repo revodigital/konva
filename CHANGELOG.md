@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file. This
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.6.11 (3/2/2022)
+Fixes *Barcode* resolution problems when it has long width. Corrects also *RichText* unuseful margins and resizing problems. Implements *RichText* measuring utils, 
+to perform advanced text measuring.
+
 ## 1.6.3 (30/1/2022)
 Fixes *Barcode* performance and exporting issues. Solves caching problems on *backgroundColor* and *fill*.  
 Solves *flashing* problem on resize end, now *Barcode* is fully resizable using scale-based or size-based scaling policies. 
