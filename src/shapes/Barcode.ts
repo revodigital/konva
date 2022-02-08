@@ -9,20 +9,17 @@
  * Description:
  */
 
-import { Shape, ShapeConfig }  from '../Shape';
-import { GetSet }              from '../types';
-import { Factory }             from '../Factory';
-import { Context }             from '../Context';
-import { Image }               from './Image';
-import * as JsBarcode          from 'jsbarcode';
-import { _registerNode }       from '../Global';
+import { Shape, ShapeConfig }    from '../Shape';
+import { GetSet }                from '../types';
+import { Factory }               from '../Factory';
+import { Context, SceneContext } from '../Context';
+import { Image }                 from './Image';
+import * as JsBarcode            from 'jsbarcode';
+import { _registerNode }         from '../Global';
 import {
   INVALID_CDECS
-}                              from '../events/barcode/InvalidCodeOrSpecification';
-import { Text }                from './Text';
-import { HorizontalAlignment } from '../configuration/Alignment';
-import { PointRectangle2D }    from '../common/PointRectangle2D';
-import { callbackify }         from 'util';
+}                                from '../events/barcode/InvalidCodeOrSpecification';
+import { PointRectangle2D }      from '../common/PointRectangle2D';
 
 export interface BarcodeConfig extends ShapeConfig {
   /**
@@ -121,12 +118,31 @@ export class Barcode extends Shape<BarcodeConfig> {
   backgroundColor: GetSet<string, this>;
   contentFontSize: GetSet<number, this>;
 
+  /**
+   * Message to visualize when an invalid code is given to this shape.
+   * Leave empty to hide the message
+   */
+  invalidCodeMessage!: string;
+
+  /**
+   * Font size of the invalid code message, when displayed
+   */
+  invalidCodeMessageFontSize!: number;
+
+  /**
+   * Font of the invalid code message
+   */
+  invalidCodeMessageFont!: string;
+
   _imageBuffer: CanvasImageSource;
-  _resizing: boolean;
 
   // Internal props cache
   props_cache: BarcodeCache;
+  _errored: boolean;
 
+  /**
+   * Calculaes internal cache
+   */
   _getInternalCache(): BarcodeCache {
     return {
       code: this.code(),
@@ -137,10 +153,16 @@ export class Barcode extends Shape<BarcodeConfig> {
     };
   }
 
+  /**
+   * Writes the cache for this shape
+   */
   _writeCache() {
     this.props_cache = this._getInternalCache();
   }
 
+  /**
+   * Checks if cache has changed
+   */
   _cacheChanged(): boolean {
     const temp = this._getInternalCache();
     return (this.props_cache.code !== temp.code ||
@@ -162,11 +184,11 @@ export class Barcode extends Shape<BarcodeConfig> {
     if (this.contentFontSize() === undefined) this.contentFontSize(15);
     if (!this.fill()) this.fill('black');
 
-    this._resizing = false;
+    this._errored = false;
     this._writeCache();
   }
 
-  async _sceneFunc(context: Context): Promise<void> {
+  async _sceneFunc(context: SceneContext): Promise<void> {
     // Reload cache if encoding or code has changed
     if (this._cacheChanged() || !this._imageBuffer) {
       this._imageBuffer = undefined;
@@ -176,18 +198,22 @@ export class Barcode extends Shape<BarcodeConfig> {
         if (image) {
           this._imageBuffer = image.image();
           this._writeCache();
-
+          this._errored = false;
           this._requestDraw();
         } else {
           // Fire error event
-          if (this.getStage()) this.getStage().fire(INVALID_CDECS,
-            {
-              image: image,
-              barcode: this,
-              code: this.code(),
-              encoding: this.encoding(),
-              generatedUrl: link
-            });
+          if (this.getStage()) {
+            this.getStage().fire(INVALID_CDECS,
+              {
+                image: image,
+                barcode: this,
+                code: this.code(),
+                encoding: this.encoding(),
+                generatedUrl: link
+              });
+          }
+
+          this._errored = true;
         }
       });
     }
@@ -197,7 +223,7 @@ export class Barcode extends Shape<BarcodeConfig> {
     context.fillRect(0, 0, this.width(), this.height());
 
     // Draw barcode image
-    if (this._imageBuffer && !this._resizing) {
+    if (this._imageBuffer) {
       // Draw the image
       context.drawImage(this._imageBuffer,
         0,
@@ -207,8 +233,12 @@ export class Barcode extends Shape<BarcodeConfig> {
 
       const scale = this.width() / (this._imageBuffer.width as number);
       // Invalidate cache when scale is too high
-      console.log(scale);
-      if (scale >= 2) {this._imageBuffer = undefined; this.codeLineWidth(this.codeLineWidth() + 1)}
+      if (scale >= 2) {
+        this._imageBuffer = undefined;
+        this.codeLineWidth(this.codeLineWidth() + 1);
+      }
+    } else if (this._errored) {
+      this._drawErrorMessage(context);
     }
 
     if (this.displayValue()) {
@@ -222,6 +252,7 @@ export class Barcode extends Shape<BarcodeConfig> {
         this.width());
     }
 
+    // Draw borders
     context.closePath();
     const edges = PointRectangle2D.calculateFromStart(this.width(),
       this.height());
@@ -266,6 +297,12 @@ export class Barcode extends Shape<BarcodeConfig> {
     });
   }
 
+  /**
+   * Generates the barcode url starting from code and encoding
+   * @param code Code to use
+   * @param encoding Encoding
+   * @returns A data url with the barcode
+   */
   _generateBarCodeUrl(code: string, encoding: string): string | undefined {
     let canvas = document.createElement('canvas');
     const backgroundColor = this.transparentBackground() ? '#00000000' : this.backgroundColor() as string;
@@ -285,6 +322,21 @@ export class Barcode extends Shape<BarcodeConfig> {
     } catch (e) {
       return undefined;
     }
+  }
+
+  /**
+   * Draws the error message when this barcode receives an invalid
+   * code or encoding
+   * @param context
+   */
+  _drawErrorMessage(context: SceneContext): void {
+    // Render error message using properties
+    context._context.fillStyle = 'red';
+    context._context.font = `${ this.invalidCodeMessageFontSize }px ${ this.invalidCodeMessageFont }`;
+    context._context.textAlign = 'center';
+    context.fillText(this.invalidCodeMessage,
+      this.width() / 2,
+      this.height() / 2);
   }
 
   getSelfRect(): { x: number; width: number; y: number; height: number } {
@@ -317,8 +369,14 @@ Factory.addGetterSetter(Barcode, 'codeLineWidth');
  */
 Factory.addGetterSetter(Barcode, 'encoding');
 
+/**
+ * Get / set placeholder
+ */
 Factory.addGetterSetter(Barcode, 'placeHolder');
 
+/**
+ * Get / set display value
+ */
 Factory.addGetterSetter(Barcode, 'displayValue');
 
 /**
@@ -332,4 +390,8 @@ Factory.addGetterSetter(Barcode, 'backgroundColor');
 Factory.addGetterSetter(Barcode, 'contentFontSize');
 
 Barcode.prototype.className = 'Barcode';
+Barcode.prototype.invalidCodeMessage = 'Invalid code';
+Barcode.prototype.invalidCodeMessageFont = 'Arial';
+Barcode.prototype.invalidCodeMessageFontSize = 20;
+
 _registerNode(Barcode);
