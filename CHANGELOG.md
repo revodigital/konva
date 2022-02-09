@@ -3,6 +3,9 @@
 All notable changes to this project will be documented in this file. This
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.6.14 (9/2/2022)
+Fixes *Barcode* error message drawing problems
+
 ## 1.6.13 (8/2/2022)
 Adds *Barcode* text for displaying errors during barcode calculations. It can be formatted using
 ```javascript
