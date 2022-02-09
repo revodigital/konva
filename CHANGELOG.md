@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file. This
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.6.13 (8/2/2022)
+Adds *Barcode* text for displaying errors during barcode calculations. It can be formatted using
+```javascript
+Barcode.prototype.invalidCodeMessage
+Barcode.prototype.invalidCodeMessageFont
+Barcode.prototype.invalidCodeMessageFontSize
+```
+properties.
+
 ## 1.6.11 (3/2/2022)
 Fixes *Barcode* resolution problems when it has long width. Corrects also *RichText* unuseful margins and resizing problems. Implements *RichText* measuring utils, 
 to perform advanced text measuring.
