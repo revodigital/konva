@@ -222,7 +222,7 @@ export class RichText extends Shape<RichTextConfig> {
     // Draw background
     this._drawBackground(context);
 
-    if (this._image && !this._resizing) {
+    if (this._image) {
       context.beginPath();
       context.rect(this.padding(),
         this.padding(),
@@ -231,7 +231,7 @@ export class RichText extends Shape<RichTextConfig> {
       context.clip();
       context.drawImage(this._image,
         this.padding() - 6,
-        this.padding() - 8);
+        this.padding() - 3);
     }
 
     // Draw shape borders
@@ -262,6 +262,7 @@ export class RichText extends Shape<RichTextConfig> {
     } else {
       const size = this.measureMultiStyleTextSize(doc,
         sizeOf(this.width(), UNLIMITED));
+      console.log(size);
       if (size.overflowsHeight(this.getSizeRect()))
         this.height(size.getHeight());
     }
@@ -277,7 +278,7 @@ export class RichText extends Shape<RichTextConfig> {
       if (result.errors.length === 0) {
         this._resizing = false;
         this._image = result.image;
-        this._requestDraw();
+        this.draw();
       }
     });
   }
@@ -300,17 +301,18 @@ export class RichText extends Shape<RichTextConfig> {
   private _loadFittedImage(doc: string) {
     // Make content fit
     this._image = undefined;
-    let value = this.fitContent();
-    this.fontSize(value);
+    this.fitContent().then((value) => {
+      this.fontSize(value);
 
-    drawHTML(this._formatDocument(value),
-      null,
-      { width: this.width(), height: this.height() }).then((result) => {
-      // Save image into cache
-      if (result.errors.length === 0) {
-        this._image = result.image;
-        this._requestDraw();
-      }
+      drawHTML(doc,
+        null,
+        { width: this.width(), height: this.height() }).then((result) => {
+        // Save image into cache
+        if (result.errors.length === 0) {
+          this._image = result.image;
+          this.draw();
+        }
+      });
     });
   }
 
@@ -319,36 +321,44 @@ export class RichText extends Shape<RichTextConfig> {
    * fit entirely shape boundaries. If fontsize <= 6, then it
    * will be resized using fontsize of 6px.
    */
-  fitContent(): number {
+  async fitContent(onlyDecrease: boolean = false): Promise<number> {
     // Font size
     let ft = this.fontSize() || 12;
     this._resizing = true;
-
+    const options: Options = {
+      width: this.width() - 3,
+    };
+    // Current image
+    let img = await this._getDocumentImage(this._formatDocument(ft), options);
+    // Error check. Img will be undefined if there were errors reading the document
+    if (!img) return;
     const selfRect = this.getSizeRect();
-    let textRect: Size2D = this.measureMultiStyleTextSize(this._formatDocument(
-      ft), sizeOf(this.width(), UNLIMITED));
+    let textRect: Size2D = Size2D.fromBounds(img.width, img.height);
     // Minimum font size
     const MIN = 6;
-    const MAX = 50;
-    let canGrow = true;
-    let canShrink = true;
 
-    // Decrease font size to make all fit
-    while (ft > MIN && (textRect.overflows(selfRect) || textRect.canBeContainedBy(
-      selfRect))) {
-
-      if (textRect.overflows(selfRect) && canShrink) {
+    if (textRect.overflows(selfRect)) {
+      // Decrease font size to make all fit
+      while (ft > MIN && textRect.overflows(selfRect)) {
         ft--;
-        canShrink = false;
-      } else if (textRect.canBeContainedBy(selfRect) && canGrow) {
-        ft++;
-        canGrow = false;
-      } else if (textRect.canBeContainedBy(selfRect) && !canGrow) break;
-      else if (textRect.overflows(selfRect) && !canShrink) break;
 
-      // Recalculate text rect
-      textRect = this.measureMultiStyleTextSize(this._formatDocument(ft),
-        sizeOf(this.width() - 10, UNLIMITED));
+        // Recalculate image
+        img = await this._getDocumentImage(this._formatDocument(ft), options);
+        // Recalculate text rect
+        textRect = Size2D.fromBounds(img.width, img.height);
+      }
+    } else if (!onlyDecrease) {
+      // Increase font size
+      while (textRect.canBeContainedBy(selfRect)) {
+        ft++;
+
+        // Recalculate image
+        img = await this._getDocumentImage(this._formatDocument(ft), options);
+        // Recalculate text rect
+        textRect = Size2D.fromBounds(img.width, img.height);
+      }
+
+      ft--;
     }
 
     this._resizing = false;
