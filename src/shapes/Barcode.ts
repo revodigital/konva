@@ -214,6 +214,7 @@ export class Barcode extends Shape<BarcodeConfig> {
           }
 
           this._errored = true;
+          this._requestDraw();
         }
       });
     }
@@ -237,7 +238,10 @@ export class Barcode extends Shape<BarcodeConfig> {
         this._imageBuffer = undefined;
         this.codeLineWidth(this.codeLineWidth() + 1);
       }
-    } else if (this._errored) {
+    }
+
+    // Draw error message
+    if (this._errored) {
       this._drawErrorMessage(context);
     }
 
