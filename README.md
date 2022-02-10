@@ -4,10 +4,7 @@ Pamela is an HTML5 Canvas JavaScript framework that enables high performance ani
 
 You can draw things onto the stage, add event listeners to them, move them, scale them, and rotate them independently from other shapes to support high performance animations, even if your application uses thousands of shapes. Served hot with a side of awesomeness.
 
-This repository began as a GitHub fork of PamelaJs
-- **Visit:** The [Home Page](http://Pamelajs.org/) and follow on [Twitter](https://twitter.com/lavrton)
-- **Discover:** [Tutorials](http://Pamelajs.org/docs), [API Documentation](http://Pamelajs.org/api)
-- **Help:** [StackOverflow](http://stackoverflow.com/questions/tagged/Pamelajs), [Discord Chat](https://discord.gg/8FqZwVT)
+This repository began as a GitHub fork of KonvaJS
 
 # Quick Look
 
