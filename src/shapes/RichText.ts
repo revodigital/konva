@@ -9,18 +9,18 @@
  * Description:
  */
 
-import { Shape, ShapeConfig }  from '../Shape';
-import { GetSet }              from '../types';
-import { Factory }             from '../Factory';
-import { _registerNode }       from '../Global';
-import { SceneContext }        from '../Context';
-import { Marked }              from '@ts-stack/markdown';
-import { drawHTML, Options }   from 'next-rasterizehtml';
-import { Size2D, sizeOf }      from '../common/Size2D';
+import { Shape, ShapeConfig } from '../Shape';
+import { GetSet } from '../types';
+import { Factory } from '../Factory';
+import { _registerNode } from '../Global';
+import { SceneContext } from '../Context';
+import { Marked } from '@ts-stack/markdown';
+import { drawHTML, Options } from 'next-rasterizehtml';
+import { Size2D, sizeOf } from '../common/Size2D';
 import { HorizontalAlignment } from '../configuration/Alignment';
-import { GrowPolicy }          from './Text';
-import { RichTextMetrics }     from '../TextMeasurement';
-import { PointRectangle2D }    from '../common/PointRectangle2D';
+import { GrowPolicy } from './Text';
+import { RichTextMetrics } from '../TextMeasurement';
+import { PointRectangle2D } from '../common/PointRectangle2D';
 
 export const UNLIMITED = 300000;
 
@@ -266,20 +266,11 @@ export class RichText extends Shape<RichTextConfig> {
         this.height(size.getHeight());
     }
 
-    // it as shape body
-    drawHTML(doc,
-      null,
-      {
-        width: this.width() - this.padding(),
-        height: this.height() - this.padding()
-      }).then(result => {
-      // Save image into cache
-      if (result.errors.length === 0) {
-        this._resizing = false;
-        this._image = result.image;
-        this._requestDraw();
-      }
-    });
+    this.render_html_to_canvas(this._formatDocument(), this.width(), this.height()).then((result) => {
+      this._image = result;
+      this._resizing = false;
+      this._requestDraw();
+    })
   }
 
   /**
@@ -303,15 +294,45 @@ export class RichText extends Shape<RichTextConfig> {
     let value = this.fitContent();
     this.fontSize(value);
 
-    drawHTML(this._formatDocument(value),
-      null,
-      { width: this.width(), height: this.height() }).then((result) => {
-      // Save image into cache
-      if (result.errors.length === 0) {
-        this._image = result.image;
-        this._requestDraw();
-      }
+    this.render_html_to_canvas(doc,
+      this.width(),
+      this.height()).then((image) => {
+      this._image = image;
+      this._resizing = false;
+      this._requestDraw();
     });
+  }
+
+  async render_html_to_canvas(html, width, height): Promise<HTMLImageElement> {
+    return new Promise((resolve) => {
+      var xml = this.html_to_xml(html);
+      xml = xml.replace(/\#/g, '%23');
+      var data = 'data:image/svg+xml;charset=utf-8,' + '<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '">' +
+                 '<foreignObject width="100%" height="100%">' +
+                 xml +
+                 '</foreignObject>' +
+                 '</svg>';
+
+      var img = new Image();
+      img.onload = function () {
+        resolve(img);
+      };
+      img.src = data;
+    });
+  }
+
+  html_to_xml(html) {
+    var doc = document.implementation.createHTMLDocument('');
+    doc.write(html);
+
+    // You must manually set the xmlns if you intend to immediately serialize
+    // the HTML document to a string as opposed to appending it to a
+    // <foreignObject> in the DOM
+    doc.documentElement.setAttribute('xmlns', doc.documentElement.namespaceURI);
+
+    // Get well-formed markup
+    html = (new XMLSerializer).serializeToString(doc.body);
+    return html;
   }
 
   /**
