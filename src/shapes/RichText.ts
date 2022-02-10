@@ -158,7 +158,7 @@ export class RichText extends Shape<RichTextConfig> {
     <div id="document" style="
     ${ this.style() };
     color: ${ this.fill() || 'black' };
-    margin: ${ this.padding() || 0 }px; 
+    margin: -8px; 
     font-family: ${ this.fontFamily() || 'arial' };
     font-variant: ${ this.fontVariant() || '' }};
     text-align: ${ HAlign.toHtmlTextAlign(this.horizontalAlignment()) || 'left' };
