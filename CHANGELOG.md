@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file. This
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.7.6 (12/2/2022)
+Implements *cors* customizations for *Image.fromURL*. Add capability for *Pamela.Image* to 
+work with link images, allowing persistence of images. Now, we can contruct an image specifing
+only the url: 
+```javascript
+const i = new Pamela.Image({
+  src: '<link>'
+})
+```
+*Pamela.Image* will care about all the operations to correctly render and save the image into the stage.
+We also added some very useful methods to:
+* Change image src (using `image.loadImageFromUrl(<link>)`)
+* Get image original size (using `image.getOriginalSize()`)
+* Reload image from the same origin (using `image.reload()`)
+
 ## 1.6.14 (9/2/2022)
 Fixes *Barcode* error message drawing problems
 
