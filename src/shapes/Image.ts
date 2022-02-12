@@ -19,8 +19,19 @@ import { GetSet, IRect } from '../types';
 import { Context }       from '../Context';
 
 export interface ImageConfig extends ShapeConfig {
-  image: CanvasImageSource | undefined;
+  /**
+   * Image data to draw
+   */
+  image?: CanvasImageSource | undefined;
+
+  /**
+   * Cropping rect to apply
+   */
   crop?: IRect;
+  
+  /**
+   * Image source to use (alternative to image)
+   */
   src?: string;
 }
 
@@ -84,6 +95,10 @@ export class Image extends Shape<ImageConfig> {
     const image = this.attrs.image;
     let params;
 
+    // Load src image
+    if (!image && this.src()) this.loadImageFromUrl(this.src());
+
+    // Draw image
     if (image) {
       const cropWidth = this.attrs.cropWidth;
       const cropHeight = this.attrs.cropHeight;
@@ -114,6 +129,17 @@ export class Image extends Shape<ImageConfig> {
     if (image) {
       context.drawImage.apply(context, params);
     }
+  }
+
+  public loadImageFromUrl(url: string, cors?: string) {
+    var img = Util.createImageElement();
+    const th = this;
+    img.onload = () => {
+      th.attrs.image = img;
+      this._requestDraw();
+    };
+    img.crossOrigin = cors;
+    img.src = url;
   }
 
   /**
