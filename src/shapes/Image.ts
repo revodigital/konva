@@ -9,25 +9,26 @@
  * Description:
  */
 
-import { Util } from '../Util';
-import { Factory } from '../Factory';
+import { Util }               from '../Util';
+import { Factory }            from '../Factory';
 import { Shape, ShapeConfig } from '../Shape';
 import { getNumberValidator } from '../Validators';
-import { _registerNode } from '../Global';
+import { _registerNode }      from '../Global';
 
 import { GetSet, IRect } from '../types';
-import { Context } from '../Context';
+import { Context }       from '../Context';
 
 export interface ImageConfig extends ShapeConfig {
   image: CanvasImageSource | undefined;
   crop?: IRect;
+  src?: string;
 }
 
 /**
  * Image constructor
  * @constructor
- * @memberof Konva
- * @augments Konva.Shape
+ * @memberof Pamela
+ * @augments Pamela.Shape
  * @param {Object} config
  * @param {Image} config.image
  * @param {Object} [config.crop]
@@ -36,7 +37,7 @@ export interface ImageConfig extends ShapeConfig {
  * @example
  * var imageObj = new Image();
  * imageObj.onload = function() {
- *   var image = new Konva.Image({
+ *   var image = new Pamela.Image({
  *     x: 200,
  *     y: 50,
  *     image: imageObj,
@@ -55,6 +56,7 @@ export class Image extends Shape<ImageConfig> {
 
     this._setImageLoad();
   }
+
   _setImageLoad() {
     const image = this.image() as any;
     // check is image is already loaded
@@ -71,9 +73,11 @@ export class Image extends Shape<ImageConfig> {
       });
     }
   }
+
   _useBufferCanvas() {
     return super._useBufferCanvas(true);
   }
+
   _sceneFunc(context: Context) {
     const width = this.getWidth();
     const height = this.getHeight();
@@ -127,35 +131,39 @@ export class Image extends Shape<ImageConfig> {
     context.closePath();
     context.fillStrokeShape(this);
   }
+
   getWidth() {
     return this.attrs.width ?? this.image()?.width;
   }
+
   getHeight() {
     return this.attrs.height ?? this.image()?.height;
   }
 
   /**
-   * load image from given url and create `Konva.Image` instance
+   * load image from given url and create `Pamela.Image` instance
    * @method
-   * @memberof Konva.Image
+   * @memberof Pamela.Image
    * @param {String} url image source
-   * @param {Function} callback with Konva.Image instance as first argument
+   * @param {Function} callback with Pamela.Image instance as first argument
+   * @param {String} cors Cross origin permissions to download this image. By default it is `Anonymous`
    * @example
-   *  Konva.Image.fromURL(imageURL, function(image){
-   *    // image is Konva.Image instance
+   *  Pamela.Image.fromURL(imageURL, image => {
+   *    // image is Pamela.Image instance
    *    layer.add(image);
    *    layer.draw();
    *  });
    */
-  static fromURL(url, callback) {
+  static fromURL(url: string, callback: (image: Image) => void, cors?: string) {
     var img = Util.createImageElement();
     img.onload = function () {
       var image = new Image({
         image: img,
+        src: url,
       });
       callback(image);
     };
-    img.crossOrigin = 'Anonymous';
+    img.crossOrigin = cors;
     img.src = url;
   }
 
@@ -165,13 +173,14 @@ export class Image extends Shape<ImageConfig> {
   cropY: GetSet<number, this>;
   cropWidth: GetSet<number, this>;
   cropHeight: GetSet<number, this>;
+  src: GetSet<string, this>;
 }
 
 Image.prototype.className = 'Image';
 _registerNode(Image);
 /**
  * get/set image source. It can be image, canvas or video element
- * @name Konva.Image#image
+ * @name Pamela.Image#image
  * @method
  * @param {Object} image source
  * @returns {Object}
@@ -188,7 +197,7 @@ Factory.addComponentsGetterSetter(Image, 'crop', ['x', 'y', 'width', 'height']);
 /**
  * get/set crop
  * @method
- * @name Konva.Image#crop
+ * @name Pamela.Image#crop
  * @param {Object} crop
  * @param {Number} crop.x
  * @param {Number} crop.y
@@ -212,7 +221,7 @@ Factory.addGetterSetter(Image, 'cropX', 0, getNumberValidator());
 /**
  * get/set crop x
  * @method
- * @name Konva.Image#cropX
+ * @name Pamela.Image#cropX
  * @param {Number} x
  * @returns {Number}
  * @example
@@ -226,7 +235,7 @@ Factory.addGetterSetter(Image, 'cropX', 0, getNumberValidator());
 Factory.addGetterSetter(Image, 'cropY', 0, getNumberValidator());
 /**
  * get/set crop y
- * @name Konva.Image#cropY
+ * @name Pamela.Image#cropY
  * @method
  * @param {Number} y
  * @returns {Number}
@@ -241,7 +250,7 @@ Factory.addGetterSetter(Image, 'cropY', 0, getNumberValidator());
 Factory.addGetterSetter(Image, 'cropWidth', 0, getNumberValidator());
 /**
  * get/set crop width
- * @name Konva.Image#cropWidth
+ * @name Pamela.Image#cropWidth
  * @method
  * @param {Number} width
  * @returns {Number}
@@ -254,9 +263,10 @@ Factory.addGetterSetter(Image, 'cropWidth', 0, getNumberValidator());
  */
 
 Factory.addGetterSetter(Image, 'cropHeight', 0, getNumberValidator());
+
 /**
  * get/set crop height
- * @name Konva.Image#cropHeight
+ * @name Pamela.Image#cropHeight
  * @method
  * @param {Number} height
  * @returns {Number}
@@ -267,3 +277,8 @@ Factory.addGetterSetter(Image, 'cropHeight', 0, getNumberValidator());
  * // set crop height
  * image.cropHeight(20);
  */
+
+/**
+ * Get / set image source
+ */
+Factory.addGetterSetter(Image, 'src');

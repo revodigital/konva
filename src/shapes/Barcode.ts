@@ -394,7 +394,7 @@ Factory.addGetterSetter(Barcode, 'backgroundColor');
 Factory.addGetterSetter(Barcode, 'contentFontSize');
 
 Barcode.prototype.className = 'Barcode';
-Barcode.prototype.invalidCodeMessage = 'Invalid code';
+Barcode.prototype.invalidCodeMessage = 'Contenuto codice non valido';
 Barcode.prototype.invalidCodeMessageFont = 'Arial';
 Barcode.prototype.invalidCodeMessageFontSize = 20;
 
