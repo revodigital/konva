@@ -15,8 +15,9 @@ import { Shape, ShapeConfig } from '../Shape';
 import { getNumberValidator } from '../Validators';
 import { _registerNode }      from '../Global';
 
-import { GetSet, IRect } from '../types';
-import { Context }       from '../Context';
+import { GetSet, IRect }  from '../types';
+import { SceneContext }   from '../Context';
+import { Size2D, sizeOf } from '../common/Size2D';
 
 export interface ImageConfig extends ShapeConfig {
   /**
@@ -28,7 +29,7 @@ export interface ImageConfig extends ShapeConfig {
    * Cropping rect to apply
    */
   crop?: IRect;
-  
+
   /**
    * Image source to use (alternative to image)
    */
@@ -89,7 +90,7 @@ export class Image extends Shape<ImageConfig> {
     return super._useBufferCanvas(true);
   }
 
-  _sceneFunc(context: Context) {
+  _sceneFunc(context: SceneContext) {
     const width = this.getWidth();
     const height = this.getHeight();
     const image = this.attrs.image;
@@ -131,6 +132,12 @@ export class Image extends Shape<ImageConfig> {
     }
   }
 
+  /**
+   * Loads an image from the url. Keeps all the other attributes and changes only
+   * the content.
+   * @param url Url to load from
+   * @param cors Cross origin headers to apply to request
+   */
   public loadImageFromUrl(url: string, cors?: string) {
     var img = Util.createImageElement();
     const th = this;
@@ -158,10 +165,49 @@ export class Image extends Shape<ImageConfig> {
     context.fillStrokeShape(this);
   }
 
+  /**
+   * Reloads the image pointed by the src. Works only when
+   * `src` parameter is specified.
+   */
+  public reload() {
+    if(this.src()) this.loadImageFromUrl(this.src())
+  }
+
+  /**
+   * Returns the original size of this image, without crop and transform
+   */
+  public getOriginalSize(): Size2D | undefined {
+    if(this.attrs.image) {
+      return sizeOf(this.attrs.image.width, this.attrs.image.height)
+    } else return undefined;
+  }
+
+  /**
+   * Returns the original width
+   */
+  public getOriginalWidth(): number | undefined {
+    return this.getOriginalSize()?.getWidth();
+  }
+
+  /**
+   * Returns the original height of this image
+   */
+  public getOriginalHeight(): number | undefined {
+    return this.getOriginalSize()?.getHeight();
+  }
+
+  /**
+   * Returns actual shape width. To get original image width use getOriginalSize().getWidth()
+   * method
+   */
   getWidth() {
     return this.attrs.width ?? this.image()?.width;
   }
 
+  /**
+   * Returns actual shape height.
+   * To get original image width use getOriginalSize().getHeight()
+   */
   getHeight() {
     return this.attrs.height ?? this.image()?.height;
   }
