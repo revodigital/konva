@@ -148,4 +148,11 @@ export class Size2D {
       height: this.height,
     };
   }
+
+  public toVector(): Vector2d {
+    return {
+      x: this.width,
+      y: this.height
+    }
+  }
 }

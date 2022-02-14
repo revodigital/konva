@@ -145,7 +145,7 @@ export class Image extends Shape<ImageConfig> {
       th.attrs.image = img;
       this._requestDraw();
     };
-    img.crossOrigin = cors;
+    img.crossOrigin = cors || 'anonymous';
     img.src = url;
   }
 
@@ -238,6 +238,13 @@ export class Image extends Shape<ImageConfig> {
     img.crossOrigin = cors;
     img.src = url;
   }
+
+  // toDataURL(config?: { x?: number; y?: number; width?: number; height?: number; pixelRatio?: number; mimeType?: string; quality?: number; callback?: (str: string) => void }): string {
+  //   console.log("Reac");
+  //   if(this.attrs.image) {
+  //     return "";
+  //   }
+  // }
 
   image: GetSet<CanvasImageSource | undefined, this>;
   crop: GetSet<IRect, this>;
