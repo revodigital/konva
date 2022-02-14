@@ -57,6 +57,7 @@ import { Barcode }                  from './shapes/Barcode';
 import { RichText, RichTextSource } from './shapes/RichText';
 import { Point2D }                  from './common/Point2D';
 import { ExportVariable }           from './shapes/ExportVariable';
+import { CropTransformer }          from './shapes/CropTransformer';
 
 export const Pamela = Core.Util._assign(Core, {
   Arc,
@@ -80,6 +81,7 @@ export const Pamela = Core.Util._assign(Core, {
   Table,
   Barcode,
   GrowPolicy,
+  CropTransformer,
   RichText,
   RichTextSource,
   Point2D,
