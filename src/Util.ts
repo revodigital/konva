@@ -544,6 +544,11 @@ export const Util = {
   createImageElement() {
     return document.createElement('img');
   },
+
+  createImageHelper() {
+    return new Image();
+  },
+
   _isInDocument(el: any) {
     while ((el = el.parentNode)) {
       if (el == document) {

@@ -19,6 +19,11 @@ import { GetSet, IRect }  from '../types';
 import { SceneContext }   from '../Context';
 import { Size2D, sizeOf } from '../common/Size2D';
 
+export enum ImageSourcePolicy {
+  DATAURL,
+  URL,
+}
+
 export interface ImageConfig extends ShapeConfig {
   /**
    * Image data to draw
@@ -31,9 +36,15 @@ export interface ImageConfig extends ShapeConfig {
   crop?: IRect;
 
   /**
-   * Image source to use (alternative to image)
+   * Source data to use (can be url or data url)
+   * Useful for persistence purposes
    */
-  src?: string;
+  sourceData?: string;
+
+  /**
+   * Type of source data content
+   */
+  sourcePolicy?: ImageSourcePolicy;
 }
 
 /**
@@ -96,8 +107,13 @@ export class Image extends Shape<ImageConfig> {
     const image = this.attrs.image;
     let params;
 
-    // Load src image
-    if (!image && this.src()) this.loadImageFromUrl(this.src());
+    // Load data url if any
+    if (!image && this.sourcePolicy() === ImageSourcePolicy.DATAURL && this.sourceData())
+      this.loadFromDataURL(this.sourceData());
+
+    // Load from url if any
+    if (!image && this.sourcePolicy() === ImageSourcePolicy.URL && this.sourceData())
+      this.loadFromURL(this.sourceData());
 
     // Draw image
     if (image) {
@@ -138,15 +154,44 @@ export class Image extends Shape<ImageConfig> {
    * @param url Url to load from
    * @param cors Cross origin headers to apply to request
    */
-  public loadImageFromUrl(url: string, cors?: string) {
+  public loadFromURL(url: string, cors?: string) {
     var img = Util.createImageElement();
     const th = this;
     img.onload = () => {
       th.attrs.image = img;
       this._requestDraw();
     };
-    img.crossOrigin = cors || 'anonymous';
     img.src = url;
+  }
+
+  /**
+   * Loads an image from data url
+   * @param dataUrl Image data url
+   */
+  public loadFromDataURL(dataUrl: string) {
+    var img = Util.createImageHelper();
+    let th = this;
+    img.onload = function () {
+      th.attrs.image = img;
+      th._requestDraw();
+    };
+    img.src = dataUrl;
+  }
+
+  /**
+   * Loads an image starting from the data url
+   * @param dataURL
+   * @param callback
+   */
+  public static fromDataURL(dataURL: string, callback: (img: Image) => void) {
+    var img = Util.createImageHelper();
+    let th = this;
+    img.onload = function () {
+      callback(new Image({
+        image: img,
+      }));
+    };
+    img.src = dataURL;
   }
 
   /**
@@ -166,19 +211,11 @@ export class Image extends Shape<ImageConfig> {
   }
 
   /**
-   * Reloads the image pointed by the src. Works only when
-   * `src` parameter is specified.
-   */
-  public reload() {
-    if(this.src()) this.loadImageFromUrl(this.src())
-  }
-
-  /**
    * Returns the original size of this image, without crop and transform
    */
   public getOriginalSize(): Size2D | undefined {
-    if(this.attrs.image) {
-      return sizeOf(this.attrs.image.width, this.attrs.image.height)
+    if (this.attrs.image) {
+      return sizeOf(this.attrs.image.width, this.attrs.image.height);
     } else return undefined;
   }
 
@@ -252,7 +289,8 @@ export class Image extends Shape<ImageConfig> {
   cropY: GetSet<number, this>;
   cropWidth: GetSet<number, this>;
   cropHeight: GetSet<number, this>;
-  src: GetSet<string, this>;
+  sourceData: GetSet<string, this>;
+  sourcePolicy: GetSet<ImageSourcePolicy, this>;
 }
 
 Image.prototype.className = 'Image';
@@ -357,7 +395,6 @@ Factory.addGetterSetter(Image, 'cropHeight', 0, getNumberValidator());
  * image.cropHeight(20);
  */
 
-/**
- * Get / set image source
- */
-Factory.addGetterSetter(Image, 'src');
+Factory.addGetterSetter(Image, 'sourcePolicy');
+
+Factory.addGetterSetter(Image, 'sourceData');
