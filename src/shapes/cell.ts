@@ -9,21 +9,42 @@
  * Description:
  */
 
-import { PointRectangle2D }                       from '../common/PointRectangle2D';
-import { HorizontalAlignment, VerticalAlignment } from '../configuration/Alignment';
-import { ITextConfiguration, TextConfiguration }  from '../configuration/TextConfiguration';
-import { BorderConfig }                           from '../configuration/BorderOptions';
-import { Point2D }                                from '../common/Point2D';
-import { SceneContext }                           from '../Context';
+import { PointRectangle2D } from '../common/PointRectangle2D';
+import {
+  HorizontalAlignment,
+  VerticalAlignment
+}                           from '../configuration/Alignment';
+import {
+  ITextConfiguration,
+  TextConfiguration
+}                           from '../configuration/TextConfiguration';
+import {
+  BorderConfig
+}                           from '../configuration/BorderOptions';
+import { Point2D }          from '../common/Point2D';
+import { SceneContext }     from '../Context';
+
+export class CellIndex extends Point2D {}
+
+/**
+ * Represents size of a cell
+ */
+export type CellSize = number | 'auto';
+
+export interface CellConfig extends ITextConfiguration {
+  content?: string;
+  fill?: string;
+  border?: BorderConfig;
+  visible?: boolean;
+  width?: CellSize;
+  height?: CellSize;
+}
 
 /**
  * Defines the configuration properties of a single cell
  */
-export interface ICell extends ITextConfiguration {
-  content?: string;
+export interface ICell extends CellConfig {
   edges: PointRectangle2D;
-  fill?: string;
-  border?: BorderConfig;
 }
 
 /**
@@ -80,11 +101,11 @@ export class Cell extends TextConfiguration {
    * @param ctx The drawing context
    */
   _render(ctx: SceneContext): void {
-    if(this.edges.getWidth() === 0 || this.edges.getHeight() === 0) return;
+    if (this.edges.getWidth() === 0 || this.edges.getHeight() === 0) return;
 
     if (this.fill !== 'transparent') {
       let space: number = 0;
-      if(this.border) {
+      if (this.border) {
         space = this.border.borderWidth || 0;
         space /= 2;
       }
@@ -156,20 +177,20 @@ export class Cell extends TextConfiguration {
    * @private
    */
   private _renderBorders(ctx: SceneContext): void {
-    if(!this.border) return;
-    if(!this.border.bordered) return;
-    if(this.border.borderWidth === 0) return;
+    if (!this.border) return;
+    if (!this.border.bordered) return;
+    if (this.border.borderWidth === 0) return;
 
     ctx._context.lineCap = this.border.borderCap;
     ctx._context.strokeStyle = this.border.borderColor;
     ctx._context.lineWidth = this.border.borderWidth;
 
-    if(this.border.borderDash)
+    if (this.border.borderDash)
       ctx.setLineDash(this.border.borderDash);
     ctx.closePath();
 
     // Bottom border
-    if(!this._lastOfRow) {
+    if (!this._lastOfRow) {
       ctx.beginPath();
       ctx.moveTo(this.edges.topRight.x, this.edges.topRight.y);
       ctx.moveTo(this.edges.bottomRight.x, this.edges.bottomRight.y);
@@ -180,7 +201,7 @@ export class Cell extends TextConfiguration {
     }
 
     // Right border
-    if(!this._lastOfCol) {
+    if (!this._lastOfCol) {
       ctx.beginPath();
       ctx.moveTo(this.edges.topRight.x, this.edges.topRight.y);
       ctx.lineTo(this.edges.bottomRight.x, this.edges.bottomRight.y);

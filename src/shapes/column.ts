@@ -9,8 +9,8 @@
  * Description:
  */
 
-import { TextConfiguration, ITextConfiguration } from '../configuration/TextConfiguration';
-import { ColumnLayout }                          from '../layout/ColumnLayout';
+import { ITextConfiguration } from '../configuration/TextConfiguration';
+import { Cell }               from './cell';
 
 /**
  * Represents a Column into a Table
@@ -25,47 +25,14 @@ export interface IColumn extends ITextConfiguration {
  * It unites the column configuration and the content of it. In a column, you only specify
  * a text, witch is the content of the first cell of the column (header cell).
  */
-export class Column extends TextConfiguration {
-
-  /**
-   * Column width, can be a number (percentual) for example 50 stands for 50%.
-   * If not specified or "auto", the width will be calculated during render-time.
-   */
-  width: number | "auto";
-
-  /**
-   * The first column cell heading content. An optional string
-   */
-  text?: string;
+export class Column {
+  cells: Cell[];
 
   /**
    * Creates a new Column
-   * @param options The options for this column
+   * @param cells Cells composing this column
    */
-  constructor(options: IColumn) {
-    super(options);
-    this.width = options.width;
-    this.text = options.text;
-  }
-
-  /**
-   * Creates an array of column instances starting from an array of
-   * interfaces
-   * @param array The starting array
-   */
-  static fromIColumnArray(array: IColumn[]): Column[] {
-    let temp: Column[] = [];
-
-    for(const a of array)
-      temp.push(new Column(a));
-
-    return temp;
-  }
-
-  /**
-   * Extracts the layout of this column
-   */
-  extractLayout(): ColumnLayout {
-    return new ColumnLayout(this.width);
+  constructor(cells: Cell[]) {
+    this.cells = cells;
   }
 }

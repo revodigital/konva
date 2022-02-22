@@ -9,79 +9,21 @@
  * Description:
  */
 
-import { TextConfiguration, ITextConfiguration } from '../configuration/TextConfiguration';
-import { RowLayout }                             from '../layout/RowLayout';
-
-/**
- * Represents a line of a Table
- */
-export interface IRow extends ITextConfiguration {
-  height: number | 'auto';
-  data: string[];
-  fill?: string;
-}
+import { Cell } from './cell';
 
 /**
  * Represents a row into a table. Handles both the configuration and also
- * the content, via the data array.
+ * the content.
  */
-export class Row extends TextConfiguration {
-  /**
-   * Row content (each element is a cell of this row)
-   */
-  data: string[];
-
-  /**
-   * Row height, similar to Colulmn width, but in horizontal
-   */
-  height: number | 'auto';
-
-  /**
-   * Fill color
-   */
-  fill: string;
+export class Row {
+  cells: Cell[];
 
   /**
    * Creates a new Row object
-   * @param options The options to create it
+   * @param cells Cells to initialize it
    */
-  constructor(options: IRow) {
-    super(options);
-    this.data = options.data;
-    this.height = options.height;
-    this.fill = options.fill || 'white';
-  }
-
-  /**
-   * Loads an array of rows starting from their instances
-   * @param array The starting array
-   */
-  static fromIRowArray(array: IRow[]): Row[] {
-    let temp: Row[] = [];
-
-    for(const a of array)
-      temp.push(new Row(a));
-
-    return temp;
-  }
-
-  /**
-   * Extracts the layout of this row
-   */
-  extractLayout(): RowLayout {
-    return new RowLayout(this.height);
-  }
-
-  /**
-   * Fills the empty cells of the row
-   * @param cellPerRow Number of cells per row
-   */
-  fillEmptyCells(cellPerRow: number): void {
-    // Number of cells to fill
-    const i = cellPerRow - this.data.length;
-
-    for(let x =  0; x < i; x++)
-      this.data.push('');
+  constructor(cells: Cell[]) {
+    this.cells = cells;
   }
 
   /**
@@ -89,8 +31,7 @@ export class Row extends TextConfiguration {
    * @param index The cell index
    */
   existsIndex(index: number): boolean {
-
-    return (index >= 0);
+    return (index >= 0 && index < this.cells.length);
   }
 
   /**
@@ -99,12 +40,11 @@ export class Row extends TextConfiguration {
    * @param indexB Second cell index
    */
   swapCells(indexA: number, indexB: number): void {
-    if(!this.existsIndex(indexA) || !this.existsIndex(indexB)) throw new Error('Impossible swap');
 
-    this.fillEmptyCells(indexB + 1);
+    if (!this.existsIndex(indexA) || !this.existsIndex(indexB)) return;
 
-    const temp = this.data[indexA];
-    this.data[indexA] = this.data[indexB];
-    this.data[indexB] = temp;
+    const temp = this.cells[indexB];
+    this.cells[indexB] = this.cells[indexA];
+    this.cells[indexA] = temp;
   }
 }

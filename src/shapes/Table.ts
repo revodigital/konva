@@ -9,51 +9,46 @@
  * Description:
  */
 
-import { Shape, ShapeConfig } from '../Shape';
-import { _registerNode }         from '../Global';
-import { Context, SceneContext } from '../Context';
-import { Column, IColumn }       from './column';
-import { IRow, Row }          from './Row';
+import { Shape, ShapeConfig }          from '../Shape';
+import { _registerNode }               from '../Global';
+import { SceneContext }                from '../Context';
+import { Column }                      from './column';
+import { Row }                         from './Row';
 import {
   ITextConfiguration,
   TextConfiguration
-}                             from '../configuration/TextConfiguration';
+}                                      from '../configuration/TextConfiguration';
 import {
   BorderConfig
-}                             from '../configuration/BorderOptions';
-import { GetSet }             from '../types';
-import { Factory }            from '../Factory';
-import { TableLayout }        from '../layout/TableLayout';
+}                                      from '../configuration/BorderOptions';
+import { GetSet }                      from '../types';
+import { Factory }                     from '../Factory';
+import { TableLayout }                 from '../layout/TableLayout';
 import {
   ColumnRowLayoutConfiguration
-}                             from '../layout/ColumnRowLayoutConfiguration';
+}                                      from '../layout/ColumnRowLayoutConfiguration';
 import {
   PointRectangle2D
-}                             from '../common/PointRectangle2D';
-import { Cell }               from './cell';
-import { CellPosition }       from '../common/CellPosition';
-import { Point2D }            from '../common/Point2D';
-import { Verse }              from './Verse';
-import { Vector }             from './Vector';
-import { ColumnLayout }       from '../layout/ColumnLayout';
+}                                      from '../common/PointRectangle2D';
+import { Cell, CellConfig, CellIndex } from './cell';
+import { CellPosition }                from '../common/CellPosition';
+import { Point2D }                     from '../common/Point2D';
+import { Verse }                       from './Verse';
+import { Vector }                      from './Vector';
+import { ColumnLayout }                from '../layout/ColumnLayout';
 import {
   ColLayoutGroup
-}                             from '../layout/ColLayoutGroup';
-import { insertToArray }      from './utils';
-import { RowLayout }          from '../layout/RowLayout';
+}                                      from '../layout/ColLayoutGroup';
+import { insertToArray }               from './utils';
+import { RowLayout }                   from '../layout/RowLayout';
 import {
   RowLayoutGroup
-}                             from '../layout/RowLayoutGroup';
+}                                      from '../layout/RowLayoutGroup';
 
 export interface TableConfig extends ShapeConfig {
-  header?: IColumn[];
-  rows?: IRow[];
-
-  headerFill?: string;
-  headerText?: ITextConfiguration;
-  headerHeight?: number | 'auto';
   externalBorder?: BorderConfig;
   internalBorder?: BorderConfig;
+  cells?: [CellConfig[]];
 }
 
 /**
@@ -61,15 +56,9 @@ export interface TableConfig extends ShapeConfig {
  */
 export class Table extends Shape<TableConfig> {
   /**
-   * Table header, defines the column width for all rows of the table
+   * Contains all the cells of this Table
    */
-  header: GetSet<Column[], this>;
-
-  /**
-   * Array with all the rows of the table. Each Row object handles the configuration
-   * and the content of all cells inside it.
-   */
-  rows: GetSet<Row[], this>;
+  cells: GetSet<[Cell[]], this>;
 
   /**
    * Configuration for the internal border of this table
@@ -82,45 +71,106 @@ export class Table extends Shape<TableConfig> {
   externalBorder: GetSet<BorderConfig, this>;
 
   /**
-   * The height percentage of the header row
+   * Checks if this table has a cell at the given index
+   * @param index
    */
-  headerHeight: GetSet<number | 'auto', this>;
-
-  /**
-   * Fill color for the background of the header
-   */
-  headerFill: GetSet<string, this>;
-
-  /**
-   * Header text options
-   */
-  headerText: GetSet<ITextConfiguration, this>;
-
-  /**
-   * Adds the header row to the rows
-   * @private
-   */
-  private _getEffectiveRows(): Row[] {
-    // Copy array
-    const temp = Array.from(this.rows());
-    const rowsData = this.header().map((col) => {
-      return col.text;
-    }) as string[];
-
-    return [new Row({
-      height: this.headerHeight(),
-      data: rowsData,
-      fill: this.headerFill(), ...this.headerText()
-    }), ...temp];
+  public hasCellAtIndex(index: CellIndex): boolean {
+    if (this.cells().length < index.y) return false;
+    return this.cells()[index.y][index.x] !== undefined;
   }
 
-  getSelfRect(): { x: number; width: number; y: number; height: number } {
-    return {
-      x: 0,
-      y: 0,
-      width: this.width(),
-      height: this.height()
-    };
+  /**
+   * Returns the number of rows into this table
+   */
+  public getRowsCount(): number {
+    return this.cells().length || 0;
+  }
+
+  /**
+   * Returns the number of columns into this table
+   */
+  public getColumnsCount(): number {
+    return this.cells()[0].length || 0;
+  }
+
+  _initFunc(config?: TableConfig) {
+    super._initFunc(config);
+    if (!this.cells()) this.cells([[]]);
+  }
+
+  /**
+   * Returns a specific cell of this table
+   * @param index Cell index
+   */
+  public getCell(index: CellIndex): CellConfig | undefined {
+    if (!this.hasCellAtIndex(index)) return undefined;
+
+    else return this.cells()[index.y][index.x];
+  }
+
+  /**
+   * Get a specific row of this table
+   * @param index
+   */
+  public getRow(index: number): Row | undefined {
+    if (!this.cells()) return undefined;
+
+    return new Row(this.cells()[index]);
+  }
+
+  /**
+   * Returns a column starting from its index
+   * @param index Column index
+   */
+  public getColumn(index: number): Column | undefined {
+    if (!this.cells()) return undefined;
+
+    return new Column(this.cells().map(it => {
+      return it[0];
+    }) || []);
+  }
+
+  /**
+   * Returns the first column or undefined if it is empty
+   */
+  public firstColumn(): Column | undefined {
+    return this.getColumn(0);
+  }
+
+  /**
+   * Returns the last valid row index of this table
+   */
+  public lastRowIndex(): number {
+    return this.cells().length - 1;
+  }
+
+  /**
+   * Returns the last valid column index
+   */
+  public lastColumnIndex(): number {
+    if (this.cells() && this.cells()[0]) return this.cells()[0].length - 1;
+    return 0;
+  }
+
+  /**
+   * Returns the last column of this table
+   */
+  public lastColumn(): Column | undefined {
+    return this.getColumn(this.lastColumnIndex());
+  }
+
+  /**
+   * Returns the last row of this table
+   */
+  public lastRow(): Row | undefined {
+    return this.getRow(this.lastRowIndex());
+  }
+
+  /**
+   * Returns the first row of this table
+   */
+  public firstRow(): Row | undefined {
+    return this.getRow(0);
   }
 
   /**
@@ -173,7 +223,7 @@ export class Table extends Shape<TableConfig> {
   }
 
   private _renderTableBorders(layout: TableLayout, ctx: CanvasRenderingContext2D): void {
-    if(!this.externalBorder() || !this.externalBorder().bordered || this.externalBorder().borderWidth === 0) return;
+    if (!this.externalBorder() || !this.externalBorder().bordered || this.externalBorder().borderWidth === 0) return;
     // Draw table borders
     ctx.beginPath();
     ctx.moveTo(0,
@@ -271,7 +321,7 @@ export class Table extends Shape<TableConfig> {
    * @param index The row index
    */
   public existsRowWithIndex(index: number): boolean {
-    return (index >= 0 && index < this.rows().length && this.rows()[index] !== undefined);
+    return (index >= 0 && index < this.cells().length && this.cells()[index] !== undefined);
   }
 
   /**
@@ -279,7 +329,7 @@ export class Table extends Shape<TableConfig> {
    * @param index The column index
    */
   public existsColumnWithIndex(index: number): boolean {
-    return (index >= 0 && index < this.header().length && this.header()[index] !== undefined);
+    return (index >= 0 && index < this.cells()[0].length && this.cells()[0][index] !== undefined);
   }
 
   /**
@@ -675,16 +725,6 @@ export class Table extends Shape<TableConfig> {
 }
 
 /**
- * Get / set table header
- */
-Factory.addGetterSetter<Column[]>(Table, 'header', []);
-
-/**
- * Get / set table rows and their content
- */
-Factory.addGetterSetter<Row[]>(Table, 'rows', []);
-
-/**
  * Get / set table internal border configuration
  */
 Factory.addGetterSetter<BorderConfig>(Table,
@@ -695,23 +735,6 @@ Factory.addGetterSetter<BorderConfig>(Table,
  */
 Factory.addGetterSetter<BorderConfig>(Table,
   'externalBorder');
-
-/**
- * Get / set header height in percentage
- */
-Factory.addGetterSetter<number | 'auto'>(Table, 'headerHeight', 0);
-
-/**
- * Get / set header fill (background color)
- */
-Factory.addGetterSetter<string>(Table, 'headerFill', 'black');
-
-/**
- * Get / set header text formatting configuration
- */
-Factory.addGetterSetter<ITextConfiguration>(Table,
-  'headerText',
-  TextConfiguration.getDefaultOptions());
 
 Table.prototype.className = 'Table';
 
