@@ -536,6 +536,11 @@ export class Transformer extends Group {
 
     this._createAnchor('rotater');
   }
+
+  /**
+   * Draws an anchor of this transformer
+   * @param name
+   */
   _createAnchor(name) {
     var anchor = new Rect({
       stroke: 'rgb(0, 161, 255)',
@@ -635,6 +640,11 @@ export class Transformer extends Group {
       this.update();
     });
   }
+
+  /**
+   * Called when the user presses the mouse
+   * @param e
+   */
   _handleMouseDown(e) {
     this._movingAnchorName = e.target.name().split(' ')[0];
 
@@ -665,6 +675,11 @@ export class Transformer extends Group {
       target._fire('transformstart', { evt: e, target });
     });
   }
+
+  /**
+   * Called when the user moves the mouse
+   * @param e
+   */
   _handleMouseMove(e) {
     var x, y, newHypotenuse;
     var anchorNode = this.findOne('.' + this._movingAnchorName);
@@ -1081,8 +1096,8 @@ export class Transformer extends Group {
     this.getLayer().batchDraw();
   }
   /**
-   * force update of Konva.Transformer.
-   * Use it when you updated attached Konva.Group and now you need to reset transformer size
+   * force update of Pamela.Transformer.
+   * Use it when you updated attached Pamela.Group and now you need to reset transformer size
    * @method
    * @name Pamela.Transformer#forceUpdate
    */

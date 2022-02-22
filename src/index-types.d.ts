@@ -108,6 +108,10 @@ declare namespace Pamela {
   export type ShapeConfig = import('./Shape').ShapeConfig;
   export const shapes: typeof import('./Shape').shapes;
 
+  export const CropTransformer: typeof import('./shapes/CropTransformer').CropTransformer;
+  export type CropTransformer = import('./shapes/CropTransformer').CropTransformer;
+  export type CropTransformerConfig = import('./shapes/CropTransformer').CropTransformerConfig;
+
   export const Animation: typeof import('./Animation').Animation;
   export type Animation = import('./Animation').Animation;
 

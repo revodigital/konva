@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file. This
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.7.6 (12/2/2022)
+Implements *cors* customizations for *Image.fromURL*. Add capability for *Pamela.Image* to 
+work with link images, allowing persistence of images. Now, we can contruct an image specifing
+only the url: 
+```javascript
+const i = new Pamela.Image({
+  src: '<link>'
+})
+```
+*Pamela.Image* will care about all the operations to correctly render and save the image into the stage.
+We also added some very useful methods to:
+* Change image src (using `image.loadImageFromUrl(<link>)`)
+* Get image original size (using `image.getOriginalSize()`)
+* Reload image from the same origin (using `image.reload()`)
+
+## 1.6.14 (9/2/2022)
+Fixes *Barcode* error message drawing problems
+
+## 1.6.13 (8/2/2022)
+Adds *Barcode* text for displaying errors during barcode calculations. It can be formatted using
+```javascript
+Barcode.prototype.invalidCodeMessage
+Barcode.prototype.invalidCodeMessageFont
+Barcode.prototype.invalidCodeMessageFontSize
+```
+properties.
+
+## 1.6.11 (3/2/2022)
+Fixes *Barcode* resolution problems when it has long width. Corrects also *RichText* unuseful margins and resizing problems. Implements *RichText* measuring utils, 
+to perform advanced text measuring.
+
+## 1.6.3 (30/1/2022)
+Fixes *Barcode* performance and exporting issues. Solves caching problems on *backgroundColor* and *fill*.  
+Solves *flashing* problem on resize end, now *Barcode* is fully resizable using scale-based or size-based scaling policies. 
+Increases *Barcode* border rendering quality.
+
+## 1.6.0 (30/1/2022)
+Fixes Barcode drawing problems and implements **showContent** property
+to show / hide it's code. Implements also text formatting configuration for barcode content.
+Fixes Barcode resizing problems, to it is fully resizable using width and or scale.
+
 ## 1.5.10 (28/1/2022)
 Fixes several bugs, such as: 
 * Barcode not showing content

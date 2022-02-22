@@ -9,21 +9,17 @@
  * Description:
  */
 
-import { Shape, ShapeConfig } from '../Shape';
-import { ITextConfiguration } from '../configuration/TextConfiguration';
-import { GetSet }             from '../types';
-import { Factory }            from '../Factory';
-import { Context }            from '../Context';
+import { Shape, ShapeConfig }    from '../Shape';
+import { GetSet }                from '../types';
+import { Factory }               from '../Factory';
+import { Context, SceneContext } from '../Context';
+import { Image }                 from './Image';
+import * as JsBarcode            from 'jsbarcode';
+import { _registerNode }         from '../Global';
 import {
-  InvalidBarcodeConfiguration
-}                             from '../exceptions/InvalidBarcodeConfiguration';
-import { BarcodeLayout }      from '../layout/BarcodeLayout';
-import { Image }              from './Image';
-import * as JsBarcode         from 'jsbarcode';
-import { _registerNode }      from '../Global';
-import {
-  INVALID_CDECS, InvalidCodeOrSpecification
-}                             from '../events/barcode/InvalidCodeOrSpecification';
+  INVALID_CDECS
+}                                from '../events/barcode/InvalidCodeOrSpecification';
+import { PointRectangle2D }      from '../common/PointRectangle2D';
 
 export interface BarcodeConfig extends ShapeConfig {
   /**
@@ -62,12 +58,24 @@ export interface BarcodeConfig extends ShapeConfig {
    * Enable / disable value rendering
    */
   displayValue?: boolean;
+
+  /**
+   * Barcode background color (default is transparent). Fill is used for barcode color
+   */
+  backgroundColor?: string;
+
+  /**
+   * Content font size
+   */
+  contentFontSize?: number;
 }
 
 interface BarcodeCache {
   code: string;
   encoding: string;
   showContent: boolean;
+  backgroundColor: string;
+  fill: string;
 }
 
 /**
@@ -105,31 +113,63 @@ export class Barcode extends Shape<BarcodeConfig> {
   transparentBackground: GetSet<boolean, this>;
   codeLineWidth: GetSet<number, this>;
   encoding: GetSet<string, this>;
-  showContent: GetSet<boolean, this>;
   placeHolder: GetSet<string, this>;
   displayValue: GetSet<boolean, this>;
+  backgroundColor: GetSet<string, this>;
+  contentFontSize: GetSet<number, this>;
+
+  /**
+   * Message to visualize when an invalid code is given to this shape.
+   * Leave empty to hide the message
+   */
+  invalidCodeMessage!: string;
+
+  /**
+   * Font size of the invalid code message, when displayed
+   */
+  invalidCodeMessageFontSize!: number;
+
+  /**
+   * Font of the invalid code message
+   */
+  invalidCodeMessageFont!: string;
 
   _imageBuffer: CanvasImageSource;
-  _resizing: boolean;
 
   // Internal props cache
   props_cache: BarcodeCache;
+  _errored: boolean;
 
+  /**
+   * Calculaes internal cache
+   */
   _getInternalCache(): BarcodeCache {
     return {
       code: this.code(),
       encoding: this.encoding(),
       showContent: this.displayValue(),
+      backgroundColor: this.backgroundColor(),
+      fill: this.fill()
     };
   }
 
+  /**
+   * Writes the cache for this shape
+   */
   _writeCache() {
     this.props_cache = this._getInternalCache();
   }
 
+  /**
+   * Checks if cache has changed
+   */
   _cacheChanged(): boolean {
     const temp = this._getInternalCache();
-    return (this.props_cache.code !== temp.code || this.props_cache.showContent !== temp.showContent || this.props_cache.encoding !== temp.encoding);
+    return (this.props_cache.code !== temp.code ||
+            this.props_cache.showContent !== temp.showContent ||
+            this.props_cache.encoding !== temp.encoding ||
+            this.props_cache.backgroundColor !== temp.backgroundColor ||
+            this.props_cache.fill !== temp.fill);
   }
 
   _initFunc(config?: BarcodeConfig) {
@@ -140,57 +180,94 @@ export class Barcode extends Shape<BarcodeConfig> {
     if (!this.encoding()) this.encoding('CODE39');
     if (!this.codeLineWidth()) this.codeLineWidth(1);
     if (!this.displayValue()) this.displayValue(false);
+    if (!this.backgroundColor()) this.backgroundColor('transparent');
+    if (this.contentFontSize() === undefined) this.contentFontSize(15);
+    if (!this.fill()) this.fill('black');
 
-    this._resizing = false;
-
+    this._errored = false;
     this._writeCache();
-
-    // Add event listeners
-    this.on('transformstart', () => {
-      this._resizing = true;
-    });
-    this.on('transformend', (event) => {
-      // Delete cache after transform
-      this._imageBuffer = undefined;
-      this._resizing = false;
-      this.draw();
-    });
   }
 
-  async _sceneFunc(context: Context): Promise<void> {
+  async _sceneFunc(context: SceneContext): Promise<void> {
     // Reload cache if encoding or code has changed
     if (this._cacheChanged() || !this._imageBuffer) {
       this._imageBuffer = undefined;
+
       this._loadBarcodeImage().then(({ image, link }) => {
-        this._resizing = true;
         // Draw barcode only if there is an image
         if (image) {
-          this.width(image.width());
-          this.height(image.height());
           this._imageBuffer = image.image();
-          this._resizing = false;
           this._writeCache();
-          this.draw();
+          this._errored = false;
+          this._requestDraw();
         } else {
           // Fire error event
-          if (this.getStage()) this.getStage().fire(INVALID_CDECS,
-            {
-              image: image,
-              barcode: this,
-              code: this.code(),
-              encoding: this.encoding(),
-              generatedUrl: link
-            });
+          if (this.getStage()) {
+            this.getStage().fire(INVALID_CDECS,
+              {
+                image: image,
+                barcode: this,
+                code: this.code(),
+                encoding: this.encoding(),
+                generatedUrl: link
+              });
+          }
+
+          this._errored = true;
+          this._requestDraw();
         }
       });
     }
 
-    // Clear previous stuff
-    context.fillStrokeShape(this);
+    // Draw borders and background
+    context._context.fillStyle = this.backgroundColor();
+    context.fillRect(0, 0, this.width(), this.height());
 
     // Draw barcode image
-    if (this._imageBuffer && !this._resizing)
-      context.drawImage(this._imageBuffer, 0, 0);
+    if (this._imageBuffer) {
+      // Draw the image
+      context.drawImage(this._imageBuffer,
+        0,
+        0,
+        this.width(),
+        this.height() - (this.displayValue() ? (this.contentFontSize() + 3) : 0));
+
+      const scale = this.width() / (this._imageBuffer.width as number);
+      // Invalidate cache when scale is too high
+      if (scale >= 2) {
+        this._imageBuffer = undefined;
+        this.codeLineWidth(this.codeLineWidth() + 1);
+      }
+    }
+
+    // Draw error message
+    if (this._errored) {
+      this._drawErrorMessage(context);
+    }
+
+    if (this.displayValue()) {
+      context._context.fillStyle = this.fill() || 'black';
+      context._context.font = `${ this.contentFontSize() }px Arial`;
+      context._context.textAlign = 'center';
+      const textW = context.measureText(this.code());
+      context._context.fillText(this.code().toUpperCase(),
+        this.width() / 2,
+        this.height() - 5,
+        this.width());
+    }
+
+    // Draw borders
+    context.closePath();
+    const edges = PointRectangle2D.calculateFromStart(this.width(),
+      this.height());
+    context.beginPath();
+    context.moveTo(edges.topLeft.x, edges.topLeft.y);
+    context.lineTo(edges.topRight.x, edges.topRight.y);
+    context.lineTo(edges.bottomRight.x, edges.bottomRight.y);
+    context.lineTo(edges.bottomLeft.x, edges.bottomLeft.y);
+    context.lineTo(edges.topLeft.x, edges.topLeft.y);
+    context.strokeShape(this);
+    context.closePath();
   }
 
   _hitFunc(context) {
@@ -224,9 +301,15 @@ export class Barcode extends Shape<BarcodeConfig> {
     });
   }
 
+  /**
+   * Generates the barcode url starting from code and encoding
+   * @param code Code to use
+   * @param encoding Encoding
+   * @returns A data url with the barcode
+   */
   _generateBarCodeUrl(code: string, encoding: string): string | undefined {
     let canvas = document.createElement('canvas');
-    const backgroundColor = this.transparentBackground() ? '#00000000' : this.fill() as string;
+    const backgroundColor = this.transparentBackground() ? '#00000000' : this.backgroundColor() as string;
     try {
       JsBarcode(canvas,
         code,
@@ -234,14 +317,30 @@ export class Barcode extends Shape<BarcodeConfig> {
           format: encoding,
           margin: 0,
           width: this.codeLineWidth(),
-          height: this.height(),
-          displayValue: this.displayValue(),
-          background: backgroundColor
+          height: this.height() - this.contentFontSize(),
+          displayValue: false,
+          background: backgroundColor,
+          lineColor: this.fill() || 'black'
         });
       return canvas.toDataURL('image/png');
     } catch (e) {
       return undefined;
     }
+  }
+
+  /**
+   * Draws the error message when this barcode receives an invalid
+   * code or encoding
+   * @param context
+   */
+  _drawErrorMessage(context: SceneContext): void {
+    // Render error message using properties
+    context._context.fillStyle = 'red';
+    context._context.font = `${ this.invalidCodeMessageFontSize }px ${ this.invalidCodeMessageFont }`;
+    context._context.textAlign = 'center';
+    context.fillText(this.invalidCodeMessage,
+      this.width() / 2,
+      this.height() / 2);
   }
 
   getSelfRect(): { x: number; width: number; y: number; height: number } {
@@ -274,11 +373,29 @@ Factory.addGetterSetter(Barcode, 'codeLineWidth');
  */
 Factory.addGetterSetter(Barcode, 'encoding');
 
-Factory.addGetterSetter(Barcode, 'showContent');
-
+/**
+ * Get / set placeholder
+ */
 Factory.addGetterSetter(Barcode, 'placeHolder');
 
+/**
+ * Get / set display value
+ */
 Factory.addGetterSetter(Barcode, 'displayValue');
 
+/**
+ * Get / set background color
+ */
+Factory.addGetterSetter(Barcode, 'backgroundColor');
+
+/**
+ * Get / set content font size
+ */
+Factory.addGetterSetter(Barcode, 'contentFontSize');
+
 Barcode.prototype.className = 'Barcode';
+Barcode.prototype.invalidCodeMessage = 'Contenuto codice non valido';
+Barcode.prototype.invalidCodeMessageFont = 'Arial';
+Barcode.prototype.invalidCodeMessageFontSize = 20;
+
 _registerNode(Barcode);

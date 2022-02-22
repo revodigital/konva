@@ -9,17 +9,20 @@
  * Description:
  */
 
-import { Shape, ShapeConfig }          from '../Shape';
-import { GetSet }                      from '../types';
-import { Factory }                     from '../Factory';
-import { _registerNode }               from '../Global';
-import { SceneContext }                from '../Context';
-import { Marked }                      from '@ts-stack/markdown';
-import { drawHTML, Options }           from 'next-rasterizehtml';
-import { Size2D }                      from '../common/Size2D';
-import { HAlign, HorizontalAlignment } from '../configuration/Alignment';
-import { GrowPolicy }                  from './Text';
-import { PointRectangle2D }            from '../common/PointRectangle2D';
+import { Shape, ShapeConfig }  from '../Shape';
+import { GetSet }              from '../types';
+import { Factory }             from '../Factory';
+import { _registerNode }       from '../Global';
+import { SceneContext }        from '../Context';
+import { Marked }              from '@ts-stack/markdown';
+import { drawHTML, Options }   from 'next-rasterizehtml';
+import { Size2D, sizeOf }      from '../common/Size2D';
+import { HorizontalAlignment } from '../configuration/Alignment';
+import { GrowPolicy }          from './Text';
+import { RichTextMetrics }     from '../TextMeasurement';
+import { PointRectangle2D }    from '../common/PointRectangle2D';
+
+export const UNLIMITED = 300000;
 
 /**
  * Represents the type of a rich text source
@@ -137,6 +140,8 @@ export class RichText extends Shape<RichTextConfig> {
     if (this.sourceType() === undefined) this.sourceType(RichTextSource.Markdown);
 
     if (this.growPolicy() === undefined) this.growPolicy(GrowPolicy.GrowHeight);
+    if (this.padding() === undefined) this.padding(0);
+
     this._resizing = false;
   }
 
@@ -155,13 +160,19 @@ export class RichText extends Shape<RichTextConfig> {
 
     // Format complete document, adding formatting options
     const doc = `
+    <style>
+    p {
+        margin: 0;
+        padding: 0;
+    }
+</style>
     <div id="document" style="
     ${ this.style() };
     color: ${ this.fill() || 'black' };
-    margin: ${ this.padding() || 0 }px; 
     font-family: ${ this.fontFamily() || 'arial' };
+    padding: 0;
     font-variant: ${ this.fontVariant() || '' }};
-    text-align: ${ HAlign.toHtmlTextAlign(this.horizontalAlignment()) || 'left' };
+    text-align: left;
     text-decoration: ${ this.fontDecoration() || '' };
     background-color: ${ this.backgroundColor() || 'transparent' }; 
     font-size: ${ fontSize || 12 }px
@@ -208,10 +219,20 @@ export class RichText extends Shape<RichTextConfig> {
         this._loadFittedImage(doc);
     }
 
+    // Draw background
     this._drawBackground(context);
 
-    if (this._image)
-      context.drawImage(this._image, 0, 0);
+    if (this._image) {
+      context.beginPath();
+      context.rect(this.padding(),
+        this.padding(),
+        this.width() - this.padding(),
+        this.height() - this.padding());
+      context.clip();
+      context.drawImage(this._image,
+        this.padding() - 6,
+        this.padding() - 3);
+    }
 
     // Draw shape borders
     context.closePath();
@@ -229,23 +250,30 @@ export class RichText extends Shape<RichTextConfig> {
 
   private _loadFreeImage(doc: string) {
     // Draw html into null canvas, get the image and draw
-    let options: Options;
     this._resizing = true;
-    // Calculate only 1 time the image and request draw
-    if (this.growPolicy() === GrowPolicy.GrowHeight) options = {
-      width: this.width(),
-    };
-    else options = { height: this.height() };
+    // Calculate only 1 time the image and request dra
+
+    // Resize richtext
+    if (this.growPolicy() === GrowPolicy.GrowWidth) {
+      const size = this.measureMultiStyleTextSize(doc,
+        sizeOf(UNLIMITED, this.height()));
+      if (size.overflowsWidth(this.getSizeRect()))
+        this.width(size.getWidth());
+    } else {
+      const size = this.measureMultiStyleTextSize(doc,
+        sizeOf(this.width(), UNLIMITED));
+      console.log(size);
+      if (size.overflowsHeight(this.getSizeRect()))
+        this.height(size.getHeight());
+    }
 
     // it as shape body
     drawHTML(doc,
       null,
-      options).then(result => {
-      // Resize if needed
-      if (result.image.width > this.width())
-        this.width(result.image.width);
-      if (result.image.height > this.height())
-        this.height(result.image.height);
+      {
+        width: this.width() - this.padding(),
+        height: this.height() - this.padding()
+      }).then(result => {
       // Save image into cache
       if (result.errors.length === 0) {
         this._resizing = false;
@@ -261,7 +289,7 @@ export class RichText extends Shape<RichTextConfig> {
    * @param type Source type (Html or markdown are supported)
    */
   public setContent(source: string, type: RichTextSource) {
-    if(type === RichTextSource.Markdown) this.markdownContent(source);
+    if (type === RichTextSource.Markdown) this.markdownContent(source);
     else this.htmlContent(source);
     this.sourceType(type);
 
@@ -319,9 +347,6 @@ export class RichText extends Shape<RichTextConfig> {
         // Recalculate text rect
         textRect = Size2D.fromBounds(img.width, img.height);
       }
-      // Resize if needed
-      if (textRect.overflows(selfRect) && ft === 6)
-        this._onResize(selfRect, textRect);
     } else if (!onlyDecrease) {
       // Increase font size
       while (textRect.canBeContainedBy(selfRect)) {
@@ -346,9 +371,32 @@ export class RichText extends Shape<RichTextConfig> {
       options)).image;
   }
 
-  private _onResize(oldRect: Size2D, newRect: Size2D): void {
-    this.width(newRect.getWidth());
-    this.height(newRect.getHeight());
+  /**
+   * Measures a multistyle text using dom element
+   * @param doc Document to measure
+   */
+  public measureMultiStyleText(doc: string, size: Size2D): RichTextMetrics {
+    let element = document.createElement('div');
+    if (size.getWidth() !== UNLIMITED)
+      element.style.width = size.getWidth() + 'px';
+
+    if (size.getHeight() !== UNLIMITED)
+      element.style.height = size.getHeight() + 'px';
+    element.innerHTML = doc;
+    document.body.append(element);
+
+    const mes = {
+      width: element.offsetWidth,
+      height: element.offsetHeight + 30,
+    };
+
+    document.body.removeChild(element);
+
+    return mes;
+  }
+
+  public measureMultiStyleTextSize(doc: string, size: Size2D): Size2D {
+    return Size2D.fromSize(this.measureMultiStyleText(doc, size));
   }
 }
 
