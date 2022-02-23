@@ -16,6 +16,7 @@ import { Shape }                           from './Shape';
 import { BorderRadius, BorderRadiusUtils } from './configuration/BorderOptions';
 import { LineCap as LineCap2 }             from './configuration/LineCap';
 import { Vector2d }                        from './types';
+import { Point2D }                         from './common/Point2D';
 
 function simplifyArray(arr: Array<any>) {
   var retArr = [],
@@ -253,6 +254,44 @@ export class Context {
     }
 
     return str;
+  }
+
+  /**
+   * Creates a line to a point
+   * @param point
+   */
+  lineToPoint(point: Point2D) {
+    this._context.lineTo(point.x, point.y);
+  }
+
+  /**
+   * Moves to a specific point
+   * @param point
+   */
+  moveToPoint(point: Point2D) {
+    this._context.moveTo(point.x, point.y);
+  }
+
+  /**
+   * Creates a line between 2 points, moving from a to b. It does not start a new path or close it
+   * @param a
+   * @param b
+   */
+  lineBetween(a: Point2D, b: Point2D) {
+    this.moveToPoint(a);
+    this.lineToPoint(b);
+  }
+
+  /**
+   * Strokes a complete 2 point line
+   * @param a
+   * @param b
+   */
+  strokeLineBetween(a: Point2D, b: Point2D) {
+    this.beginPath();
+    this.lineBetween(a, b);
+    this.closePath();
+    this.stroke();
   }
 
   clearTrace() {

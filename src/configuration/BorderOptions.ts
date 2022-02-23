@@ -12,6 +12,7 @@
 import { LineDashConfiguration } from './LineDash';
 import { Factory }               from '../Factory';
 import { LineCap }               from './LineCap';
+import { Context }               from '../Context';
 
 /**
  * Represents the options of a border
@@ -145,3 +146,19 @@ export const addBorderConfigToClass = (cls: any) => {
     Factory.addGetterSetter(cls, i);
   }
 };
+
+/**
+ * Applies a border configuration to this context
+ * @param border
+ * @param ctx
+ */
+export const applyBorderConfig = (border: BorderConfig, ctx: Context) => {
+  if(!border) return;
+
+  ctx._context.lineCap = border.borderCap;
+  ctx._context.strokeStyle = border.borderColor;
+  ctx._context.lineWidth = border.borderWidth;
+
+  if (border.borderDash)
+    ctx.setLineDash(border.borderDash);
+}
