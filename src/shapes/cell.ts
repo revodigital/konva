@@ -143,6 +143,9 @@ export class Cell implements CellConfig {
     const textMeasure = ctx.measureText(this.content);
     let startPoint = this.edges.topLeft;
 
+    const padding = this.padding || 0;
+    const fontSize = this.fontSize || 13;
+
     // Set horizontal position
     switch (this.textAlign) {
       case HorizontalAlignment.Center:
@@ -151,11 +154,11 @@ export class Cell implements CellConfig {
         break;
       case HorizontalAlignment.Left:
         ctx._context.textAlign = 'start';
-        startPoint.x = this.edges.topLeft.x + this.padding;
+        startPoint.x = this.edges.topLeft.x + padding;
         break;
       case HorizontalAlignment.Right:
         ctx._context.textAlign = 'end';
-        startPoint.x = this.edges.topRight.x - this.padding;
+        startPoint.x = this.edges.topRight.x - padding;
         break;
     }
 
@@ -165,10 +168,10 @@ export class Cell implements CellConfig {
         startPoint.y = center.y + (textMeasure.actualBoundingBoxAscent / 2);
         break;
       case VerticalAlignment.Bottom:
-        startPoint.y = this.edges.bottomRight.y - this.padding - (textMeasure.actualBoundingBoxAscent);
+        startPoint.y = this.edges.bottomRight.y - padding - fontSize;
         break;
       case VerticalAlignment.Top:
-        startPoint.y = this.edges.topLeft.y + this.padding + this.fontSize;
+        startPoint.y = this.edges.topLeft.y + padding + fontSize;
         break;
     }
 
@@ -186,23 +189,23 @@ export class Cell implements CellConfig {
     const edges = this.edges;
 
     // Bottom border
-    if(this.topBorder && this.topBorder.bordered) {
+    if (this.topBorder && this.topBorder.bordered) {
       // Apply border configruration
       applyBorderConfig(this.topBorder, ctx);
-      ctx.strokeLineBetween(edges.topLeft, edges.topRight)
+      ctx.strokeLineBetween(edges.topLeft, edges.topRight);
     }
 
-    if(this.rightBorder && this.rightBorder.bordered) {
+    if (this.rightBorder && this.rightBorder.bordered) {
       applyBorderConfig(this.rightBorder, ctx);
       ctx.strokeLineBetween(edges.topRight, edges.bottomRight);
     }
 
-    if(this.bottomBorder && this.bottomBorder.bordered) {
+    if (this.bottomBorder && this.bottomBorder.bordered) {
       applyBorderConfig(this.bottomBorder, ctx);
       ctx.strokeLineBetween(edges.bottomRight, edges.bottomLeft);
     }
 
-    if(this.leftBorder && this.leftBorder.bordered) {
+    if (this.leftBorder && this.leftBorder.bordered) {
       applyBorderConfig(this.leftBorder, ctx);
       ctx.strokeLineBetween(edges.bottomLeft, edges.topLeft);
     }
