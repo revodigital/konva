@@ -13,15 +13,16 @@ import { PointRectangle2D } from '../common/PointRectangle2D';
 import {
   HorizontalAlignment,
   VerticalAlignment
-}                           from '../configuration/Alignment';
+}                       from '../configuration/Alignment';
 import {
   ITextConfiguration
-}                           from '../configuration/TextConfiguration';
+}                       from '../configuration/TextConfiguration';
 import {
   applyBorderConfig,
   BorderConfig
-}                           from '../configuration/BorderOptions';
-import { SceneContext }     from '../Context';
+}                       from '../configuration/BorderOptions';
+import { SceneContext } from '../Context';
+import { pointOf }      from '../common/Point2D';
 
 export interface CellConfig extends ITextConfiguration {
   content?: string;
@@ -79,6 +80,8 @@ export class Cell implements CellConfig {
   bottomBorder: BorderConfig;
   topBorder: BorderConfig;
 
+  underlined: boolean;
+
   /**
    * Creates a new instance of a Cell class, for drawing a Cell into a table.
    * @param options Configuration following ICell interface.
@@ -99,6 +102,7 @@ export class Cell implements CellConfig {
     this.textColor = options.textColor;
     this.verticalAlign = options.verticalAlign;
     this.padding = options.padding;
+    this.underlined = options.underlined || false;
     this.edges = edges;
   }
 
@@ -178,6 +182,15 @@ export class Cell implements CellConfig {
     ctx.fillText(this.content,
       startPoint.x,
       startPoint.y);
+
+    // Draw line if present
+    if(this.underlined) {
+      ctx._context.strokeStyle = this.textColor;
+      const lineWidth = ctx.measureText(this.content).width;
+      const start = pointOf(startPoint.x, startPoint.y + padding);
+      const end = pointOf(startPoint.x + lineWidth, start.y);
+      ctx.strokeLineBetween(start, end);
+    }
   }
 
   /**
@@ -216,7 +229,7 @@ export class Cell implements CellConfig {
    * @private
    */
   private _formatFontString(): string {
-    return `${ this.bold ? 'bold' : '' } ${ this.fontSize }px ${ this.fontName } ${ this.italic ? 'italic' : '' }`;
+    return `${ this.bold ? 'bold' : '' } ${ this.italic ? 'italic' : '' } ${ this.fontSize || 13 }px ${ this.fontName }`;
   }
 
   /**
