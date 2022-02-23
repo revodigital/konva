@@ -21,8 +21,6 @@ import { Matrix2D }           from '../common/Matrix2D';
 import { PointRectangle2D }   from '../common/PointRectangle2D';
 
 export interface TableConfig extends ShapeConfig {
-  externalBorder?: BorderConfig;
-  internalBorder?: BorderConfig;
   cells?: Matrix2D<CellConfig>;
 }
 
@@ -35,25 +33,15 @@ export class Table extends Shape<TableConfig> {
    */
   cells: GetSet<Matrix2D<CellConfig>, this>;
 
-  /**
-   * Configuration for the internal border of this table
-   */
-  internalBorder: GetSet<BorderConfig, this>;
-
-  /**
-   * Configuration for the external border of this table
-   */
-  externalBorder: GetSet<BorderConfig, this>;
-
   private _sceneFunc(context: SceneContext) {
+    // Render content
+    this._renderContent(context);
+
     // Draw background
     context.beginPath();
     context.rect(0, 0, this.width(), this.height());
     context.fillStrokeShape(this);
     context.closePath();
-
-    // Render content
-    this._renderContent(context);
   }
 
   private _hitFunc(context) {
@@ -101,18 +89,6 @@ export class Table extends Shape<TableConfig> {
     });
   }
 }
-
-/**
- * Get / set table internal border configuration
- */
-Factory.addGetterSetter<BorderConfig>(Table,
-  'internalBorder');
-
-/**
- * Get / set external border configuration
- */
-Factory.addGetterSetter<BorderConfig>(Table,
-  'externalBorder');
 
 /**
  * Get / set table cells
