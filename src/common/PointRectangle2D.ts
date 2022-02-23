@@ -95,6 +95,22 @@ export class PointRectangle2D implements IPointrectangle {
   }
 
   /**
+   * Constructs a new point rectangle from a starting point
+   * @param start
+   * @param width
+   * @param height
+   */
+  static fromStartPoint(start: Point2D, width: number, height: number): PointRectangle2D {
+    let rect = new PointRectangle2D();
+    rect.topLeft = start;
+    rect.topRight = new Point2D(width + start.x, start.y);
+    rect.bottomLeft = new Point2D(start.x, height + start.y);
+    rect.bottomRight = new Point2D(width + start.x, height + start.y);
+
+    return rect;
+  }
+
+  /**
    * Calculates the center coordinates starting from the edges appliying an offset
    */
   getCenterWithOffset(offsetX: number, offsetY: number): Point2D {
