@@ -13,11 +13,19 @@ import { Table, TableConfig } from '../shapes/Table';
 import { Builder }            from './Builder';
 import { Matrix2D }           from '../common/Matrix2D';
 import { CellConfig }         from '../shapes/cell';
-import { Row }                from './Row';
+import { RowBuilder }         from './RowBuilder';
 import { Verse }              from '../shapes/Verse';
+import { ColumnBuilder }      from './ColumnBuilder';
 
 export interface AddRowConfig {
-  row: Row;
+  row: RowBuilder;
+  index?: number;
+  verse?: Verse;
+  include?: boolean;
+}
+
+export interface AddColumnConfig {
+  column: ColumnBuilder;
   index?: number;
   verse?: Verse;
   include?: boolean;
@@ -84,9 +92,9 @@ export class TableBuilder implements Builder<Table> {
     const include = options.include || true;
 
     // Insert the row
-    if (!options.index) this.cells.pushRow(options.row.toCells());
+    if (!options.index) this.cells.pushRow(options.row.build());
     else
-      this.cells.insertRow(options.row.toCells(), options.index, options.verse);
+      this.cells.insertRow(options.row.build(), options.index, options.verse);
 
     if (!include) {
       const addHeight = this.getHeight() * (100 / options.row.getHeight());
@@ -109,48 +117,26 @@ export class TableBuilder implements Builder<Table> {
    * @param index The column index
    */
   public existsColumnWithIndex(index: number): boolean {
-    return (index >= 0 && index < this.cells[0].length && this.cells[0][index] !== undefined);
+    return this.cells.hasColumnAt(index);
   }
 
   /**
    * Adds a column to the table
-   * @param col The column to add
-   * @param index The starting index of this operation
-   * @param verse The adding verse, just as addRow
-   * @param data Optional array of data string to set in rows
-   * @param include Indicates if the new column should increase the width of this table
+   *
+   * @param config Advanced configuration for adding to this
+   * builder.
    * to ensure it is included into it
    */
-  // public addColumn(col: Column, index: number, verse: Verse, include?: boolean, data?: string[]): void {
-  //   if (!this.existsColumnWithIndex(index)) throw new Error(
-  //     'Invalid column index');
-  //
-  //   this.header(insertToArray<Column>(this.header(), col, index, verse));
-  //
-  //   let i = 0;
-  //
-  //   let dat = data || [];
-  //
-  //   // Insert empty row values
-  //   for (let r of this.rows()) {
-  //     r.data = insertToArray<string>(r.data, dat[i] || '', index, verse);
-  //     i++;
-  //   }
-  //
-  //   if (include === true) {
-  //     const column = new ColumnLayout(col.width);
-  //     let addWidth: number;
-  //
-  //     if (column.widthIsAuto())
-  //       addWidth = this.width() * (ColLayoutGroup.fromRawConfiguration(
-  //         this.header()).getAutoColPercentage() / 100);
-  //     else {
-  //       addWidth = this.width() * ((column.width as number) / 100);
-  //     }
-  //
-  //     this.width(this.width() + addWidth);
-  //   }
-  // }
+  public addColumn(config: AddColumnConfig): void {
+    const include = config.include;
+
+    if (!config.index) this.cells.pushColumn(config.column.build());
+
+    if (!include) {
+      const addWidth = this.getWidth() * (100 / config.column.getWidth());
+      this.setWidth(this.getWidth() + addWidth);
+    }
+  }
 
   /**
    * Clears the contents of an entire row
@@ -160,6 +146,26 @@ export class TableBuilder implements Builder<Table> {
     if (!this.existsRowWithIndex(index)) return;
 
     this.cells[index].forEach(it => it.content = '');
+  }
+
+  /**
+   * Returns a specific row of this builder
+   * @param index Index to extract from
+   */
+  getRow(index: number): RowBuilder | undefined {
+    if (!this.existsRowWithIndex(index)) return undefined;
+
+    return new RowBuilder(this.cells.getRow(index));
+  }
+
+  /**
+   * Returns a column from its index
+   * @param index
+   */
+  getColumn(index: number): ColumnBuilder | undefined {
+    if (!this.existsColumnWithIndex(index)) return undefined;
+
+    return new ColumnBuilder(this.cells.getColumn(index));
   }
 
   /**

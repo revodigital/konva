@@ -1,0 +1,219 @@
+/*
+ * Copyright (c) 2022. Revo Digital
+ * ---
+ * Author: gabriele
+ * File: CellCollectionBuilder.ts
+ * Project: complex-shapes-dev
+ * Committed last: 2022/2/25 @ 1941
+ * ---
+ * Description:
+ */
+
+
+import { CellConfig } from '../shapes/cell';
+import { Builder }    from './Builder';
+
+export abstract class CellCollectionBuilder implements Builder<CellConfig[]> {
+
+  cells: CellConfig[];
+
+  constructor(cells: CellConfig[]) {
+    this.cells = cells;
+  }
+
+  /**
+   * Sets the width of all the cells in this collection
+   */
+  setWidth(val: number): this {
+    if (val < 0 || val >= 100) return this;
+
+    this.cells.forEach(it => {
+      it.width = val;
+    });
+
+    return this;
+  }
+
+  /**
+   * Returns the height of this row
+   */
+  getHeight(): number {
+    return this.cells[0]?.height || 0;
+  }
+
+  /**
+   * Returns the width of this column
+   */
+  getWidth(): number {
+    return this.cells[0]?.width || 0;
+  }
+
+  /**
+   * Sets the height of all the cells of this collection.
+   * All the cells will assume this height in percentage
+   * @param val Height in percentage
+   */
+  setHeight(val: number): this {
+    if (val < 0 || val >= 100) return this;
+
+    this.cells.forEach(it => {
+      it.height = val;
+    });
+
+    return this;
+  }
+
+  /**
+   * Checks if this collection has a cell at the given index
+   * @param index
+   */
+  hasCellAtIndex(index: number): boolean {
+    return index >= 0 && index < this.cells.length;
+  }
+
+  /**
+   * Populates the contents of this collection
+   * @param data
+   */
+  populate(data: string[]): this {
+    let x = 0;
+    this.cells.forEach(it => {
+      if (data[x])
+        it.content = data[x];
+      x++;
+    });
+
+    return this;
+  }
+
+  /**
+   * Populates this collection using async data parser
+   * @param getter Getter to call for each cell
+   */
+  // async populateEachAsync(getter: (cell: CellConfig, index: number) => Promise<string>): Promise<this> {
+  //   let x = 0;
+  //   for (const it of this.cells) {
+  //     it.content = await getter(it, x);
+  //     x++;
+  //   }
+  //
+  //   return this;
+  // }
+
+  /**
+   * Populates eanch cell calling a data getter
+   * @param getter
+   */
+  populateEach(getter: (cell: CellConfig, index: number) => string): this {
+    let x = 0;
+    for (const it of this.cells) {
+      it.content = getter(it, x);
+      x++;
+    }
+
+    return this;
+  }
+
+  /**
+   * Sets the background of this collection
+   * @param color
+   */
+  setBackground(color: string): void {
+    this.cells.forEach(it => {
+      it.fill = color;
+    });
+  }
+
+  /**
+   * Adds a new cell into this collection
+   * @param cell
+   */
+  addCell(cell: CellConfig): this {
+    this.cells.push(cell);
+    return this;
+  }
+
+  /**
+   * Adds multiple cells to this collection
+   * @param cells
+   */
+  addCells(cells: CellConfig[]): this {
+    this.cells.push(...cells);
+
+    return this;
+  }
+
+  /**
+   * Configure a specific cell
+   * @param index Index to configure
+   * @param config Configuration to apply
+   */
+  set(index: number, config: Partial<CellConfig>): this {
+    if (!this.hasCellAtIndex(index)) return this;
+
+    Object.assign(this.cells[index], config);
+    return this;
+  }
+
+  /**
+   * Sets this configuration to each cell of this collection
+   * @param config
+   */
+  setAll(config: Partial<CellConfig>): this {
+    this.cells.forEach(
+      it => {
+        Object.assign(it, config);
+      }
+    );
+
+    return this;
+  }
+
+  /**
+   * Configure the first cell of this collection
+   * @param config
+   */
+  setFirst(config: Partial<CellConfig>): void {
+    Object.assign(this.cells[0], config);
+  }
+
+  /**
+   * Clones this collection builder
+   */
+  abstract clone(): CellCollectionBuilder;
+
+  /**
+   * Sets only the configuration of this cells, specified by index
+   * @param cellIndexes Indexes to apply configuration to
+   * @param config Configuration to apply
+   */
+  setOnly(cellIndexes: number[], config: Partial<CellConfig>): this {
+    let index = 0;
+
+    this.cells.forEach(
+      it => {
+        if (cellIndexes.includes(index)) Object.assign(it, config);
+        index++;
+      }
+    );
+
+    return this;
+  }
+
+  getCellCount(): number {
+    return this.cells.length;
+  }
+
+  /**
+   * Configure the last cell of this collection
+   * @param config
+   */
+  setLast(config: Partial<CellConfig>): void {
+    Object.assign(this.cells[this.cells.length - 1], config);
+  }
+
+  /**
+   * Build this object
+   */
+  abstract build(): CellConfig[];
+}

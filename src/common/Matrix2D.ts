@@ -76,6 +76,13 @@ export class Matrix2D<T> {
   }
 
   /**
+   * Checks if there is a column with the given index
+   */
+  public hasColumnAt(index: number): boolean {
+    return index >= 0 && index < this.getColumnsCount() && this.getColumn(index) !== undefined;
+  }
+
+  /**
    * Counts the rows where this predicate is true
    * @param predicate
    */
