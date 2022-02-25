@@ -69,12 +69,15 @@ export class Row {
    * Populates the contents of this row
    * @param data
    */
-  populate(data: string[]): void {
+  populate(data: string[]): this {
     let x = 0;
     this.cells.forEach(it => {
-      it.content = data[x];
+      if (data[x])
+        it.content = data[x];
       x++;
     });
+
+    return this;
   }
 
   /**
@@ -162,7 +165,7 @@ export class Row {
       if (it.percentage <= 0 || it.percentage > 100) return this;
       space += it.percentage;
 
-      if(space > 100) return this;
+      if (space > 100) return this;
     }
 
 
@@ -208,6 +211,21 @@ export class Row {
   }
 
   /**
+   * Creates a new row with a given number of cells with the same configuration
+   * @param num Number of cells
+   * @param config Configuration to apply to all of them
+   */
+  static withCells(num: number, config: Partial<CellConfig>): Row {
+    let cells = [];
+
+    for (let i = 0; i < num; i++) cells.push({
+      ...config
+    });
+
+    return new Row(cells);
+  }
+
+  /**
    * Calculates a new width to make all cells fit into the specified total
    * percentage
    * @param totalPerc Percentage of space to use
@@ -215,7 +233,7 @@ export class Row {
   fitWidth(totalPerc?: number): this {
     const total = totalPerc || 100;
 
-    const part = Math.round(total / this.getCellCount());
+    const part = total / this.getCellCount();
 
     return this.setAll({
       width: part
