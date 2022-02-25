@@ -81,6 +81,34 @@ export class Row {
   }
 
   /**
+   * Populates this row using async data parser
+   * @param getter Getter to call for each cell
+   */
+  async populateEachAsync(getter: (cell: CellConfig, index: number) => Promise<string>): Promise<this> {
+    let x = 0;
+    for (const it of this.cells) {
+      it.content = await getter(it, x);
+      x++;
+    }
+
+    return this;
+  }
+
+  /**
+   * Populates eanch cell calling a data getter
+   * @param getter
+   */
+  populateEach(getter: (cell: CellConfig, index: number) => string): this {
+    let x = 0;
+    for (const it of this.cells) {
+      it.content = getter(it, x);
+      x++;
+    }
+
+    return this;
+  }
+
+  /**
    * Sets the background of this row
    * @param color
    */
