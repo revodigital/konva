@@ -81,8 +81,6 @@ export class TableBuilder implements Builder<Table> {
    * @param options Options to configure this method
    */
   public addRow(options: AddRowConfig): this {
-    if (options.index && !this.existsRowWithIndex(options.index)) return;
-
     const include = options.include || true;
 
     // Insert the row
