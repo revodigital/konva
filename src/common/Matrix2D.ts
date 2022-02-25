@@ -10,6 +10,7 @@
  */
 
 import { Point2D } from './Point2D';
+import { Verse }   from '../shapes/Verse';
 
 export class MatrixIndex extends Point2D {}
 
@@ -20,7 +21,7 @@ export class Matrix2D<T> {
   private data: T[][];
 
   constructor(data?: T[][]) {
-    if (data) this.data = data;
+    this.data = data || [];
   }
 
   /**
@@ -80,8 +81,8 @@ export class Matrix2D<T> {
    */
   public countRowsWhere(predicate: (it: T[]) => boolean): number {
     let i = 0;
-    for(const r of this.data)
-      if(predicate(r)) i++;
+    for (const r of this.data)
+      if (predicate(r)) i++;
 
     return i;
   }
@@ -176,5 +177,62 @@ export class Matrix2D<T> {
 
   public length(): number {
     return this.data.length;
+  }
+
+  /**
+   * Sets the content of a row
+   * @param index Row index
+   * @param value Value to set
+   */
+  public setRow(index: number, value: T[]) {
+    if (index >= 0 && index < this.data.length)
+      this.data[index] = value;
+  }
+
+  /**
+   * Inserts an element into a matrix specificating the position, the shifting verse and the object to add
+   * @param object
+   * @param startIndex
+   * @param verse
+   */
+  insertRow(object: T[], startIndex: number, verse: Verse) {
+    // Check errors
+    if (startIndex < 0 || startIndex >= this.data.length) return;
+
+    let a = this.data;
+
+    // Simple push
+    if (startIndex === (a.length - 1) && verse === Verse.After) {
+      a.push(object);
+      return a;
+    }
+
+    if (startIndex === 0 && verse === Verse.Before) {
+      const temp = a;
+      a = [object];
+      a.push(...temp);
+      return a;
+    }
+
+    const temp_after = a.slice(startIndex + 1);
+    const temp_before = a.slice(0, startIndex);
+    const currItem = a[startIndex];
+
+    switch (verse) {
+      case Verse.After:
+        a = [...temp_before];
+        a.push(currItem);
+        a.push(object);
+        a.push(...temp_after);
+        break;
+      case Verse.Before:
+        a = [...temp_before];
+        a.push(object);
+        a.push(currItem);
+        a.push(...temp_after);
+        break;
+    }
+
+    this.data = a;
   }
 }

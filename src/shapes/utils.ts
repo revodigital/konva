@@ -103,7 +103,7 @@ export const eventAddsText = (e: KeyboardEvent, textArea: HTMLTextAreaElement): 
 
 export const eventIsPaste = (e: KeyboardEvent): boolean => {
   return e.key === 'v' && e.ctrlKey === true;
-}
+};
 
 export const eventRemovesText = (e: KeyboardEvent, textArea: HTMLTextAreaElement): boolean => {
   return e.key === 'Delete' || e.key === 'Backspace' || textArea.selectionStart !== textArea.selectionEnd;
@@ -162,4 +162,12 @@ export const pixel = (val: number): string => {
   if (val >= 0)
     return `${ val }px`;
   return '0px';
+};
+
+export const cloneArray = <T>(array: T[]): T[] => {
+  let arr = [];
+
+  for(const t of array) arr.push({...t});
+
+  return arr;
 };

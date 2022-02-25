@@ -36,6 +36,11 @@ export interface CellConfig extends ITextConfiguration {
   height?: number;
 }
 
+export interface CellSize {
+  percentage: number;
+  index: number;
+}
+
 /**
  * Provides a low-level api for rendering table cells. After you specify a rectangle
  * containing all the points of the cell, you can add a configuration to the cell.

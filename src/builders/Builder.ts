@@ -17,10 +17,4 @@ export interface Builder<T> {
    * Contructs this object
    */
   build(): T;
-
-  /**
-   * Reads informations from an already existing object
-   * @param initial
-   */
-  attachTo(initial: T): void;
 }

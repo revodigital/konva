@@ -163,6 +163,8 @@ declare namespace Pamela {
   export const Table: typeof import('./shapes/Table').Table;
   export type Table = import('./shapes/Table').Table;
   export type TableConfig = import('./shapes/Table').TableConfig;
+  export type TableBuilder = import('./builders/TableBuilder').TableBuilder;
+  export type Row = import('./builders/Row').Row;
 
   export const Rect: typeof import('./shapes/Rect').Rect;
   export type Rect = import('./shapes/Rect').Rect;
