@@ -9,8 +9,9 @@
  * Description:
  */
 
-import { Point2D } from './Point2D';
-import { Verse }   from '../shapes/Verse';
+import { Point2D }       from './Point2D';
+import { Verse }         from '../shapes/Verse';
+import { insertToArray } from '../shapes/utils';
 
 export class MatrixIndex extends Point2D {}
 
@@ -253,5 +254,15 @@ export class Matrix2D<T> {
     }
 
     this.data = a;
+  }
+
+  insertColumn(object: T[], startIndex: number, verse: Verse) {
+    let i = 0;
+    console.log("initial data: ", this.data);
+
+    for (let c = 0; c < this.getRowsCount(); c++) {
+      this.data[c] = insertToArray(this.data[c], object[i], startIndex, verse);
+      i++;
+    }
   }
 }

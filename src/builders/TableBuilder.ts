@@ -129,6 +129,7 @@ export class TableBuilder implements Builder<Table> {
    */
   public addColumn(config: AddColumnConfig): this {
     const include = config.include || true;
+    console.log('Add');
 
     if (!config.column.hasWidth()) {
       // We need to give it a width
@@ -151,7 +152,15 @@ export class TableBuilder implements Builder<Table> {
       config.column.setAutoHeight();
     }
 
-    if (!config.index) this.cells.pushColumn(config.column.build());
+    if (config.index === undefined) {
+      this.cells.pushColumn(config.column.build());
+      console.log('Push');
+    } else if (config.index !== undefined) {
+      console.log('Insert');
+      this.cells.insertColumn(config.column.build(),
+        config.index,
+        config.verse || Verse.After);
+    }
 
     if (!include) {
       const addWidth = this.getWidth() * (100 / config.column.getWidth());

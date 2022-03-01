@@ -88,7 +88,6 @@ export class ColumnBuilder extends CellCollectionBuilder {
     return new ColumnBuilder(cells);
   }
 
-
   /**
    * Clones this row into another object and returns it
    */
@@ -97,6 +96,7 @@ export class ColumnBuilder extends CellCollectionBuilder {
   }
 
   build(): CellConfig[] {
-    return this.cells;
+    this.applyDefaults();
+    return this.cells.filter(it => it !== undefined);
   }
 }

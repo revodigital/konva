@@ -72,6 +72,9 @@ export class Table extends Shape<TableConfig> {
       let offsetX = 0;
 
       it.forEach(cell => {
+        // Skip invalid cells
+        if(!cell) return;
+
         const topLeft = startingPoint.translated({
           x: offsetX,
           y: offsetY

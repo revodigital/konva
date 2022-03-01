@@ -12,6 +12,10 @@
 
 import { CellConfig } from '../shapes/cell';
 import { Builder }    from './Builder';
+import {
+  HorizontalAlignment,
+  VerticalAlignment
+}                     from '../configuration/Alignment';
 
 export abstract class CellCollectionBuilder implements Builder<CellConfig[]> {
 
@@ -356,4 +360,16 @@ export abstract class CellCollectionBuilder implements Builder<CellConfig[]> {
    * Build this object
    */
   abstract build(): CellConfig[];
+
+  /**
+   * Applies all the default values to all the cells
+   */
+  applyDefaults(): void {
+    this.cells.forEach(it => {
+      if (!it.textAlign) it.textAlign = HorizontalAlignment.Center;
+      if (!it.verticalAlign) it.verticalAlign = VerticalAlignment.Center;
+      if (!it.fill) it.fill = 'white';
+      if (!it.textColor) it.textColor = 'black';
+    });
+  }
 }

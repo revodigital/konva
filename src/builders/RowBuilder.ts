@@ -99,6 +99,7 @@ export class RowBuilder extends CellCollectionBuilder {
   }
 
   build(): CellConfig[] {
-    return this.cells;
+    this.applyDefaults();
+    return this.cells.filter(it => it !== undefined);
   }
 }
