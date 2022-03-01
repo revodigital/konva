@@ -81,6 +81,22 @@ export class TableBuilder implements Builder<Table> {
   }
 
   /**
+   * Sets the header of this table
+   * @param header
+   */
+  withHeader(header: RowBuilder): this {
+    if (!this.cells) this.cells = new Matrix2D([header.build()]);
+
+    if (this.cells[0]) this.cells[0] = header.build();
+    else this.cells.pushRow(header.build());
+
+    if(header.hasAutoWidth()) header.fitWidth();
+
+    this.adaptVSpace();
+    return this;
+  }
+
+  /**
    * Adds a row to the table, with advanced parameters.
    *
    * @param options Options to configure this method
@@ -91,7 +107,7 @@ export class TableBuilder implements Builder<Table> {
     if (!options.row.hasHeight()) {
       // We need to give it a width
       // Set it to auto
-      options.row.setAutoHeight();
+      options.row.autoHeight();
       // Calculate new auto coefficent
       const autoRows = this.getAutoRowsCount() + 1;
 
@@ -105,8 +121,8 @@ export class TableBuilder implements Builder<Table> {
     }
 
     if (!options.row.hasWidth()) {
-      console.log("Adapt width");
-      options.row.setAutoWidth();
+      console.log('Adapt width');
+      options.row.autoWidth();
       options.row.fitWidth();
     }
 
@@ -156,7 +172,7 @@ export class TableBuilder implements Builder<Table> {
     if (!config.column.hasWidth()) {
       // We need to give it a width
       // Set it to auto
-      config.column.setAutoWidth();
+      config.column.autoWidth();
       // Calculate new auto coefficent
       const autoCols = this.getAutoColCount() + 1;
 
@@ -171,7 +187,7 @@ export class TableBuilder implements Builder<Table> {
 
     if (!config.column.hasHeight()) {
       config.column.setHeight(100 / config.column.getCellCount());
-      config.column.setAutoHeight();
+      config.column.autoHeight();
     }
 
     if (config.index === undefined) {

@@ -30,6 +30,7 @@ export class RowBuilder extends CellCollectionBuilder {
   fitWidth(totalPerc?: number): this {
     const total = this.getFreeWidth();
 
+    console.log(total);
     const part = total / this.getAutoWidthCellsCount();
     console.log("Part is ", part);
 

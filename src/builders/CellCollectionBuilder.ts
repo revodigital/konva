@@ -97,7 +97,7 @@ export abstract class CellCollectionBuilder implements Builder<CellConfig[]> {
   /**
    * Sets each cell to auto-width
    */
-  setAutoWidth(): this {
+  autoWidth(): this {
     this.cells.forEach(it => {
       it.autoWidth = true;
     });
@@ -156,7 +156,7 @@ export abstract class CellCollectionBuilder implements Builder<CellConfig[]> {
   /**
    * Sets each cell to auto-height
    */
-  setAutoHeight(): this {
+  autoHeight(): this {
     this.cells.forEach(it => {
       it.autoHeight = true;
     });
