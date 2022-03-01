@@ -152,7 +152,6 @@ export abstract class CellCollectionBuilder implements Builder<CellConfig[]> {
     });
   }
 
-
   /**
    * Sets each cell to auto-height
    */

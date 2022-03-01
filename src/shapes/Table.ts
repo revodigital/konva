@@ -19,6 +19,7 @@ import { Cell, CellConfig }   from './cell';
 import { pointOf }            from '../common/Point2D';
 import { Matrix2D }           from '../common/Matrix2D';
 import { PointRectangle2D }   from '../common/PointRectangle2D';
+import { TableBuilder }       from '../builders/TableBuilder';
 
 export interface TableConfig extends ShapeConfig {
   cells?: Matrix2D<CellConfig>;
@@ -32,6 +33,12 @@ export class Table extends Shape<TableConfig> {
    * Contains all the cells of this Table
    */
   cells: GetSet<Matrix2D<CellConfig>, this>;
+  _config: TableConfig;
+
+  constructor(config: TableConfig) {
+    super(config);
+    this._config = config;
+  }
 
   private _sceneFunc(context: SceneContext) {
     // Render content
@@ -73,7 +80,7 @@ export class Table extends Shape<TableConfig> {
 
       it.forEach(cell => {
         // Skip invalid cells
-        if(!cell) return;
+        if (!cell) return;
 
         const topLeft = startingPoint.translated({
           x: offsetX,
@@ -90,6 +97,24 @@ export class Table extends Shape<TableConfig> {
 
       offsetY += (it[0].height / 100) * height;
     });
+  }
+
+  /**
+   * Constructs a builder for this table
+   */
+  toBuilder(): TableBuilder {
+    return TableBuilder.fromTable(this);
+  }
+
+  /**
+   * Returns the configuration of this table without cells
+   * data
+   */
+  toConfig(): TableConfig {
+    let c = this._config;
+    delete c.cells;
+
+    return c;
   }
 }
 

@@ -90,7 +90,7 @@ export class TableBuilder implements Builder<Table> {
     if (this.cells[0]) this.cells[0] = header.build();
     else this.cells.pushRow(header.build());
 
-    if(header.hasAutoWidth()) header.fitWidth();
+    if (header.hasAutoWidth()) header.fitWidth();
 
     this.adaptVSpace();
     return this;
@@ -423,6 +423,15 @@ export class TableBuilder implements Builder<Table> {
   }
 
   /**
+   * Sets the cells of this table
+   * @param cells
+   */
+  setCells(cells: Matrix2D<CellConfig>): this {
+    this.cells = cells;
+    return this;
+  }
+
+  /**
    * Returns a specific row of this builder
    * @param index Index to extract from
    */
@@ -743,6 +752,17 @@ export class TableBuilder implements Builder<Table> {
   //   this.removeRow(this.rows().length - 1, resize);
   //   return temp;
   // }
+
+  /**
+   * Creates a builder to edit a specific table
+   * @param table To edit
+   */
+  static fromTable(table: Table): TableBuilder {
+    const b = new TableBuilder(table.toConfig());
+    b.setCells(table.cells());
+
+    return b;
+  }
 
   build(): Table {
     return new Table({
