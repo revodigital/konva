@@ -68,11 +68,13 @@ export class Matrix2D<T> {
    * @param column
    */
   public pushColumn(column: T[]): void {
-    let index = 0;
-    this.data.forEach(it => {
-      it.push(column[index]);
-      index++;
-    });
+    let c = 0;
+
+    for (let i = 0; i < column.length; i++) {
+      if (!this.data[i]) this.data[i] = [];
+      this.data[i].push(column[c]);
+      c++;
+    }
   }
 
   /**
@@ -114,6 +116,8 @@ export class Matrix2D<T> {
    * Returns the number of columns into this table
    */
   public getColumnsCount(): number {
+    if (!this.data || !this.data[0]) return 0;
+
     return this.data[0].length || 0;
   }
 
@@ -134,9 +138,17 @@ export class Matrix2D<T> {
   public getColumn(index: number): T[] | undefined {
     if (!this.data) return undefined;
 
-    return this.data.map(it => {
-      return it[0];
-    }) || [];
+    let i = 0;
+    let data = [];
+
+    if (!this.data[i]) return undefined;
+
+    while (this.data[i] && this.data[i][index]) {
+      data.push(this.data[i][index]);
+      i++;
+    }
+
+    return data;
   }
 
   /**

@@ -47,7 +47,6 @@ export class TableBuilder implements Builder<Table> {
   constructor(initial?: Partial<TableConfig>) {
     this.options = initial || {};
     this.cells = new Matrix2D<CellConfig>();
-    this.autoRows = 0;
   }
 
   setWidth(val: number): this {
@@ -126,9 +125,31 @@ export class TableBuilder implements Builder<Table> {
    * @param config Advanced configuration for adding to this
    * builder.
    * to ensure it is included into it
+   * TODO: Implement indexing prolicy
    */
-  public addColumn(config: AddColumnConfig): void {
-    const include = config.include;
+  public addColumn(config: AddColumnConfig): this {
+    const include = config.include || true;
+
+    if (!config.column.hasWidth()) {
+      // We need to give it a width
+      // Set it to auto
+      config.column.setAutoWidth();
+      // Calculate new auto coefficent
+      const autoCols = this.getAutoColCount() + 1;
+
+      const k = this.getHFreeSpace() / autoCols;
+      config.column.setWidth(k);
+
+      // Change width of all other auto columns
+      this.setToAllAutoCol({
+        width: k,
+      });
+    }
+
+    if (!config.column.hasHeight()) {
+      config.column.setHeight(100 / config.column.getCellCount());
+      config.column.setAutoHeight();
+    }
 
     if (!config.index) this.cells.pushColumn(config.column.build());
 
@@ -136,6 +157,133 @@ export class TableBuilder implements Builder<Table> {
       const addWidth = this.getWidth() * (100 / config.column.getWidth());
       this.setWidth(this.getWidth() + addWidth);
     }
+
+    return this;
+  }
+
+  /**
+   * Returns the number of rows with auto-height
+   */
+  getAutoRowsCount(): number {
+    if (!this.cells) return 0;
+    let c = 0;
+
+    this.cells.forEachRow(it => {
+      const builder = new RowBuilder(it);
+      if (builder.hasAutoHeight()) c++;
+    });
+
+    return c;
+  }
+
+  /**
+   * Returns the number of columns with auto-width
+   */
+  getAutoColCount(): number {
+    if (!this.cells) return 0;
+    let c = 0;
+
+    this.cells.forEachColumn(it => {
+      const builder = new ColumnBuilder(it);
+      if (builder.hasAutoWidth()) c++;
+    });
+
+    return c;
+  }
+
+  /**
+   * Returns the number of column in this table
+   */
+  getColumnsCount(): number {
+    if (!this.cells) return 0;
+
+    return this.cells.getColumnsCount();
+  }
+
+  /**
+   * Returns the number of columns with a specific width
+   * (not auto)
+   */
+  getOVColCount(): number {
+    return this.getColumnsCount() - this.getAutoColCount();
+  }
+
+  forEachOVCol(iterator: (it: ColumnBuilder) => void): this {
+    if (!this.cells) return this;
+
+    this.cells.forEachColumn(it => {
+      const b = new ColumnBuilder(it);
+      if (b.hasOVWidth()) iterator(b);
+    });
+
+    return this;
+  }
+
+  /**
+   * Returns the horizontal space in percentage not used by
+   * the overwritten columns (with custom width)
+   */
+  getHFreeSpace(): number {
+    let c = 0;
+
+    this.forEachOVCol(it => {
+      if (it.getWidth() > 0 && it.getWidth() <= 100)
+        c += it.getWidth();
+    });
+
+    return Math.abs(100 - c);
+  }
+
+  /**
+   * Iterate throught every auto column
+   * @param iterator
+   */
+  forEachAutoCol(iterator: (it: ColumnBuilder) => void): this {
+    if (!this.cells) return this;
+
+    this.cells.forEachColumn(it => {
+      const builder = new ColumnBuilder(it);
+
+      if (builder.hasAutoWidth()) iterator(builder);
+    });
+
+    return this;
+  }
+
+  /**
+   * For each auto row use this iterator
+   * @param iterator
+   */
+  forEachAutoRow(iterator: (it: RowBuilder) => void): this {
+    if (!this.cells) return this;
+
+    this.cells.forEachRow(it => {
+      const builder = new RowBuilder(it);
+
+      if (builder.hasAutoHeight()) iterator(builder);
+    });
+
+    return this;
+  }
+
+  /**
+   * Set a configuration to all the auto rows
+   * @param config
+   */
+  setToAllAutoRow(config: Partial<CellConfig>): this {
+    this.forEachAutoRow(it => {
+      it.setAll(config);
+    });
+
+    return this;
+  }
+
+  setToAllAutoCol(config: Partial<CellConfig>): this {
+    this.forEachAutoCol(it => {
+      it.setAll(config);
+    });
+
+    return this;
   }
 
   /**
@@ -159,13 +307,67 @@ export class TableBuilder implements Builder<Table> {
   }
 
   /**
-   * Returns a column from its index
-   * @param index
+   * Returns a column from its index or undefined if not found
+   * @param index Index to search from
    */
   getColumn(index: number): ColumnBuilder | undefined {
     if (!this.existsColumnWithIndex(index)) return undefined;
 
     return new ColumnBuilder(this.cells.getColumn(index));
+  }
+
+  /**
+   * Returns the first column of this Table
+   */
+  firstColumn(): ColumnBuilder | undefined {
+    return new ColumnBuilder(this.cells.firstColumn());
+  }
+
+  /**
+   * Returns the first row of this table
+   */
+  firstRow(): RowBuilder | undefined {
+    return new RowBuilder(this.cells.firstRow());
+  }
+
+  /**
+   * Returns the last row of this table
+   */
+  lastRow(): RowBuilder | undefined {
+    return new RowBuilder(this.cells.lastRow());
+  }
+
+  /**
+   * Returns the last column of this table
+   */
+  lastColumn(): ColumnBuilder | undefined {
+    return new ColumnBuilder(this.cells.lastColumn());
+  }
+
+  /**
+   * Returns the pure matrix of cells that represent this table
+   */
+  getMatrix(): Matrix2D<CellConfig> {
+    return this.cells;
+  }
+
+  /**
+   * Returns the number of rows in this table. If it is empty
+   * it returns 0
+   */
+  getRowsCount(): number {
+    if (!this.cells) return 0;
+
+    return this.cells.getRowsCount();
+  }
+
+  /**
+   * Get the header of this table.
+   * If not defined, returns *undefined*
+   */
+  getHeader(): RowBuilder | undefined {
+    if (this.getRowsCount() > 0) return new RowBuilder(this.cells.firstRow());
+    return undefined;
   }
 
   /**
@@ -418,17 +620,6 @@ export class TableBuilder implements Builder<Table> {
   //   const temp = this.rows()[this.rows().length - 1];
   //   this.removeRow(this.rows().length - 1, resize);
   //   return temp;
-  // }
-
-  /**
-   * Sets the row background color to transparent
-   * @param rowIndex The row index
-   */
-  // public setRowTransparent(rowIndex: number): void {
-  //   if (!this.existsRowWithIndex(rowIndex)) throw new Error('Invalid row index');
-  //
-  //   this.rows()[rowIndex].fill = 'transparent';
-  //   this.clearCache();
   // }
 
   build(): Table {

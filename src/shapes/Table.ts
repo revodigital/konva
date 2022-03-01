@@ -85,7 +85,6 @@ export class Table extends Shape<TableConfig> {
         offsetX += (cell.width / 100) * width;
       });
 
-      console.log(it[0]);
       offsetY += (it[0].height / 100) * height;
     });
   }

@@ -13,16 +13,16 @@ import { PointRectangle2D } from '../common/PointRectangle2D';
 import {
   HorizontalAlignment,
   VerticalAlignment
-}                       from '../configuration/Alignment';
+}                           from '../configuration/Alignment';
 import {
   ITextConfiguration
-}                       from '../configuration/TextConfiguration';
+}                           from '../configuration/TextConfiguration';
 import {
   applyBorderConfig,
   BorderConfig
-}                       from '../configuration/BorderOptions';
-import { SceneContext } from '../Context';
-import { pointOf }      from '../common/Point2D';
+}                           from '../configuration/BorderOptions';
+import { SceneContext }     from '../Context';
+import { pointOf }          from '../common/Point2D';
 
 export interface CellConfig extends ITextConfiguration {
   content?: string;
@@ -34,6 +34,8 @@ export interface CellConfig extends ITextConfiguration {
   topBorder?: BorderConfig;
   width?: number;
   height?: number;
+  autoWidth?: boolean;
+  autoHeight?: boolean;
 }
 
 export interface CellSize {
@@ -189,7 +191,7 @@ export class Cell implements CellConfig {
       startPoint.y);
 
     // Draw line if present
-    if(this.underlined) {
+    if (this.underlined) {
       ctx._context.strokeStyle = this.textColor;
       const lineWidth = ctx.measureText(this.content).width;
       const start = pointOf(startPoint.x, startPoint.y + padding);

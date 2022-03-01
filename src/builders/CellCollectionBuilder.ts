@@ -25,13 +25,144 @@ export abstract class CellCollectionBuilder implements Builder<CellConfig[]> {
    * Sets the width of all the cells in this collection
    */
   setWidth(val: number): this {
-    if (val < 0 || val >= 100) return this;
+    if (val < 0 || val > 100) return this;
 
     this.cells.forEach(it => {
       it.width = val;
     });
 
     return this;
+  }
+
+  /**
+   * Set a custom width to all the cells and disable
+   * auto-width mode
+   * @param val
+   */
+  customWidth(val: number): this {
+    if (val < 0 || val > 100) return this;
+
+    this.cells.forEach(it => {
+      it.width = val;
+      it.autoWidth = false;
+    });
+
+    return this;
+  }
+
+  /**
+   * Set a custom width to all the cells and disable
+   * auto-width mode
+   * @param val
+   */
+  customHeight(val: number): this {
+    if (val < 0 || val > 100) return this;
+
+    this.cells.forEach(it => {
+      it.height = val;
+      it.autoHeight = false;
+    });
+
+    return this;
+  }
+
+  /**
+   * Checks if all the cells have auto width
+   */
+  hasAutoWidth(): boolean {
+    if (!this.cells) return false;
+
+    for (const r of this.cells)
+      if (!r.autoWidth) return false;
+
+    return true;
+  }
+
+  /**
+   * Checks if all the cells have auto height
+   */
+  hasAutoHeight(): boolean {
+    if (!this.cells) return false;
+
+    for (const r of this.cells)
+      if (!r.autoHeight) return false;
+
+    return true;
+  }
+
+  /**
+   * Sets each cell to auto-width
+   */
+  setAutoWidth(): this {
+    this.cells.forEach(it => {
+      it.autoWidth = true;
+    });
+
+    return this;
+  }
+
+  /**
+   * Sets each cell to auto-height
+   */
+  setAutoHeight(): this {
+    this.cells.forEach(it => {
+      it.autoHeight = true;
+    });
+
+    return this;
+  }
+
+  /**
+   * Returns the available width in percentage or
+   * 0 if it is full
+   */
+  getAvailableWidth(): number {
+    if (!this.cells) return 100;
+
+    let used = 0;
+
+    this.cells.forEach(
+      it => {
+        if (it.width >= 0 && it.width <= 100)
+          used += it.width;
+      });
+
+    if (used < 100) return 100 - used;
+    else return 0;
+  }
+
+  /**
+   * Returns the available height in percentage or
+   * 0 if it is full
+   */
+  getAvailableHeight(): number {
+    if (!this.cells) return 100;
+
+    let used = 0;
+
+    this.cells.forEach(
+      it => {
+        if (it.height >= 0 && it.height <= 100)
+          used += it.height;
+      });
+
+    if (used < 100) return 100 - used;
+    else return 0;
+  }
+
+  /**
+   * Returns true if this collection has a width
+   */
+  hasWidth(): boolean {
+    if (!this.cells) return false;
+
+    if (this.cells[0].width) return true;
+  }
+
+  hasHeight(): boolean {
+    if (!this.cells) return false;
+
+    if (this.cells[0].height) return true;
   }
 
   /**
@@ -54,13 +185,22 @@ export abstract class CellCollectionBuilder implements Builder<CellConfig[]> {
    * @param val Height in percentage
    */
   setHeight(val: number): this {
-    if (val < 0 || val >= 100) return this;
+    if (val < 0 || val > 100) return this;
 
     this.cells.forEach(it => {
       it.height = val;
+      it.autoHeight = false;
     });
 
     return this;
+  }
+
+  hasOVWidth(): boolean {
+    return !this.hasAutoWidth();
+  }
+
+  hasOVHeight(): boolean {
+    return !this.hasAutoHeight();
   }
 
   /**
