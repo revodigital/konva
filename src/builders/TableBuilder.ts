@@ -21,14 +21,14 @@ export interface AddRowConfig {
   row: RowBuilder;
   index?: number;
   verse?: Verse;
-  include?: boolean;
+  resize?: boolean;
 }
 
 export interface AddColumnConfig {
   column: ColumnBuilder;
   index?: number;
   verse?: Verse;
-  include?: boolean;
+  resize?: boolean;
 }
 
 /**
@@ -83,22 +83,46 @@ export class TableBuilder implements Builder<Table> {
   /**
    * Adds a row to the table, with advanced parameters.
    *
-   * NOTE: This method does not handle row sizing, it should be pre-set before adding it into the table.
-   * To do so, use Row sizing methods or Column ones.
    * @param options Options to configure this method
    */
   public addRow(options: AddRowConfig): this {
-    const include = options.include || true;
+    let resize = options.resize;
+
+    if (!options.row.hasHeight()) {
+      // We need to give it a width
+      // Set it to auto
+      options.row.setAutoHeight();
+      // Calculate new auto coefficent
+      const autoRows = this.getAutoRowsCount() + 1;
+
+      const k = this.getVFreeSpace() / autoRows;
+      options.row.setHeight(k);
+
+      // Change width of all other auto columns
+      this.setToAllAutoRow({
+        height: k,
+      });
+    }
+
+    if (!options.row.hasWidth()) {
+      console.log("Adapt width");
+      options.row.setAutoWidth();
+      options.row.fitWidth();
+    }
 
     // Insert the row
     if (!options.index) this.cells.pushRow(options.row.build());
     else
-      this.cells.insertRow(options.row.build(), options.index, options.verse);
+      this.cells.insertRow(options.row.build(),
+        options.index,
+        options.verse || Verse.After);
 
-    if (!include) {
-      const addHeight = this.getHeight() * (100 / options.row.getHeight());
+    if (resize) {
+      const addHeight = this.getHeight() * (options.row.getHeight() / 100);
       this.setHeight(this.getHeight() + addHeight);
     }
+
+    this.adaptVSpace();
 
     return this;
   }
@@ -125,11 +149,9 @@ export class TableBuilder implements Builder<Table> {
    * @param config Advanced configuration for adding to this
    * builder.
    * to ensure it is included into it
-   * TODO: Implement indexing prolicy
    */
   public addColumn(config: AddColumnConfig): this {
-    const include = config.include || true;
-    console.log('Add');
+    const resize = config.resize;
 
     if (!config.column.hasWidth()) {
       // We need to give it a width
@@ -154,18 +176,50 @@ export class TableBuilder implements Builder<Table> {
 
     if (config.index === undefined) {
       this.cells.pushColumn(config.column.build());
-      console.log('Push');
-    } else if (config.index !== undefined) {
-      console.log('Insert');
+    } else {
       this.cells.insertColumn(config.column.build(),
         config.index,
         config.verse || Verse.After);
     }
 
-    if (!include) {
-      const addWidth = this.getWidth() * (100 / config.column.getWidth());
+    if (resize) {
+      const addWidth = this.getWidth() * (config.column.getWidth() / 100);
       this.setWidth(this.getWidth() + addWidth);
     }
+
+    return this;
+  }
+
+  /**
+   * Adapts the horizontal space, recalculating auto-width columns
+   */
+  adaptHSpace(): this {
+    // Calculate new auto coefficent
+    const autoCols = this.getAutoColCount();
+
+    const k = this.getHFreeSpace() / autoCols;
+
+    // Change width of all other auto columns
+    this.setToAllAutoCol({
+      width: k,
+    });
+
+    return this;
+  }
+
+  /**
+   * Adapts rows space, recalculating auto-rows height
+   */
+  adaptVSpace(): this {
+    // Calculate new auto coefficent
+    const autoRows = this.getAutoRowsCount();
+
+    const k = this.getVFreeSpace() / autoRows;
+
+    // Change width of all other auto columns
+    this.setToAllAutoRow({
+      height: k,
+    });
 
     return this;
   }
@@ -217,12 +271,34 @@ export class TableBuilder implements Builder<Table> {
     return this.getColumnsCount() - this.getAutoColCount();
   }
 
+  /**
+   * Returns the number of rows that override the auto width
+   */
+  getOVRowCount(): number {
+    return this.getRowsCount() - this.getAutoRowsCount();
+  }
+
   forEachOVCol(iterator: (it: ColumnBuilder) => void): this {
     if (!this.cells) return this;
 
     this.cells.forEachColumn(it => {
       const b = new ColumnBuilder(it);
       if (b.hasOVWidth()) iterator(b);
+    });
+
+    return this;
+  }
+
+  /**
+   * Iterates throught every override row (with custom height)
+   * @param iterator
+   */
+  forEachOVRow(iterator: (it: RowBuilder) => void): this {
+    if (!this.cells) return this;
+
+    this.cells.forEachRow(it => {
+      const b = new RowBuilder(it);
+      if (b.hasOVHeight()) iterator(b);
     });
 
     return this;
@@ -238,6 +314,21 @@ export class TableBuilder implements Builder<Table> {
     this.forEachOVCol(it => {
       if (it.getWidth() > 0 && it.getWidth() <= 100)
         c += it.getWidth();
+    });
+
+    return Math.abs(100 - c);
+  }
+
+  /**
+   * Returns the vertical space in percentage not used by
+   * the overwritten rows (with custom height)
+   */
+  getVFreeSpace(): number {
+    let c = 0;
+
+    this.forEachOVRow(it => {
+      if (it.getHeight() > 0 && it.getHeight() <= 100)
+        c += it.getHeight();
     });
 
     return Math.abs(100 - c);
@@ -306,12 +397,20 @@ export class TableBuilder implements Builder<Table> {
   }
 
   /**
+   * Recalculates auto space to fit container
+   */
+  adaptSpace(): this {
+    this.adaptHSpace();
+    this.adaptVSpace();
+
+    return this;
+  }
+
+  /**
    * Returns a specific row of this builder
    * @param index Index to extract from
    */
   getRow(index: number): RowBuilder | undefined {
-    if (!this.existsRowWithIndex(index)) return undefined;
-
     return new RowBuilder(this.cells.getRow(index));
   }
 
@@ -320,8 +419,6 @@ export class TableBuilder implements Builder<Table> {
    * @param index Index to search from
    */
   getColumn(index: number): ColumnBuilder | undefined {
-    if (!this.existsColumnWithIndex(index)) return undefined;
-
     return new ColumnBuilder(this.cells.getColumn(index));
   }
 

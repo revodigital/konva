@@ -28,11 +28,12 @@ export class RowBuilder extends CellCollectionBuilder {
    * @param totalPerc Percentage of space to use
    */
   fitWidth(totalPerc?: number): this {
-    const total = totalPerc || 100;
+    const total = this.getFreeWidth();
 
-    const part = total / this.getCellCount();
+    const part = total / this.getAutoWidthCellsCount();
+    console.log("Part is ", part);
 
-    return this.setAll({
+    return this.setAllAutoWidthCells({
       width: part
     });
   }

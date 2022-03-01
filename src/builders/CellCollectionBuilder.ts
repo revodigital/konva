@@ -106,6 +106,54 @@ export abstract class CellCollectionBuilder implements Builder<CellConfig[]> {
   }
 
   /**
+   * Returns the number of cells with an automatic width
+   */
+  getAutoWidthCellsCount(): number {
+    let c = 0;
+
+    this.forEachAutoWidthCell(it => {
+      c++;
+    });
+
+    return c;
+  }
+
+  getAutoHeightCellsCount(): number {
+    let c = 0;
+
+    this.forEachAutoHeightCell(it => {
+      c++;
+    });
+
+    return c;
+  }
+
+  forEachOVWidthCell(iterator: (cell: CellConfig) => void) {
+    this.cells.forEach(it => {
+      if (!it.autoWidth) iterator(it);
+    });
+  }
+
+  forEachOVHeightCell(iterator: (cell: CellConfig) => void) {
+    this.cells.forEach(it => {
+      if (!it.autoHeight) iterator(it);
+    });
+  }
+
+  forEachAutoWidthCell(iterator: (cell: CellConfig) => void) {
+    this.cells.forEach(it => {
+      if (it.autoWidth === true) iterator(it);
+    });
+  }
+
+  forEachAutoHeightCell(iterator: (cell: CellConfig) => void) {
+    this.cells.forEach(it => {
+      if (it.autoHeight === true) iterator(it);
+    });
+  }
+
+
+  /**
    * Sets each cell to auto-height
    */
   setAutoHeight(): this {
@@ -133,6 +181,24 @@ export abstract class CellCollectionBuilder implements Builder<CellConfig[]> {
 
     if (used < 100) return 100 - used;
     else return 0;
+  }
+
+  getFreeWidth(): number {
+    let c = 0;
+
+    this.forEachOVWidthCell(it => {
+      if (it.width > 0 && it.width <= 100) c += it.width;
+    });
+
+    return Math.abs(100 - c);
+  }
+
+  setAllAutoWidthCells(config: Partial<CellConfig>): this {
+    this.forEachAutoWidthCell(it => {
+      Object.assign(it, config);
+    });
+
+    return this;
   }
 
   /**
@@ -314,11 +380,36 @@ export abstract class CellCollectionBuilder implements Builder<CellConfig[]> {
   }
 
   /**
+   * Sets alternatively configuration a or configuration b. The first
+   * cell receives a, the second b and so on
+   * @param configA Configuration for even cells
+   * @param configB Configuration for non-even cells
+   */
+  setAlternate(configA: Partial<CellConfig>, configB?: Partial<CellConfig>): this {
+    let i = 1;
+
+    for (const o of this.cells) {
+      if (i % 2) Object.assign(o, configA);
+      else Object.assign(o, configB || {});
+
+      i++;
+    }
+
+    return this;
+  }
+
+  setStepped(step: number, config: Partial<CellConfig>): this {
+    return this;
+  }
+
+  /**
    * Configure the first cell of this collection
    * @param config
    */
-  setFirst(config: Partial<CellConfig>): void {
+  setFirst(config: Partial<CellConfig>): this {
     Object.assign(this.cells[0], config);
+
+    return this;
   }
 
   /**
