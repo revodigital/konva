@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file. This
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.8.1 (1/3/2022)
+Changes *Table* rendering method. Now each table works only with cells, without
+specifing a policy to change them. Every **Pamela.Table** now receives a
+**cells** *Matrix2D* object and draws it. 
+How can i create such matrix? We decided to create an entire *Builder* for that.
+It's an object that simplifies the process of creating and editing tables.  
+It uses the *Builder* gof pattern, so it can be instantiated and when the **build** method is called,
+it will create a complete **Pamela.Table** object for you.  
+It implements very advanced ways of customizing your table, 
+allowing also different idioms:
+* Working by columns
+* Working by rows
+* Fully functional set / get operations
+* Advanced iterators
+* Automatic size managing (using auto-width and auto-height)
+* Async table building
+
+This builder is completely un-opinionated on how you should 
+look at your table. See online documentation for better informations about it.
+
 ## 1.7.6 (12/2/2022)
 Implements *cors* customizations for *Image.fromURL*. Add capability for *Pamela.Image* to 
 work with link images, allowing persistence of images. Now, we can contruct an image specifing
