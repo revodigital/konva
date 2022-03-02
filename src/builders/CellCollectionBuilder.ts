@@ -412,6 +412,28 @@ export abstract class CellCollectionBuilder implements Builder<CellConfig[]> {
   }
 
   /**
+   * Returns the first cell of this collection
+   */
+  first(): CellConfig | undefined {
+    return this.cells[0];
+  }
+
+  /**
+   * Get a specific cell
+   * @param index
+   */
+  get(index: number): CellConfig | undefined {
+    return this.cells[index];
+  }
+
+  /**
+   * Returns the last cell of this collection
+   */
+  last(): CellConfig | undefined {
+    return this.cells[this.cells.length - 1];
+  }
+
+  /**
    * Clones this collection builder
    */
   abstract clone(): CellCollectionBuilder;

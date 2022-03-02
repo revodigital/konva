@@ -37,8 +37,6 @@ export interface AddColumnConfig {
 export class TableBuilder implements Builder<Table> {
   cells: Matrix2D<CellConfig>;
   options: Partial<TableConfig>;
-  autoRows: number;
-  columnAutoWidth: number;
 
   /**
    * Creates a new table builder starting from an initial configuration
@@ -77,6 +75,17 @@ export class TableBuilder implements Builder<Table> {
    */
   setOptions(options: Partial<TableConfig>): this {
     Object.assign(this.options, options);
+    return this;
+  }
+
+  /**
+   * Overrides the options of a table using only the
+   * specified ones
+   * @param options
+   */
+  overrideOptions(options: Partial<TableConfig>): this {
+    this.options = options;
+
     return this;
   }
 
@@ -764,6 +773,26 @@ export class TableBuilder implements Builder<Table> {
     return b;
   }
 
+  /**
+   * Build the cells of this table, excluding pure shape configuration
+   */
+  buildCells(): Matrix2D<CellConfig> {
+    return this.cells;
+  }
+
+  /**
+   * Builds the content of this table directly to a pre-existing
+   * table object. This does not transfer shape configuration (external border, width, height)
+   * but only cells data.
+   * @param table
+   */
+  buildTo(table: Table): void {
+    table.cells(this.cells);
+  }
+
+  /**
+   * Builds a new table from this builder
+   */
   build(): Table {
     return new Table({
       ...this.options,

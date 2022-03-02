@@ -25,16 +25,59 @@ import { SceneContext }     from '../Context';
 import { pointOf }          from '../common/Point2D';
 
 export interface CellConfig extends ITextConfiguration {
+  /**
+   * Cell content (data to display using text configuration)
+   */
   content?: string;
+
+  /**
+   * Cell background color
+   */
   fill?: string;
+
+  /**
+   * Cell visibility modifier (if set to false it will be hidden)
+   */
   visible?: boolean;
+
+  /**
+   * Left border configuration
+   */
   leftBorder?: BorderConfig;
+
+  /**
+   * Right border configuration
+   */
   rightBorder?: BorderConfig;
+
+  /**
+   * Bottom border configuration
+   */
   bottomBorder?: BorderConfig;
+
+  /**
+   * Top border configuration
+   */
   topBorder?: BorderConfig;
+
+  /**
+   * Cell width in percentage
+   */
   width?: number;
+
+  /**
+   * Cell height in percentage
+   */
   height?: number;
+
+  /**
+   * Only for storage purposes: if this cell with auto width?
+   */
   autoWidth?: boolean;
+
+  /**
+   * Only for storage purposes: if this cell with auto height?
+   */
   autoHeight?: boolean;
 }
 
