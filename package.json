@@ -12,6 +12,7 @@
   "typings": "./lib/index-types.d.ts",
   "type": "module",
   "scripts": {
+    "gen-diagrams": "tplant -i src/index.ts -o diagrams/diagram.puml",
     "start": "npx serve && npx cypress open",
     "doc": "npx typedoc",
     "doc-watch": "npx typedoc --watch",
