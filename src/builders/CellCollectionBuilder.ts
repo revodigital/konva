@@ -71,6 +71,14 @@ export abstract class CellCollectionBuilder implements Builder<CellConfig[]> {
   }
 
   /**
+   * Merges 2 consequent cells using their indexes
+   * @param indexA
+   * @param indexB
+   * @param useA
+   */
+  abstract mergeCells(indexA: number, indexB: number, useA: boolean);
+
+  /**
    * Checks if all the cells have auto width
    */
   hasAutoWidth(): boolean {
@@ -101,6 +109,67 @@ export abstract class CellCollectionBuilder implements Builder<CellConfig[]> {
     this.cells.forEach(it => {
       it.autoWidth = true;
     });
+
+    return this;
+  }
+
+  /**
+   * Removes a cell at the specified index
+   * @param index Cell index
+   */
+  removeCellAt(index: number): this {
+    if (!this.hasCellAtIndex(index)) return this;
+
+    this.cells.splice(index, 1);
+
+    return this;
+  }
+
+  /**
+   * Overwrites the configuration of a cell
+   * @param index Index of the cell
+   * @param config Configuration to set
+   */
+  overwrite(index: number, config: CellConfig): this {
+    if (!this.hasCellAtIndex(index)) return this;
+
+    this.cells[index] = config;
+
+    return this;
+  }
+
+  /**
+   * Returns the last index
+   */
+  lastIndex(): number {
+    const last = this.cells.length - 1;
+    return last >= 0 ? last : 0;
+  }
+
+  /**
+   * Overwrites the first cell
+   * @param config
+   */
+  overwriteFirst(config: CellConfig): this {
+    return this.overwrite(0, config);
+  }
+
+  /**
+   * Overwrites the last cell
+   * @param config
+   */
+  overwriteLast(config: CellConfig): this {
+    return this.overwrite(this.lastIndex(), config);
+  }
+
+  /**
+   * Removes every cell that fits to this predicate
+   * @param predicate When it returns true, the cell gets removed
+   */
+  removeWhere(predicate: (cell: CellConfig, index: number, cellsCount: number) => boolean): this {
+    for (let i = 0; i < this.cells.length; i++)
+      if (predicate(this.cells[i], i, this.cells.length))
+        this.cells.splice(i);
 
     return this;
   }
@@ -465,7 +534,7 @@ export abstract class CellCollectionBuilder implements Builder<CellConfig[]> {
    * @param config
    */
   setLast(config: Partial<CellConfig>): void {
-    Object.assign(this.cells[this.cells.length - 1], config);
+    Object.assign(this.cells[this.lastIndex()], config);
   }
 
   /**

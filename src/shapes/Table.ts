@@ -76,6 +76,9 @@ export class Table extends Shape<TableConfig> {
     const height = this.height();
 
     this.cells().forEachRow(it => {
+      // Skip empty lines
+      if (it.length <= 0) return;
+
       let offsetX = 0;
 
       it.forEach(cell => {
