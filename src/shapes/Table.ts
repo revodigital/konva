@@ -121,6 +121,31 @@ export class Table extends Shape<TableConfig> {
   }
 
   /**
+   * Populates the contents of a table
+   * @param content
+   * @param includesHeader
+   */
+  populateContent(content: Matrix2D<string>, includesHeader?: boolean): this {
+    const headered = !!includesHeader;
+    let rowIndex = headered ? 0 : 1;
+
+    content.forEachRow(row => {
+      let index = 0;
+
+      const r = this.cells[rowIndex];
+      if (r !== undefined)
+        r.forEach(it => {
+          it['content'] = row[index] || '';
+          index++;
+        });
+
+      rowIndex++;
+    });
+
+    return this;
+  }
+
+  /**
    * Returns an helper to work easily with the cells of this matrix.
    *
    * Your code **should not** change the cells, but only perform calculations.
