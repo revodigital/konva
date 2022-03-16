@@ -45,6 +45,10 @@ export interface ImageConfig extends ShapeConfig {
    * Type of source data content
    */
   sourcePolicy?: ImageSourcePolicy;
+
+  src?: string;
+
+  assetId?: number;
 }
 
 /**
@@ -291,6 +295,8 @@ export class Image extends Shape<ImageConfig> {
   cropHeight: GetSet<number, this>;
   sourceData: GetSet<string, this>;
   sourcePolicy: GetSet<ImageSourcePolicy, this>;
+  src: GetSet<string, this>;
+  assetId: GetSet<number, this>;
 }
 
 Image.prototype.className = 'Image';
@@ -398,3 +404,7 @@ Factory.addGetterSetter(Image, 'cropHeight', 0, getNumberValidator());
 Factory.addGetterSetter(Image, 'sourcePolicy');
 
 Factory.addGetterSetter(Image, 'sourceData');
+
+Factory.addGetterSetter(Image, 'src');
+
+Factory.addGetterSetter(Image, 'assetId');

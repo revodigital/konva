@@ -3,49 +3,95 @@
 All notable changes to this project will be documented in this file. This
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.8.2 (1/3/2022)
+
+Implements *Table*.*toBuilder* method to create a *TableBuilder* starting from
+an existing Table.
+
+## 1.8.1 (1/3/2022)
+
+Changes *Table* rendering method. Now each table works only with cells, without
+specifing a policy to change them. Every **Pamela.Table** now receives a
+**cells** *Matrix2D* object and draws it. How can i create such matrix? We
+decided to create an entire *Builder* for that. It's an object that simplifies
+the process of creating and editing tables.  
+It uses the *Builder* gof pattern, so it can be instantiated and when the **
+build** method is called, it will create a complete **Pamela.Table** object for
+you.  
+It implements very advanced ways of customizing your table, allowing also
+different idioms:
+
+* Working by columns
+* Working by rows
+* Fully functional set / get operations
+* Advanced iterators
+* Automatic size managing (using auto-width and auto-height)
+* Async table building
+
+This builder is completely un-opinionated on how you should look at your table.
+See online documentation for better informations about it.
+
 ## 1.7.6 (12/2/2022)
-Implements *cors* customizations for *Image.fromURL*. Add capability for *Pamela.Image* to 
-work with link images, allowing persistence of images. Now, we can contruct an image specifing
-only the url: 
+
+Implements *cors* customizations for *Image.fromURL*. Add capability for *
+Pamela.Image* to work with link images, allowing persistence of images. Now, we
+can contruct an image specifing only the url:
+
 ```javascript
 const i = new Pamela.Image({
   src: '<link>'
 })
 ```
-*Pamela.Image* will care about all the operations to correctly render and save the image into the stage.
-We also added some very useful methods to:
+
+*Pamela.Image* will care about all the operations to correctly render and save
+the image into the stage. We also added some very useful methods to:
+
 * Change image src (using `image.loadImageFromUrl(<link>)`)
 * Get image original size (using `image.getOriginalSize()`)
 * Reload image from the same origin (using `image.reload()`)
 
 ## 1.6.14 (9/2/2022)
+
 Fixes *Barcode* error message drawing problems
 
 ## 1.6.13 (8/2/2022)
-Adds *Barcode* text for displaying errors during barcode calculations. It can be formatted using
+
+Adds *Barcode* text for displaying errors during barcode calculations. It can be
+formatted using
+
 ```javascript
 Barcode.prototype.invalidCodeMessage
 Barcode.prototype.invalidCodeMessageFont
 Barcode.prototype.invalidCodeMessageFontSize
 ```
+
 properties.
 
 ## 1.6.11 (3/2/2022)
-Fixes *Barcode* resolution problems when it has long width. Corrects also *RichText* unuseful margins and resizing problems. Implements *RichText* measuring utils, 
-to perform advanced text measuring.
+
+Fixes *Barcode* resolution problems when it has long width. Corrects also *
+RichText* unuseful margins and resizing problems. Implements *RichText*
+measuring utils, to perform advanced text measuring.
 
 ## 1.6.3 (30/1/2022)
-Fixes *Barcode* performance and exporting issues. Solves caching problems on *backgroundColor* and *fill*.  
-Solves *flashing* problem on resize end, now *Barcode* is fully resizable using scale-based or size-based scaling policies. 
-Increases *Barcode* border rendering quality.
+
+Fixes *Barcode* performance and exporting issues. Solves caching problems on *
+backgroundColor* and *fill*.  
+Solves *flashing* problem on resize end, now *Barcode* is fully resizable using
+scale-based or size-based scaling policies. Increases *Barcode* border rendering
+quality.
 
 ## 1.6.0 (30/1/2022)
-Fixes Barcode drawing problems and implements **showContent** property
-to show / hide it's code. Implements also text formatting configuration for barcode content.
-Fixes Barcode resizing problems, to it is fully resizable using width and or scale.
+
+Fixes Barcode drawing problems and implements **showContent** property to show /
+hide it's code. Implements also text formatting configuration for barcode
+content. Fixes Barcode resizing problems, to it is fully resizable using width
+and or scale.
 
 ## 1.5.10 (28/1/2022)
-Fixes several bugs, such as: 
+
+Fixes several bugs, such as:
+
 * Barcode not showing content
 * Barcode without transparent background
 * RichText not rendering borders
@@ -53,10 +99,13 @@ Fixes several bugs, such as:
 * Table header drawing problems
 * Table borders drawing problems
 
-Also **removes** unuseful exceptions for barcode and table. They are replaced with **stage** events.  
+Also **removes** unuseful exceptions for barcode and table. They are replaced
+with **stage** events.  
 **Adds** a new pullrequest template, to make it clearer.  
-**Unifies** all **text-alignment** properties under the same enumeration: _HorizontalAlignment_.
-**Refactors** _RichText_ coloring process. Now **backgroundColor** is the color of the background and **fill** is the color of the text, the same as **Text**.
+**Unifies** all **text-alignment** properties under the same enumeration: _
+HorizontalAlignment_.
+**Refactors** _RichText_ coloring process. Now **backgroundColor** is the color
+of the background and **fill** is the color of the text, the same as **Text**.
 
 ## 1.5.3 (25/1/2022)
 
@@ -70,7 +119,9 @@ const node = new Pamela.Stage({
   dragbuttons: [{ button: 0, altKey: true }]
 })
 ```
-Dragging will **only** be triggered when the user clicks altr + left mouse click. 
+
+Dragging will **only** be triggered when the user clicks altr + left mouse
+click.
 
 ## 1.5.2 (25/1/2022)
 
@@ -1277,7 +1328,7 @@ of `Pamela` apps.
 ### Fixed
 
 - Fixed "Dragging Group on mobile view throws "missing preventDefault" error"
-  #169
+  # 169
 
 ## 1.1.1 - 2016-08-30
 

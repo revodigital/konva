@@ -1,0 +1,953 @@
+@startuml
+interface GetSet<Type, This>
+interface Set<Type, This>
+interface Get<Type>
+interface Vector2d {
+    +x: number
+    +y: number
+}
+interface IRect {
+    +x: number
+    +y: number
+    +width: number
+    +height: number
+}
+interface IFrame {
+    +time: number
+    +timeDiff: number
+    +lastTime: number
+    +frameRate: number
+}
+enum KonvaNodeEvent {
+    mouseover
+    mouseout
+    mousemove
+    mouseleave
+    mouseenter
+    mousedown
+    mouseup
+    wheel
+    contextmenu
+    click
+    dblclick
+    touchstart
+    touchmove
+    touchend
+    tap
+    dbltap
+    dragstart
+    dragmove
+    dragend
+}
+interface RGB {
+    +r: number
+    +g: number
+    +b: number
+}
+interface RGBA extends RGB {
+    +a: number
+}
+class Transform {
+    +m: number[]
+    +dirty: boolean
+    +reset(): void
+    +copy(): Transform
+    +copyInto(tr: Transform): void
+    +point(point: Vector2d): { x: number; y: number; }
+    +translate(x: number, y: number): this
+    +scale(sx: number, sy: number): this
+    +rotate(rad: number): this
+    +getTranslation(): { x: number; y: number; }
+    +skew(sx: number, sy: number): this
+    +multiply(matrix: Transform): this
+    +invert(): this
+    +getMatrix(): number[]
+    +setAbsolutePosition(x: number, y: number): this
+    +decompose(): { x: number; y: number; rotation: number; scaleX: number; scaleY: number; skewX: number; skewY: number; }
+}
+enum LineCap {
+    Butt
+    Rounded
+    Square
+}
+interface BorderConfig {
+    +borderWidth?: number
+    +borderColor?: string
+    +bordered?: boolean
+    +borderRadius?: BorderRadius
+    +borderDash?: LineDashConfiguration
+    +borderCap?: LineCap
+}
+interface BorderRadius {
+    +topLeft: number
+    +topRight: number
+    +bottomLeft: number
+    +bottomRight: number
+}
+interface IPoint2D {
+    +x: number
+    +y: number
+}
+class Point2D implements IPoint2D {
+    +x: number
+    +y: number
+    +distanceFrom(point: Point2D): number
+    +distanceX(point: Point2D): number
+    +distanceY(point: Point2D): number
+    +absoluteDistanceY(point: Point2D): number
+    +absoluteDistanceX(point: Point2D): number
+    +distanceVector(point: Point2D): Vector2d
+    +absoluteDistanceVector(point: Point2D): Vector2d
+    +isTopLeft(): boolean
+    +normalize(): void
+    +incrementX(value: number): void
+    +decrementX(value: number): void
+    +incrementY(value: number): void
+    +decrementY(value: number): void
+    +translate(vector: Vector2d): void
+    +translateScale(vector: Vector2d, scale: number): void
+    +translated(vector: Vector2d): Point2D
+    +centerOf(point: Point2D): Point2D
+    +setVector(vector: Vector2d): void
+    +toVector(): Vector2d
+    +{static} fromVector(vector: Vector2d): Point2D
+    +{static} fromXY(x: number, y: number): Point2D
+}
+class Context {
+    +canvas: Canvas
+    +_context: CanvasRenderingContext2D
+    +traceArr: String[]
+    +fillShape(shape: Shape<ShapeConfig>): void
+    +_fill(shape: any): void
+    +strokeShape(shape: Shape<ShapeConfig>): void
+    +_stroke(shape: any): void
+    +fillStrokeShape(shape: Shape<ShapeConfig>): void
+    +setTranslation(x: number, y: number): void
+    +getTranslation(): Vector2d
+    +getTrace(relaxed?: any, rounded?: any): string
+    +lineToPoint(point: Point2D): void
+    +moveToPoint(point: Point2D): void
+    +lineBetween(a: Point2D, b: Point2D): void
+    +strokeLineBetween(a: Point2D, b: Point2D): void
+    +clearTrace(): void
+    +_trace(str: any): void
+    +reset(): void
+    +getCanvas(): Canvas
+    +clear(bounds?: any): void
+    +_applyLineCap(shape: any): void
+    +_applyOpacity(shape: any): void
+    +_applyLineJoin(shape: Shape<ShapeConfig>): void
+    +setAttr(attr: any, val: any): void
+    +arc(a0: any, a1: any, a2: any, a3: any, a4: any, a5: any): void
+    +arcTo(a0: any, a1: any, a2: any, a3: any, a4: any): void
+    +beginPath(): void
+    +bezierCurveTo(a0: any, a1: any, a2: any, a3: any, a4: any, a5: any): void
+    +clearRect(a0: any, a1: any, a2: any, a3: any): void
+    +clip(): void
+    +closePath(): void
+    +createImageData(a0: any, a1: any): ImageData
+    +createLinearGradient(a0: any, a1: any, a2: any, a3: any): CanvasGradient
+    +createPattern(a0: any, a1: any): CanvasPattern
+    +createRadialGradient(a0: any, a1: any, a2: any, a3: any, a4: any, a5: any): CanvasGradient
+    +drawImage(a0: CanvasImageSource, a1: number, a2: number, a3?: number, a4?: number, a5?: number, a6?: number, a7?: number, a8?: number): void
+    +ellipse(a0: number, a1: number, a2: number, a3: number, a4: number, a5: number, a6: number, a7?: boolean): void
+    +isPointInPath(x: any, y: any): boolean
+    +fill(path2d?: Path2D): void
+    +fillRect(x: any, y: any, width: any, height: any): void
+    +strokeRect(x: any, y: any, width: any, height: any): void
+    +fillText(text: string, x: number, y: number, maxWidth?: number): void
+    +measureText(text: any): TextMetrics
+    +getImageData(a0: any, a1: any, a2: any, a3: any): ImageData
+    +lineTo(a0: any, a1: any): void
+    +moveTo(a0: any, a1: any): void
+    +rect(a0: any, a1: any, a2: any, a3: any): void
+    +putImageData(a0: any, a1: any, a2: any): void
+    +quadraticCurveTo(a0: any, a1: any, a2: any, a3: any): void
+    +roundRect(x: number, y: number, width: number, height: number, radius: BorderRadius): void
+    +restore(): void
+    +rotate(a0: any): void
+    +save(): void
+    +scale(a0: any, a1: any): void
+    +setLineDash(a0: any): void
+    +getLineDash(): number[]
+    +setTransform(a0: any, a1: any, a2: any, a3: any, a4: any, a5: any): void
+    +stroke(path2d?: Path2D): void
+    +strokeText(a0: any, a1: any, a2: any, a3: any): void
+    +transform(a0: any, a1: any, a2: any, a3: any, a4: any, a5: any): void
+    +translate(a0: any, a1: any): void
+    +_enableTrace(): void
+    +_applyGlobalCompositeOperation(node: any): void
+}
+class SceneContext extends Context {
+    +_fillColor(shape: Shape<ShapeConfig>): void
+    +_fillPattern(shape: any): void
+    +_fillLinearGradient(shape: any): void
+    +_fillRadialGradient(shape: any): void
+    +_fill(shape: any): void
+    +_strokeLinearGradient(shape: any): void
+    +_stroke(shape: any): void
+    +_applyShadow(shape: any): void
+}
+class HitContext extends Context {
+    +_fill(shape: any): void
+    +strokeShape(shape: Shape<ShapeConfig>): void
+    +_stroke(shape: any): void
+}
+interface ICanvasConfig {
+    +width?: number
+    +height?: number
+    +pixelRatio?: number
+}
+class Canvas {
+    +pixelRatio: number
+    +_canvas: HTMLCanvasElement
+    +context: Context
+    +width: number
+    +height: number
+    +isCache: boolean
+    +getContext(): Context
+    +getPixelRatio(): number
+    +setPixelRatio(pixelRatio: any): void
+    +setWidth(width: any): void
+    +setHeight(height: any): void
+    +getWidth(): number
+    +getHeight(): number
+    +setSize(width: any, height: any): void
+    +toDataURL(mimeType: any, quality: any): string
+}
+class SceneCanvas extends Canvas
+class HitCanvas extends Canvas {
+    +hitCanvas: boolean
+}
+interface ContainerConfig extends NodeConfig {
+    +clearBeforeDraw?: boolean
+    +clipFunc?: (ctx: SceneContext) => void
+    +clipX?: number
+    +clipY?: number
+    +clipWidth?: number
+    +clipHeight?: number
+}
+abstract class Container<ChildType extends Node<NodeConfig>> extends Node {
+    +children: ChildType[]
+    +getChildren(filterFunc?: (item: Node) => boolean): ChildType[]
+    +getChildrenWithoutName(name: string): ChildType[]
+    +getChildWithName(name: string): ChildType
+    +removeAllChildrenNamed(name: string): ChildType[]
+    +getChildIndexByName(name: string): number
+    +getChildWithId(id: string): ChildType
+    +bringToTop(id: string): ChildType
+    +bringToTopByName(name: string): ChildType
+    +getChildIndexById(id: string): number
+    +getChildIndex(child: ChildType): number
+    +getChildrenWithoutNames(names: string[]): ChildType[]
+    +contains(element: ChildType): boolean
+    +at(index: number): ChildType
+    +hasChildren(): boolean
+    +removeChildren(): this
+    +destroyChildren(): this
+    +{abstract} _validateAdd(node: Node<NodeConfig>): void
+    +add(children: ChildType[]): this
+    +destroy(): this
+    +find(selector: any): ChildNode[]
+    +findOne(selector: string | Function): ChildNode
+    +_generalFind(selector: string | Function, findOne: boolean): ChildNode[]
+    -_descendants(fn: (n: Node) => boolean): boolean
+    +toObject(): any
+    +isAncestorOf(node: Node<NodeConfig>): boolean
+    +clone(obj?: any): this
+    +getAllIntersections(pos: any): any[]
+    +first(): ChildType
+    +last(): ChildType
+    +firstIndex(): number
+    +lastIndex(): number
+    +_clearSelfAndDescendantCache(attr?: string): void
+    +_setChildrenIndices(): void
+    +drawScene(can?: SceneCanvas, top?: Node<NodeConfig>): this
+    +drawHit(can?: HitCanvas, top?: Node<NodeConfig>): this
+    +_drawChildren(drawMethod: any, canvas: any, top: any): void
+    +getClientRect(config?: { skipTransform?: boolean; skipShadow?: boolean; skipStroke?: boolean; relativeTo?: Container<Node>; }): IRect
+    +clip: GetSet<IRect, this>
+    +clipX: GetSet<number, this>
+    +clipY: GetSet<number, this>
+    +clipWidth: GetSet<number, this>
+    +clipHeight: GetSet<number, this>
+    +clipFunc: GetSet<(ctx: CanvasRenderingContext2D, shape: Container<ChildType>) => void, this>
+}
+class Group extends Container {
+    +_validateAdd(child: Node<NodeConfig>): void
+}
+interface LayerConfig extends ContainerConfig {
+    +clearBeforeDraw?: boolean
+    +hitGraphEnabled?: boolean
+    +imageSmoothingEnabled?: boolean
+}
+class Layer extends Container {
+    +canvas: SceneCanvas
+    +hitCanvas: HitCanvas
+    +_waitingForDraw: boolean
+    +createPNGStream(): any
+    +getCanvas(): SceneCanvas
+    +getNativeCanvasElement(): HTMLCanvasElement
+    +getHitCanvas(): HitCanvas
+    +getContext(): Context
+    +clear(bounds?: any): this
+    +setZIndex(index: any): this
+    +moveToTop(): boolean
+    +moveUp(): boolean
+    +moveDown(): boolean
+    +moveToBottom(): boolean
+    +getLayer(): this
+    +remove(): this
+    +getStage(): Stage
+    +setSize(__0: { width: any; height: any; }): this
+    +_validateAdd(child: any): void
+    +_toKonvaCanvas(config: any): any
+    +_checkVisibility(): void
+    +_setSmoothEnabled(): void
+    +getWidth(): number
+    +setWidth(): void
+    +getHeight(): number
+    +setHeight(): void
+    +batchDraw(): this
+    +getIntersection(pos: Vector2d): Shape<ShapeConfig>
+    +_getIntersection(pos: Vector2d): { shape?: Shape; antialiased?: boolean; }
+    +drawScene(can?: SceneCanvas, top?: Node<NodeConfig>): this
+    +drawHit(can?: HitCanvas, top?: Node<NodeConfig>): this
+    +enableHitGraph(): this
+    +disableHitGraph(): this
+    +setHitGraphEnabled(val: any): void
+    +getHitGraphEnabled(val: any): boolean
+    +toggleHitCanvas(): void
+    +hitGraphEnabled: GetSet<boolean, this>
+    +clearBeforeDraw: GetSet<boolean, this>
+    +imageSmoothingEnabled: GetSet<boolean, this>
+}
+interface KonvaPointerEvent extends KonvaEventObject {
+    +pointerId: number
+}
+interface StageConfig extends ContainerConfig {
+    +container: string | HTMLDivElement
+}
+class Stage extends Container {
+    +content: HTMLDivElement
+    +pointerPos: Vector2d
+    +_pointerPositions: (Vector2d & { id?: number; })[]
+    +_changedPointerPositions: (Vector2d & { id: number; })[]
+    +bufferCanvas: SceneCanvas
+    +bufferHitCanvas: HitCanvas
+    +_mouseTargetShape: Shape<ShapeConfig>
+    +_touchTargetShape: Shape<ShapeConfig>
+    +_pointerTargetShape: Shape<ShapeConfig>
+    +_mouseClickStartShape: Shape<ShapeConfig>
+    +_touchClickStartShape: Shape<ShapeConfig>
+    +_pointerClickStartShape: Shape<ShapeConfig>
+    +_mouseClickEndShape: Shape<ShapeConfig>
+    +_touchClickEndShape: Shape<ShapeConfig>
+    +_pointerClickEndShape: Shape<ShapeConfig>
+    +_mouseDblTimeout: any
+    +_touchDblTimeout: any
+    +_pointerDblTimeout: any
+    +_validateAdd(child: any): void
+    +_checkVisibility(): void
+    +setContainer(container: any): this
+    +shouldDrawHit(): boolean
+    +clear(): this
+    +clone(obj?: any): any
+    +destroy(): this
+    +getPointerPosition(): Vector2d
+    +_getPointerById(id?: number): Vector2d & { id?: number; }
+    +getPointersPositions(): (Vector2d & { id?: number; })[]
+    +getStage(): this
+    +getContent(): HTMLDivElement
+    +_toKonvaCanvas(config: any): SceneCanvas
+    +getIntersection(pos: Vector2d): Shape<ShapeConfig>
+    +_resizeDOM(): void
+    +add(layer: Layer, rest: any[]): this
+    +addLayer(layer: Layer, rest: any[]): Stage
+    +hasLayerWithName(name: string): boolean
+    +getLayersWithoutName(name: string): Layer[]
+    +getLayersWithoutNames(names: string[]): Layer[]
+    +getShapeWithName(name: string): T
+    +getLayerByName(name: string): Layer
+    +addLayers(layers: Layer[]): Stage
+    +removeLayersWithName(name: string): void
+    +addLayerBeforeAll(layer: Layer): Stage
+    +getParent(): any
+    +getLayer(): any
+    +hasPointerCapture(pointerId: number): boolean
+    +setPointerCapture(pointerId: number): void
+    +releaseCapture(pointerId: number): void
+    +getLayers(): Layer[]
+    +_bindContentEvents(): void
+    +_pointerenter(evt: any): void
+    +_pointerover(evt: any): void
+    +_getTargetShape(evenType: any): Shape<ShapeConfig>
+    +_pointerleave(evt: any): void
+    +_pointerdown(evt: TouchEvent | MouseEvent | PointerEvent): void
+    +_pointermove(evt: TouchEvent | MouseEvent | PointerEvent): void
+    +_pointerup(evt: any): void
+    +_contextmenu(evt: any): void
+    +_wheel(evt: any): void
+    +_pointercancel(evt: PointerEvent): void
+    +_lostpointercapture(evt: PointerEvent): void
+    +setPointersPositions(evt: any): void
+    +_setPointerPosition(evt: any): void
+    +_getContentPosition(): { top: number; left: number; scaleX: number; scaleY: number; }
+    +_buildDOM(): void
+    +cache(): this
+    +clearCache(): this
+    +batchDraw(): this
+    +container: GetSet<HTMLDivElement, this>
+}
+interface ISize2D {
+    +width: number
+    +height: number
+}
+class Size2D {
+    -height: number
+    -width: number
+    +getHeight(): number
+    +getWidth(): number
+    +setHeight(val: number): void
+    +setWidth(val: number): void
+    +toArray(): number[]
+    +overflows(size: Size2D): boolean
+    +overflowsWidth(size: Size2D): boolean
+    +canBeContainedBy(size: Size2D): boolean
+    +overflowsHeight(size: Size2D): boolean
+    +increase(a: number, b: number): Size2D
+    +decrease(x: number, y: number): Size2D
+    +equalsTo(size: Size2D): boolean
+    +compareTo(size: Size2D): 0 | 1 | -1
+    +toISize(): ISize2D
+    +toVector(): Vector2d
+    +{static} fromBounds(width: number, height: number): Size2D
+    +{static} fromVector(vector: Vector2d): Size2D
+    +{static} fromSize(size: { width: number; height: number; }): Size2D
+}
+interface DragButton {
+    +button: number
+    +ctrlKey?: boolean
+    +altKey?: boolean
+}
+interface NodeConfig {
+    +x?: number
+    +y?: number
+    +width?: number
+    +height?: number
+    +visible?: boolean
+    +listening?: boolean
+    +id?: string
+    +name?: string
+    +opacity?: Number
+    +scale?: Vector2d
+    +scaleX?: number
+    +scaleY?: number
+    +rotation?: number
+    +rotationDeg?: number
+    +offset?: Vector2d
+    +offsetX?: number
+    +offsetY?: number
+    +draggable?: boolean
+    +dragDistance?: number
+    +dragBoundFunc?: (this: Node, pos: Vector2d) => Vector2d
+    +dragbuttons?: DragButton[]
+    +preventDefault?: boolean
+    +globalCompositeOperation?: globalCompositeOperationType
+    +filters?: Filter[]
+}
+interface KonvaEventObject<EventType> {
+    +type: string
+    +target: Shape<ShapeConfig> | Stage
+    +evt: EventType
+    +currentTarget: Node<NodeConfig>
+    +cancelBubble: boolean
+    +child?: Node<NodeConfig>
+}
+abstract class Node<Config extends NodeConfig> {
+    +_id: number
+    +eventListeners: { [index: string]: { name: string; handler: Function; }[]; }
+    +attrs: any
+    +index: number
+    +_allEventListeners: Function[]
+    +parent: Container<Node<NodeConfig>>
+    +_cache: Map<string, any>
+    +_attachedDepsListeners: Map<string, boolean>
+    +_lastPos: Vector2d
+    +_attrsAffectingSize: string[]
+    +_batchingTransformChange: boolean
+    +_needClearTransformCache: boolean
+    +_filterUpToDate: boolean
+    +_isUnderCache: boolean
+    +nodeType: string
+    +className: string
+    +_dragEventId: number
+    +_shouldFireChangeEvents: boolean
+    +hasChildren(): boolean
+    +_clearCache(attr?: string): void
+    +_getCache(attr: string, privateGetter: Function): any
+    +_calculate(name: string, deps: string[], getter: Function): any
+    +_getCanvasCache(): any
+    +_clearSelfAndDescendantCache(attr?: string): void
+    +clearCache(): this
+    +cache(config?: { x?: number; y?: number; width?: number; height?: number; drawBorder?: boolean; offset?: number; pixelRatio?: number; imageSmoothingEnabled?: boolean; hitCanvasPixelRatio?: number; }): this
+    +isCached(): boolean
+    +{abstract} drawScene(canvas?: Canvas, top?: Node<NodeConfig>): void
+    +{abstract} drawHit(canvas?: Canvas, top?: Node<NodeConfig>): void
+    +getClientRect(config?: { skipTransform?: boolean; skipShadow?: boolean; skipStroke?: boolean; relativeTo?: Container<Node>; }): { x: number; y: number; width: number; height: number; }
+    +_transformedRect(rect: IRect, top: Node<NodeConfig>): { x: number; y: number; width: number; height: number; }
+    +_drawCachedSceneCanvas(context: Context): void
+    +_drawCachedHitCanvas(context: Context): void
+    +_getCachedSceneCanvas(): any
+    +on(evtStr: K, handler: KonvaEventListener<this, NodeEventMap[K]>): any
+    +off(evtStr?: string, callback?: Function): this
+    +dispatchEvent(evt: any): this
+    +addEventListener(type: string, handler: (e: Event) => void): this
+    +removeEventListener(type: string): this
+    +_delegate(event: string, selector: string, handler: (e: Event) => void): void
+    +remove(): this
+    +_clearCaches(): void
+    +_remove(): void
+    +destroy(): this
+    +getAttr(attr: string): any
+    +getAncestors(): Node<NodeConfig>[]
+    +getAttrs(): any
+    +setAttrs(config: any): this
+    +isListening(): any
+    +_isListening(relativeTo?: Node<NodeConfig>): boolean
+    +isVisible(): any
+    +_isVisible(relativeTo?: Node<NodeConfig>): boolean
+    +shouldDrawHit(top?: Node<NodeConfig>, skipDragCheck?: boolean): boolean
+    +show(): this
+    +hide(): this
+    +getZIndex(): number
+    +getAbsoluteZIndex(): number
+    +getDepth(): number
+    +_batchTransformChanges(func: any): void
+    +setPosition(pos: Vector2d): this
+    +getPosition(): { x: number; y: number; }
+    +getRelativePointerPosition(): { x: number; y: number; }
+    +getAbsolutePosition(top?: Node<NodeConfig>): { x: number; y: number; }
+    +setAbsolutePosition(pos: Vector2d): this
+    +_setTransform(trans: any): void
+    +_clearTransform(): { x: number; y: number; rotation: number; scaleX: number; scaleY: number; offsetX: number; offsetY: number; skewX: number; skewY: number; }
+    +move(change: Vector2d): this
+    +_eachAncestorReverse(func: any, top: any): void
+    +rotate(theta: number): this
+    +moveToTop(): boolean
+    +moveUp(): boolean
+    +moveDown(): boolean
+    +moveToBottom(): boolean
+    +setZIndex(zIndex: any): this
+    +getAbsoluteOpacity(): any
+    +_getAbsoluteOpacity(): number
+    +moveTo(newContainer: any): this
+    +toObject(): any
+    +toJSON(): string
+    +getParent(): Container<Node<NodeConfig>>
+    +findAncestors(selector: string, includeSelf?: boolean, stopNode?: Node<NodeConfig>): Node<NodeConfig>[]
+    +isAncestorOf(node: Node<NodeConfig>): boolean
+    +findAncestor(selector?: string, includeSelf?: boolean, stopNode?: Container<Node<NodeConfig>>): any
+    +_isMatch(selector: string | Function): any
+    +getLayer(): Layer
+    +getStage(): Stage
+    +_getStage(): Stage
+    +fire(eventType: string, evt?: any, bubble?: boolean): this
+    +getAbsoluteTransform(top?: Node<NodeConfig>): Transform
+    +_getAbsoluteTransform(top?: Node<NodeConfig>): Transform
+    +getAbsoluteScale(top?: Node<NodeConfig>): { x: number; y: number; }
+    +getAbsoluteRotation(): number
+    +getTransform(): Transform
+    +_getTransform(): Transform
+    +clone(obj?: any): any
+    +_toKonvaCanvas(config: any): SceneCanvas
+    +toCanvas(config?: any): HTMLCanvasElement
+    +toDataURL(config?: { x?: number; y?: number; width?: number; height?: number; pixelRatio?: number; mimeType?: string; quality?: number; callback?: (str: string) => void; }): string
+    +toImage(config?: { x?: number; y?: number; width?: number; height?: number; pixelRatio?: number; mimeType?: string; quality?: number; callback?: (img: HTMLImageElement) => void; }): void
+    +setSize(size: any): this
+    +getSizeRect(): Size2D
+    +getSize(): { width: number; height: number; }
+    +getClassName(): string
+    +getType(): string
+    +getDragDistance(): number
+    +_off(type: any, name?: any, callback?: any): void
+    +_fireChangeEvent(attr: any, oldVal: any, newVal: any): void
+    +addName(name: any): this
+    +hasName(name: any): boolean
+    +removeName(name: any): this
+    +setAttr(attr: any, val: any): this
+    +_requestDraw(): void
+    +_setAttr(key: any, val: any): void
+    +_setComponentAttr(key: any, component: any, val: any): void
+    +_fireAndBubble(eventType: any, evt: any, compareShape?: any): void
+    +_getProtoListeners(eventType: any): any
+    +_fire(eventType: any, evt: any): void
+    +draw(): this
+    +_createDragElement(evt: any): void
+    +startDrag(evt?: any, bubbleEvent?: boolean): void
+    +_setDragPosition(evt: any, elem: any): void
+    +stopDrag(evt?: any): void
+    +setDraggable(draggable: any): void
+    +isDragging(): boolean
+    +_listenDrag(): void
+    +_dragChange(): void
+    +_dragCleanup(): void
+    +isClientRectOnScreen(margin?: { x: number; y: number; }): boolean
+    +preventDefault: GetSet<boolean, this>
+    +blue: GetSet<number, this>
+    +brightness: GetSet<number, this>
+    +contrast: GetSet<number, this>
+    +blurRadius: GetSet<number, this>
+    +luminance: GetSet<number, this>
+    +green: GetSet<number, this>
+    +alpha: GetSet<number, this>
+    +hue: GetSet<number, this>
+    +kaleidoscopeAngle: GetSet<number, this>
+    +kaleidoscopePower: GetSet<number, this>
+    +levels: GetSet<number, this>
+    +noise: GetSet<number, this>
+    +pixelSize: GetSet<number, this>
+    +red: GetSet<number, this>
+    +saturation: GetSet<number, this>
+    +threshold: GetSet<number, this>
+    +value: GetSet<number, this>
+    +dragBoundFunc: GetSet<(this: Node, pos: Vector2d) => Vector2d, this>
+    +draggable: GetSet<boolean, this>
+    +dragbuttons: GetSet<DragButton[], this>
+    +dragDistance: GetSet<number, this>
+    +embossBlend: GetSet<boolean, this>
+    +embossDirection: GetSet<string, this>
+    +embossStrength: GetSet<number, this>
+    +embossWhiteLevel: GetSet<number, this>
+    +enhance: GetSet<number, this>
+    +filters: GetSet<Filter[], this>
+    +position: GetSet<Vector2d, this>
+    +absolutePosition: GetSet<Vector2d, this>
+    +size: GetSet<{ width: number; height: number; }, this>
+    +id: GetSet<string, this>
+    +listening: GetSet<boolean, this>
+    +name: GetSet<string, this>
+    +offset: GetSet<Vector2d, this>
+    +offsetX: GetSet<number, this>
+    +offsetY: GetSet<number, this>
+    +opacity: GetSet<number, this>
+    +rotation: GetSet<number, this>
+    +zIndex: GetSet<number, this>
+    +scale: GetSet<Vector2d, this>
+    +scaleX: GetSet<number, this>
+    +scaleY: GetSet<number, this>
+    +skew: GetSet<Vector2d, this>
+    +skewX: GetSet<number, this>
+    +skewY: GetSet<number, this>
+    +to: (params: AnimTo) => void
+    +transformsEnabled: GetSet<string, this>
+    +visible: GetSet<boolean, this>
+    +width: GetSet<number, this>
+    +height: GetSet<number, this>
+    +x: GetSet<number, this>
+    +y: GetSet<number, this>
+    +globalCompositeOperation: GetSet<globalCompositeOperationType, this>
+    +{static} create(data: any, container?: any): any
+    +{static} _createNode(obj: any, container?: any): any
+}
+interface AnimTo extends NodeConfig {
+    +onFinish?: Function
+    +onUpdate?: Function
+    +duration?: number
+}
+interface ShapeConfig extends NodeConfig {
+    +fill?: string
+    +fillPatternImage?: HTMLImageElement
+    +fillPatternX?: number
+    +fillPatternY?: number
+    +fillPatternOffset?: Vector2d
+    +fillPatternOffsetX?: number
+    +fillPatternOffsetY?: number
+    +fillPatternScale?: Vector2d
+    +fillPatternScaleX?: number
+    +fillPatternScaleY?: number
+    +fillPatternRotation?: number
+    +fillPatternRepeat?: string
+    +fillLinearGradientStartPoint?: Vector2d
+    +fillLinearGradientStartPointX?: number
+    +fillLinearGradientStartPointY?: number
+    +fillLinearGradientEndPoint?: Vector2d
+    +fillLinearGradientEndPointX?: number
+    +fillLinearGradientEndPointY?: number
+    +fillLinearGradientColorStops?: (string | number)[]
+    +fillRadialGradientStartPoint?: Vector2d
+    +fillRadialGradientStartPointX?: number
+    +fillRadialGradientStartPointY?: number
+    +fillRadialGradientEndPoint?: Vector2d
+    +fillRadialGradientEndPointX?: number
+    +fillRadialGradientEndPointY?: number
+    +fillRadialGradientStartRadius?: number
+    +fillRadialGradientEndRadius?: number
+    +fillRadialGradientColorStops?: (string | number)[]
+    +fillEnabled?: boolean
+    +fillPriority?: string
+    +stroke?: string | CanvasGradient
+    +strokeWidth?: number
+    +fillAfterStrokeEnabled?: boolean
+    +hitStrokeWidth?: string | number
+    +strokeScaleEnabled?: boolean
+    +strokeHitEnabled?: boolean
+    +strokeEnabled?: boolean
+    +lineJoin?: LineJoin
+    +lineCap?: LineCap
+    +sceneFunc?: (con: Context, shape: Shape) => void
+    +hitFunc?: (con: Context, shape: Shape) => void
+    +shadowColor?: string
+    +shadowBlur?: number
+    +shadowOffset?: Vector2d
+    +shadowOffsetX?: number
+    +shadowOffsetY?: number
+    +shadowOpacity?: number
+    +shadowEnabled?: boolean
+    +shadowForStrokeEnabled?: boolean
+    +dash?: number[]
+    +dashOffset?: number
+    +dashEnabled?: boolean
+    +perfectDrawEnabled?: boolean
+    +borderWidth?: number
+    +borderColor?: string
+    +bordered?: boolean
+    +borderRadius?: BorderRadius
+    +borderDash?: LineDashConfiguration
+}
+interface ShapeGetClientRectConfig {
+    +skipTransform?: boolean
+    +skipShadow?: boolean
+    +skipStroke?: boolean
+    +relativeTo?: Node<NodeConfig>
+}
+enum Verse {
+    After
+    Before
+}
+
+enum HorizontalAlignment {
+    Center
+    Left
+    Right
+    Justify
+}
+enum VerticalAlignment {
+    Center
+    Top
+    Bottom
+}
+interface ITextConfiguration {
+    +fontSize?: number
+    +textColor?: string
+    +fontName?: string
+    +bold?: boolean
+    +italic?: boolean
+    +textAlign?: HorizontalAlignment
+    +verticalAlign?: VerticalAlignment
+    +padding?: number
+    +underlined?: boolean
+}
+abstract class TextConfiguration implements ITextConfiguration {
+    +fontSize: number
+    +textColor: string
+    +fontName: string
+    +bold: boolean
+    +italic: boolean
+    +textAlign: HorizontalAlignment
+    +verticalAlign: VerticalAlignment
+    +padding: number
+    +underlined: boolean
+    +{static} getDefaultOptions(): ITextConfiguration
+}
+interface CellConfig extends ITextConfiguration {
+    +content?: string
+    +fill?: string
+    +visible?: boolean
+    +leftBorder?: BorderConfig
+    +rightBorder?: BorderConfig
+    +bottomBorder?: BorderConfig
+    +topBorder?: BorderConfig
+    +width?: number
+    +height?: number
+    +autoWidth?: boolean
+    +autoHeight?: boolean
+}
+interface CellSize {
+    +percentage: number
+    +index: number
+}
+class Cell implements CellConfig {
+    +content: string
+    +edges: PointRectangle2D
+    +fill: string
+    +border: BorderConfig
+    +visible: boolean
+    +width: number
+    +height: number
+    +bold: boolean
+    +italic: boolean
+    +fontName: string
+    +fontSize: number
+    +textAlign: HorizontalAlignment
+    +textColor: string
+    +verticalAlign: VerticalAlignment
+    +padding: number
+    +leftBorder: BorderConfig
+    +rightBorder: BorderConfig
+    +bottomBorder: BorderConfig
+    +topBorder: BorderConfig
+    +underlined: boolean
+    +_render(ctx: SceneContext): void
+    -_renderText(ctx: SceneContext): void
+    -_renderBorders(ctx: SceneContext): void
+    -_formatFontString(): string
+    +toJson(): string
+}
+class MatrixIndex extends Point2D
+class Matrix2D<T> {
+    -data: T[][]
+    +getCell(index: MatrixIndex): T
+    +forEachCell(iterator: (cell: T) => void): void
+    +forEachColumn(iterator: (column: T[]) => void): void
+    +forEachRow(iterator: (column: T[]) => void): void
+    +pushRow(row: T[]): void
+    +pushColumn(column: T[]): void
+    +hasColumnAt(index: number): boolean
+    +countRowsWhere(predicate: (it: T[]) => boolean): number
+    +hasCellAtIndex(index: MatrixIndex): boolean
+    +getRowsCount(): number
+    +getColumnsCount(): number
+    +getRow(index: number): T[]
+    +getColumn(index: number): T[]
+    +firstColumn(): T[]
+    +lastRowIndex(): number
+    +lastColumnIndex(): number
+    +lastColumn(): T[]
+    +lastRow(): T[]
+    +firstRow(): T[]
+    +length(): number
+    +setRow(index: number, value: T[]): void
+    +insertRow(object: T[], startIndex: number, verse: Verse): T[][]
+    +insertColumn(object: T[], startIndex: number, verse: Verse): void
+}
+interface Builder<T> {
+    +build(): T
+}
+abstract class CellCollectionBuilder implements Builder {
+    +cells: CellConfig[]
+    +setWidth(val: number): this
+    +customWidth(val: number): this
+    +customHeight(val: number): this
+    +hasAutoWidth(): boolean
+    +hasAutoHeight(): boolean
+    +autoWidth(): this
+    +getAutoWidthCellsCount(): number
+    +getAutoHeightCellsCount(): number
+    +forEachOVWidthCell(iterator: (cell: CellConfig) => void): void
+    +forEachOVHeightCell(iterator: (cell: CellConfig) => void): void
+    +forEachAutoWidthCell(iterator: (cell: CellConfig) => void): void
+    +forEachAutoHeightCell(iterator: (cell: CellConfig) => void): void
+    +autoHeight(): this
+    +getAvailableWidth(): number
+    +getFreeWidth(): number
+    +setAllAutoWidthCells(config: Partial<CellConfig>): this
+    +getAvailableHeight(): number
+    +hasWidth(): boolean
+    +hasHeight(): boolean
+    +getHeight(): number
+    +getWidth(): number
+    +setHeight(val: number): this
+    +hasOVWidth(): boolean
+    +hasOVHeight(): boolean
+    +hasCellAtIndex(index: number): boolean
+    +populate(data: string[]): this
+    +populateEach(getter: (cell: CellConfig, index: number) => string): this
+    +setBackground(color: string): void
+    +addCell(cell: CellConfig): this
+    +addCells(cells: CellConfig[]): this
+    +set(index: number, config: Partial<CellConfig>): this
+    +setAll(config: Partial<CellConfig>): this
+    +setAlternate(configA: Partial<CellConfig>, configB?: Partial<CellConfig>): this
+    +setStepped(step: number, config: Partial<CellConfig>): this
+    +setFirst(config: Partial<CellConfig>): this
+    +{abstract} clone(): CellCollectionBuilder
+    +setOnly(cellIndexes: number[], config: Partial<CellConfig>): this
+    +getCellCount(): number
+    +setLast(config: Partial<CellConfig>): void
+    +{abstract} build(): CellConfig[]
+    +applyDefaults(): void
+}
+class RowBuilder extends CellCollectionBuilder {
+    +fitWidth(totalPerc?: number): this
+    +setCellsWidth(customCells: CellSize[]): this
+    +clone(): RowBuilder
+    +build(): CellConfig[]
+    +{static} withCells(num: number, config: Partial<CellConfig>): RowBuilder
+}
+class ColumnBuilder extends CellCollectionBuilder {
+    +fitHeight(totalPerc?: number): this
+    +setCellsHeight(customCells: CellSize[]): this
+    +clone(): ColumnBuilder
+    +build(): CellConfig[]
+    +{static} withCells(num: number, config: Partial<CellConfig>): ColumnBuilder
+}
+interface AddRowConfig {
+    +row: RowBuilder
+    +index?: number
+    +verse?: Verse
+    +resize?: boolean
+}
+interface AddColumnConfig {
+    +column: ColumnBuilder
+    +index?: number
+    +verse?: Verse
+    +resize?: boolean
+}
+class TableBuilder implements Builder {
+    +cells: Matrix2D<CellConfig>
+    +options: Partial<TableConfig>
+    +setWidth(val: number): this
+    +setHeight(val: number): this
+    +getHeight(): number
+    +getWidth(): number
+    +setOptions(options: Partial<TableConfig>): this
+    +overrideOptions(options: Partial<TableConfig>): this
+    +withHeader(header: RowBuilder): this
+    +addRow(options: AddRowConfig): this
+    +existsRowWithIndex(index: number): boolean
+    +existsColumnWithIndex(index: number): boolean
+    +addColumn(config: AddColumnConfig): this
+    +adaptHSpace(): this
+    +adaptVSpace(): this
+    +getAutoRowsCount(): number
+    +getAutoColCount(): number
+    +getColumnsCount(): number
+    +getOVColCount(): number
+    +getOVRowCount(): number
+    +forEachOVCol(iterator: (it: ColumnBuilder) => void): this
+    +forEachOVRow(iterator: (it: RowBuilder) => void): this
+    +getHFreeSpace(): number
+    +getVFreeSpace(): number
+    +forEachAutoCol(iterator: (it: ColumnBuilder) => void): this
+    +forEachAutoRow(iterator: (it: RowBuilder) => void): this
+    +setToAllAutoRow(config: Partial<CellConfig>): this
+    +setToAllAutoCol(config: Partial<CellConfig>): this
+    +clearRow(index: number): void
+    +adaptSpace(): this
+    +setCells(cells: Matrix2D<CellConfig>): this
+    +getRow(index: number): RowBuilder
+    +getColumn(index: number): ColumnBuilder
+    +firstColumn(): ColumnBuilder
+    +firstRow(): RowBuilder
+    +lastRow(): RowBuilder
+    +lastColumn(): ColumnBuilder
+    +getMatrix(): Matrix2D<CellConfig>
+    +getRowsCount(): number
+    +getHeader(): RowBuilder
+    +buildCells(): Matrix2D<CellConfig>
+    +buildTo(table: Table): void
+    +build(): Table
+    +{static} fromTable(table: Table): TableBuilder
+}
+@enduml

@@ -54,6 +54,11 @@ export interface ITextConfiguration {
    * Cell text padding
    */
   padding?: number;
+
+  /**
+   * Cell text underline
+   */
+  underlined?: boolean;
 }
 
 /**
@@ -76,6 +81,8 @@ export abstract class TextConfiguration implements ITextConfiguration {
 
   padding: number;
 
+  underlined: boolean;
+
   /**
    * Creates a new CellTextOptions and extracts the informations
    * @param options The options for the text
@@ -83,13 +90,14 @@ export abstract class TextConfiguration implements ITextConfiguration {
    */
   protected constructor(options: ITextConfiguration) {
     this.fontSize = options.fontSize || 12;
-    this.textColor = options.textColor || "black";
+    this.textColor = options.textColor || 'black';
     this.bold = options.bold || false;
     this.italic = options.italic || false;
-    this.fontName = options.fontName || "arial";
+    this.fontName = options.fontName || 'arial';
     this.textAlign = options.textAlign || HorizontalAlignment.Center;
     this.padding = options.padding || 0;
     this.verticalAlign = options.verticalAlign || VerticalAlignment.Center;
+    this.underlined = options.underlined || false;
   }
 
   /**
@@ -104,6 +112,6 @@ export abstract class TextConfiguration implements ITextConfiguration {
       textColor: 'black',
       fontSize: 10,
       padding: 0,
-    }
+    };
   }
 }

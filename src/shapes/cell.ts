@@ -9,21 +9,81 @@
  * Description:
  */
 
-import { PointRectangle2D }                       from '../common/PointRectangle2D';
-import { HorizontalAlignment, VerticalAlignment } from '../configuration/Alignment';
-import { ITextConfiguration, TextConfiguration }  from '../configuration/TextConfiguration';
-import { BorderConfig }                           from '../configuration/BorderOptions';
-import { Point2D }                                from '../common/Point2D';
-import { SceneContext }                           from '../Context';
+import { PointRectangle2D } from '../common/PointRectangle2D';
+import {
+  HorizontalAlignment,
+  VerticalAlignment
+}                           from '../configuration/Alignment';
+import {
+  ITextConfiguration
+}                           from '../configuration/TextConfiguration';
+import {
+  applyBorderConfig,
+  BorderConfig
+}                           from '../configuration/BorderOptions';
+import { SceneContext }     from '../Context';
+import { pointOf }          from '../common/Point2D';
 
-/**
- * Defines the configuration properties of a single cell
- */
-export interface ICell extends ITextConfiguration {
+export interface CellConfig extends ITextConfiguration {
+  /**
+   * Cell content (data to display using text configuration)
+   */
   content?: string;
-  edges: PointRectangle2D;
+
+  /**
+   * Cell background color
+   */
   fill?: string;
-  border?: BorderConfig;
+
+  /**
+   * Cell visibility modifier (if set to false it will be hidden)
+   */
+  visible?: boolean;
+
+  /**
+   * Left border configuration
+   */
+  leftBorder?: BorderConfig;
+
+  /**
+   * Right border configuration
+   */
+  rightBorder?: BorderConfig;
+
+  /**
+   * Bottom border configuration
+   */
+  bottomBorder?: BorderConfig;
+
+  /**
+   * Top border configuration
+   */
+  topBorder?: BorderConfig;
+
+  /**
+   * Cell width in percentage
+   */
+  width?: number;
+
+  /**
+   * Cell height in percentage
+   */
+  height?: number;
+
+  /**
+   * Only for storage purposes: if this cell with auto width?
+   */
+  autoWidth?: boolean;
+
+  /**
+   * Only for storage purposes: if this cell with auto height?
+   */
+  autoHeight?: boolean;
+}
+
+export interface CellSize {
+  percentage: number;
+  index: number;
 }
 
 /**
@@ -32,7 +92,7 @@ export interface ICell extends ITextConfiguration {
  * Column and Row unify more cells. The configuration of a single cell respects the
  * configuration of a Column or a Row.
  */
-export class Cell extends TextConfiguration {
+export class Cell implements CellConfig {
   /**
    * Cell content
    */
@@ -53,26 +113,47 @@ export class Cell extends TextConfiguration {
    */
   border: BorderConfig;
 
-  private _lastOfCol: boolean;
-  private _lastOfRow: boolean;
-  private _tableExternalBorder: BorderConfig;
+  visible: boolean;
+  width: number;
+  height: number;
+  bold: boolean;
+  italic: boolean;
+  fontName: string;
+  fontSize: number;
+  textAlign: HorizontalAlignment;
+  textColor: string;
+  verticalAlign: VerticalAlignment;
+  padding: number;
+
+  leftBorder: BorderConfig;
+  rightBorder: BorderConfig;
+  bottomBorder: BorderConfig;
+  topBorder: BorderConfig;
+
+  underlined: boolean;
 
   /**
    * Creates a new instance of a Cell class, for drawing a Cell into a table.
    * @param options Configuration following ICell interface.
-   * @param lastOfColumn Indicates if this cell is the last of the column
-   * @param lastOfRow Indicates if this cell is the last of the row
-   * @param tableExternalBorder The table external border informations
    */
-  constructor(options: ICell, lastOfColumn: boolean, lastOfRow: boolean, tableExternalBorder: BorderConfig) {
-    super(options);
+  constructor(options: CellConfig, edges: PointRectangle2D) {
     this.content = options.content || '';
-    this.edges = options.edges;
     this.fill = options.fill || 'gray';
-    this.border = options.border;
-    this._lastOfCol = lastOfColumn;
-    this._lastOfRow = lastOfRow;
-    this._tableExternalBorder = tableExternalBorder;
+    this.visible = options.visible;
+    this.bottomBorder = options.bottomBorder;
+    this.topBorder = options.topBorder;
+    this.leftBorder = options.leftBorder;
+    this.rightBorder = options.rightBorder;
+    this.bold = options.bold;
+    this.italic = options.italic;
+    this.fontName = options.fontName;
+    this.fontSize = options.fontSize;
+    this.textAlign = options.textAlign;
+    this.textColor = options.textColor;
+    this.verticalAlign = options.verticalAlign;
+    this.padding = options.padding;
+    this.underlined = options.underlined || false;
+    this.edges = edges;
   }
 
   /**
@@ -80,23 +161,23 @@ export class Cell extends TextConfiguration {
    * @param ctx The drawing context
    */
   _render(ctx: SceneContext): void {
-    if(this.edges.getWidth() === 0 || this.edges.getHeight() === 0) return;
+    if (this.edges.getWidth() === 0 || this.edges.getHeight() === 0) return;
 
     if (this.fill !== 'transparent') {
       let space: number = 0;
-      if(this.border) {
+      if (this.border) {
         space = this.border.borderWidth || 0;
         space /= 2;
       }
 
       ctx._context.fillStyle = this.fill;
-      ctx.fillRect(this.edges.topLeft.x + space,
-        this.edges.topLeft.y + space,
-        this.edges.getWidth() - space,
-        this.edges.getHeight() - space);
+      ctx.fillRect(this.edges.topLeft.x,
+        this.edges.topLeft.y,
+        this.edges.getWidth(),
+        this.edges.getHeight());
     }
 
-    if (this.border && this.border.bordered) this._renderBorders(ctx);
+    this._renderBorders(ctx);
     this._renderText(ctx);
   }
 
@@ -114,7 +195,10 @@ export class Cell extends TextConfiguration {
     // Calculate rectangle center
     const center = this.edges.getCenter();
     const textMeasure = ctx.measureText(this.content);
-    let startPoint = new Point2D(0, 0);
+    let startPoint = this.edges.topLeft;
+
+    const padding = this.padding || 0;
+    const fontSize = this.fontSize || 13;
 
     // Set horizontal position
     switch (this.textAlign) {
@@ -124,11 +208,11 @@ export class Cell extends TextConfiguration {
         break;
       case HorizontalAlignment.Left:
         ctx._context.textAlign = 'start';
-        startPoint.x = this.edges.topLeft.x + this.padding;
+        startPoint.x = this.edges.topLeft.x + padding;
         break;
       case HorizontalAlignment.Right:
         ctx._context.textAlign = 'end';
-        startPoint.x = this.edges.topRight.x - this.padding;
+        startPoint.x = this.edges.topRight.x - padding;
         break;
     }
 
@@ -138,16 +222,25 @@ export class Cell extends TextConfiguration {
         startPoint.y = center.y + (textMeasure.actualBoundingBoxAscent / 2);
         break;
       case VerticalAlignment.Bottom:
-        startPoint.y = this.edges.bottomRight.y - this.padding - (textMeasure.actualBoundingBoxAscent);
+        startPoint.y = this.edges.bottomRight.y - padding - fontSize;
         break;
       case VerticalAlignment.Top:
-        startPoint.y = this.edges.topLeft.y + this.padding + (textMeasure.actualBoundingBoxAscent);
+        startPoint.y = this.edges.topLeft.y + padding + fontSize;
         break;
     }
 
     ctx.fillText(this.content,
       startPoint.x,
       startPoint.y);
+
+    // Draw line if present
+    if (this.underlined) {
+      ctx._context.strokeStyle = this.textColor;
+      const lineWidth = ctx.measureText(this.content).width;
+      const start = pointOf(startPoint.x, startPoint.y + padding);
+      const end = pointOf(startPoint.x + lineWidth, start.y);
+      ctx.strokeLineBetween(start, end);
+    }
   }
 
   /**
@@ -156,36 +249,28 @@ export class Cell extends TextConfiguration {
    * @private
    */
   private _renderBorders(ctx: SceneContext): void {
-    if(!this.border) return;
-    if(!this.border.bordered) return;
-    if(this.border.borderWidth === 0) return;
-
-    ctx._context.lineCap = this.border.borderCap;
-    ctx._context.strokeStyle = this.border.borderColor;
-    ctx._context.lineWidth = this.border.borderWidth;
-
-    if(this.border.borderDash)
-      ctx.setLineDash(this.border.borderDash);
-    ctx.closePath();
+    const edges = this.edges;
 
     // Bottom border
-    if(!this._lastOfRow) {
-      ctx.beginPath();
-      ctx.moveTo(this.edges.topRight.x, this.edges.topRight.y);
-      ctx.moveTo(this.edges.bottomRight.x, this.edges.bottomRight.y);
-      ctx.moveTo(this.edges.bottomLeft.x, this.edges.bottomLeft.y);
-      ctx.lineTo(this.edges.bottomRight.x, this.edges.bottomRight.y);
-      ctx.stroke();
-      ctx.closePath();
+    if (this.topBorder && this.topBorder.bordered) {
+      // Apply border configruration
+      applyBorderConfig(this.topBorder, ctx);
+      ctx.strokeLineBetween(edges.topLeft, edges.topRight);
     }
 
-    // Right border
-    if(!this._lastOfCol) {
-      ctx.beginPath();
-      ctx.moveTo(this.edges.topRight.x, this.edges.topRight.y);
-      ctx.lineTo(this.edges.bottomRight.x, this.edges.bottomRight.y);
-      ctx.stroke();
-      ctx.closePath();
+    if (this.rightBorder && this.rightBorder.bordered) {
+      applyBorderConfig(this.rightBorder, ctx);
+      ctx.strokeLineBetween(edges.topRight, edges.bottomRight);
+    }
+
+    if (this.bottomBorder && this.bottomBorder.bordered) {
+      applyBorderConfig(this.bottomBorder, ctx);
+      ctx.strokeLineBetween(edges.bottomRight, edges.bottomLeft);
+    }
+
+    if (this.leftBorder && this.leftBorder.bordered) {
+      applyBorderConfig(this.leftBorder, ctx);
+      ctx.strokeLineBetween(edges.bottomLeft, edges.topLeft);
     }
   }
 
@@ -194,7 +279,7 @@ export class Cell extends TextConfiguration {
    * @private
    */
   private _formatFontString(): string {
-    return `${ this.bold ? 'bold' : '' } ${ this.fontSize }px ${ this.fontName } ${ this.italic ? 'italic' : '' }`;
+    return `${ this.bold ? 'bold' : '' } ${ this.italic ? 'italic' : '' } ${ this.fontSize || 13 }px ${ this.fontName }`;
   }
 
   /**
