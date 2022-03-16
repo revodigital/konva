@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file. This
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.10.1 (16/3/2022)
+Implements *TableBuilder* population methods:
+* `populateContent` to populate all the contents of a table
+* `buildContent` to get a matrix with only the contents of a table
+* `withCells` to create a xy table
+
+Implements `populateContent` also on the `Table` class.
+
 ## 1.9.1 (16/3/2022)
 Solves *Table* persistence issues with cells. Adds new useful methods to *Table* for:
 * Count columns
