@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file. This
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.9.1 (16/3/2022)
+Solves *Table* persistence issues with cells. Adds new useful methods to *Table* for:
+* Count columns
+* Count rows
+* Get a `Matrix2D` helper for managing table cells
+
 ## 1.8.2 (1/3/2022)
 
 Implements *Table*.*toBuilder* method to create a *TableBuilder* starting from
