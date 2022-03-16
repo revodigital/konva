@@ -768,7 +768,7 @@ export class TableBuilder implements Builder<Table> {
    */
   static fromTable(table: Table): TableBuilder {
     const b = new TableBuilder(table.toConfig());
-    b.setCells(table.cells());
+    b.setCells(new Matrix2D<CellConfig>(table.cells()));
 
     return b;
   }
@@ -787,7 +787,7 @@ export class TableBuilder implements Builder<Table> {
    * @param table
    */
   buildTo(table: Table): void {
-    table.cells(this.cells);
+    table.cells(this.cells.data);
   }
 
   /**
@@ -796,7 +796,7 @@ export class TableBuilder implements Builder<Table> {
   build(): Table {
     return new Table({
       ...this.options,
-      cells: this.cells
+      cells: this.cells.data
     });
   }
 }

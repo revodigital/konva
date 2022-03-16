@@ -19,7 +19,7 @@ export class MatrixIndex extends Point2D {}
  * Represents a bidimensional matrix
  */
 export class Matrix2D<T> {
-  private data: T[][];
+  data: T[][];
 
   constructor(data?: T[][]) {
     this.data = data || [];

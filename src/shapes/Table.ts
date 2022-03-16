@@ -22,7 +22,7 @@ import { PointRectangle2D }   from '../common/PointRectangle2D';
 import { TableBuilder }       from '../builders/TableBuilder';
 
 export interface TableConfig extends ShapeConfig {
-  cells?: Matrix2D<CellConfig>;
+  cells?: CellConfig[][];
 }
 
 /**
@@ -32,7 +32,7 @@ export class Table extends Shape<TableConfig> {
   /**
    * Contains all the cells of this Table
    */
-  cells: GetSet<Matrix2D<CellConfig>, this>;
+  cells: GetSet<CellConfig[][], this>;
   _config: TableConfig;
 
   constructor(config: TableConfig) {
@@ -75,7 +75,9 @@ export class Table extends Shape<TableConfig> {
     const width = this.width();
     const height = this.height();
 
-    this.cells().forEachRow(it => {
+    const cells = new Matrix2D<CellConfig>(this.cells());
+
+    cells.forEachRow(it => {
       // Skip empty lines
       if (it.length <= 0) return;
 
@@ -100,6 +102,32 @@ export class Table extends Shape<TableConfig> {
 
       offsetY += (it[0].height / 100) * height;
     });
+  }
+
+  /**
+   * Returns the number of columns into this table
+   */
+  countColumns(): number {
+    if (this.cells().length === 0) return 0;
+
+    return this.cells()[0].length;
+  }
+
+  /**
+   * Returns the number of rows into this table
+   */
+  countRows(): number {
+    return this.cells().length;
+  }
+
+  /**
+   * Returns an helper to work easily with the cells of this matrix.
+   *
+   * Your code **should not** change the cells, but only perform calculations.
+   * To edit a table, please use `TableBuilder` class instead
+   */
+  getCellsMatrix(): Matrix2D<CellConfig> {
+    return new Matrix2D<CellConfig>(this.cells());
   }
 
   /**
