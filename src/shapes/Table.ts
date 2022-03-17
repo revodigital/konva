@@ -12,7 +12,6 @@
 import { Shape, ShapeConfig } from '../Shape';
 import { _registerNode }      from '../Global';
 import { SceneContext }       from '../Context';
-import { BorderConfig }       from '../configuration/BorderOptions';
 import { GetSet }             from '../types';
 import { Factory }            from '../Factory';
 import { Cell, CellConfig }   from './cell';
@@ -130,19 +129,19 @@ export class Table extends Shape<TableConfig> {
   populateContent(content: Matrix2D<string>, includesHeader?: boolean): this {
     const headered = !!includesHeader;
     let rowIndex = headered ? 0 : 1;
+    let cellsMatrix = new Matrix2D(this.cells());
 
-    content.forEachRow(row => {
-      let index = 0;
+    content.forEachRow(contentRow => {
 
-      let r = this.cells()[rowIndex];
-      if (r !== undefined)
-        r.forEach(it => {
-          const content = row[index];
+      let r = cellsMatrix.getRow(rowIndex);
+      if (r !== undefined) {
+        for (let i = 0; i < contentRow.length; i++) {
+          const content = contentRow[i];
 
           if (content)
-            it['content'] = row[index] || '';
-          index++;
-        });
+            r[i].content = contentRow[i] || '';
+        }
+      }
 
       rowIndex++;
     });

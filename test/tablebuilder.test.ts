@@ -13,6 +13,7 @@ import { TableBuilder }  from '../src/builders/TableBuilder';
 import { ColumnBuilder } from '../lib/builders/ColumnBuilder';
 import { RowBuilder }    from '../lib/builders/RowBuilder';
 import { matrixRepeat }  from '../src/common/Matrix2D';
+import { Matrix2D }      from '../lib/common/Matrix2D';
 
 it('Should correctly populate this entire table', () => {
   const builder = new TableBuilder({
@@ -112,4 +113,24 @@ it('Should correctly load this table from the JSON', () => {
   expect(t.width()).toEqual(100);
   expect(t.height()).toEqual(200);
   expect(t.fill()).toEqual('white');
+});
+
+it('Should correctly populate this table', () => {
+  const table = TableBuilder.withCells(20, 20, {
+    width: 100,
+    height: 200,
+    fill: 'white',
+    stroke: 'black',
+  }, {
+    content: 'placeholder'
+  }).build();
+
+  table.populateContent(new Matrix2D<string>([['first', 'second'], ['third', 'fourth']]),
+    true);
+
+  expect(table.cells()[0][0].content).toEqual('first');
+  expect(table.cells()[0][1].content).toEqual('second');
+  expect(table.cells()[1][0].content).toEqual('third');
+  expect(table.cells()[1][1].content).toEqual('fourth');
+  expect(table.cells()[1][2].content).toEqual('placeholder');
 });
