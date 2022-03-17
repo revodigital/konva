@@ -92,3 +92,24 @@ it('Should correctly populate this existing table', () => {
       expect(table.cells()[i][x].content).toEqual('content');
   }
 });
+
+it('Should correctly load this table from the JSON', () => {
+  const table = TableBuilder.withCells(20, 20, {
+    width: 100,
+    height: 200,
+    fill: 'white',
+    stroke: 'black'
+  }).build();
+
+  const tableJson = table.toJSON();
+
+  const loadTable = TableBuilder.fromJSON(tableJson);
+  expect(loadTable.getRowsCount()).toEqual(20);
+  expect(loadTable.getColumnsCount()).toEqual(20);
+
+  const t = loadTable.build();
+  expect(loadTable.build()).toBeDefined();
+  expect(t.width()).toEqual(100);
+  expect(t.height()).toEqual(200);
+  expect(t.fill()).toEqual('white');
+});
