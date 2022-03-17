@@ -30,9 +30,7 @@ export class RowBuilder extends CellCollectionBuilder {
   fitWidth(totalPerc?: number): this {
     const total = this.getFreeWidth();
 
-    console.log(total);
     const part = total / this.getAutoWidthCellsCount();
-    console.log("Part is ", part);
 
     return this.setAllAutoWidthCells({
       width: part
@@ -89,6 +87,39 @@ export class RowBuilder extends CellCollectionBuilder {
 
         index++;
       });
+
+    return this;
+  }
+
+  /**
+   * Merges 2 cells, by index. The resulting cell will have the same width as the original ones
+   * but a summed height. Please note that they must be consecutive
+   * @param indexA First cell index
+   * @param indexB Second cell index
+   * @param useA Indicates if the style should be inherited from a or b
+   */
+  mergeCells(indexA: number, indexB: number, useA: boolean): this {
+    const distance = Math.abs(indexA - indexB);
+    // The cells are not consecutive
+    if (distance > 1) return this;
+    if (!this.hasCellAtIndex(indexA) || !this.hasCellAtIndex(indexB)) return this;
+
+    // Cell to remove
+    const indexToRemove = useA ? indexB : indexA;
+    // Cell to copy to
+    const indexCopy = useA ? indexA : indexB;
+
+    const temp = this.get(indexCopy);
+    const tempRem = this.get(indexToRemove);
+
+    this.overwrite(indexCopy, this.get(indexToRemove));
+    this.set(indexCopy, {
+      width: temp.width + tempRem.width,
+      autoWidth: false
+    });
+
+    // Remove other cell
+    this.removeCellAt(indexToRemove);
 
     return this;
   }

@@ -15,11 +15,44 @@ import { insertToArray } from '../shapes/utils';
 
 export class MatrixIndex extends Point2D {}
 
+export const matrixOf = <T>(data: T[][]): Matrix2D<T> => {
+  return new Matrix2D<T>(data);
+};
+
+/**
+ * Creates a repeated array
+ * @param sample
+ * @param length
+ */
+export const arrayRepeat = <T>(sample: T, length: number): T[] => {
+  let a = [];
+
+  for (let i = 0; i < length; i++)
+    a.push(sample);
+
+  return a;
+};
+
+/**
+ * Creates a repeated matrix
+ * @param sample
+ * @param width
+ * @param height
+ */
+export const matrixRepeat = <T>(sample: T, width: number, height: number): Matrix2D<T> => {
+  let matrix = new Matrix2D<T>();
+
+  for (let i = 0; i < height; i++)
+    matrix.pushRow(arrayRepeat(sample, width));
+
+  return matrix;
+};
+
 /**
  * Represents a bidimensional matrix
  */
 export class Matrix2D<T> {
-  private data: T[][];
+  data: T[][];
 
   constructor(data?: T[][]) {
     this.data = data || [];
@@ -33,6 +66,25 @@ export class Matrix2D<T> {
     if (!this.hasCellAtIndex(index)) return undefined;
 
     else return this.data[index.y][index.x];
+  }
+
+  /**
+   * Map a matrix to a new matrix of another type
+   * @param converter
+   */
+  public map<Y>(converter: (cell: T) => Y): Matrix2D<Y> {
+    let result = new Matrix2D<Y>();
+
+    this.forEachRow(row => {
+      let r = [];
+      row.forEach(cell => {
+        r.push(converter(cell));
+      });
+
+      result.pushRow(r);
+    });
+
+    return result;
   }
 
   /**
@@ -258,7 +310,7 @@ export class Matrix2D<T> {
 
   insertColumn(object: T[], startIndex: number, verse: Verse) {
     let i = 0;
-    console.log("initial data: ", this.data);
+    console.log('initial data: ', this.data);
 
     for (let c = 0; c < this.getRowsCount(); c++) {
       this.data[c] = insertToArray(this.data[c], object[i], startIndex, verse);

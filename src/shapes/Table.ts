@@ -22,7 +22,7 @@ import { PointRectangle2D }   from '../common/PointRectangle2D';
 import { TableBuilder }       from '../builders/TableBuilder';
 
 export interface TableConfig extends ShapeConfig {
-  cells?: Matrix2D<CellConfig>;
+  cells?: CellConfig[][];
 }
 
 /**
@@ -32,7 +32,7 @@ export class Table extends Shape<TableConfig> {
   /**
    * Contains all the cells of this Table
    */
-  cells: GetSet<Matrix2D<CellConfig>, this>;
+  cells: GetSet<CellConfig[][], this>;
   _config: TableConfig;
 
   constructor(config: TableConfig) {
@@ -75,7 +75,12 @@ export class Table extends Shape<TableConfig> {
     const width = this.width();
     const height = this.height();
 
-    this.cells().forEachRow(it => {
+    const cells = new Matrix2D<CellConfig>(this.cells());
+
+    cells.forEachRow(it => {
+      // Skip empty lines
+      if (it.length <= 0) return;
+
       let offsetX = 0;
 
       it.forEach(cell => {
@@ -100,10 +105,94 @@ export class Table extends Shape<TableConfig> {
   }
 
   /**
+   * Returns the number of columns into this table
+   */
+  countColumns(): number {
+    if (this.cells().length === 0) return 0;
+
+    return this.cells()[0].length;
+  }
+
+  /**
+   * Returns the number of rows into this table
+   */
+  countRows(): number {
+    return this.cells().length;
+  }
+
+  /**
+   * Populates the contents of a table starting from a matrix. The table is populated according to the input matrix size.
+   * If you supply a 10x10 matrix to populate a 100x100 table, only the first 10x10 cells will be populated, the other will
+   * be leaved empty. The same happens if the supplied matrix is too big, only the required part will be used
+   * @param content The matrix to use for population
+   * @param includesHeader Should this operation start from the header or not? If false it will start from the row 1
+   */
+  populateContent(content: Matrix2D<string>, includesHeader?: boolean): this {
+    const headered = !!includesHeader;
+    let rowIndex = headered ? 0 : 1;
+
+    content.forEachRow(row => {
+      let index = 0;
+
+      let r = this.cells()[rowIndex];
+      if (r !== undefined)
+        r.forEach(it => {
+          const content = row[index];
+
+          if (content)
+            it['content'] = row[index] || '';
+          index++;
+        });
+
+      rowIndex++;
+    });
+
+    return this;
+  }
+
+  /**
+   * Returns the number of rows in this table. If it is empty
+   * it returns 0
+   */
+  getRowsCount(): number {
+    if (!this.cells()) return 0;
+
+    return this.cells().length;
+  }
+
+
+  /**
+   * Returns the number of column in this table
+   */
+  getColumnsCount(): number {
+    if (!this.cells) return 0;
+
+    if (!this.cells()[0]) return 0;
+    return this.cells()[0]?.length || 0;
+  }
+
+  /**
+   * Returns an helper to work easily with the cells of this matrix.
+   *
+   * Your code **should not** change the cells, but only perform calculations.
+   * To edit a table, please use `TableBuilder` class instead
+   */
+  getCellsMatrix(): Matrix2D<CellConfig> {
+    return new Matrix2D<CellConfig>(this.cells());
+  }
+
+  /**
    * Constructs a builder for this table
    */
   toBuilder(): TableBuilder {
     return TableBuilder.fromTable(this);
+  }
+
+  /**
+   * Builds the contents of this table to a matrix
+   */
+  buildContent(): Matrix2D<string> {
+    return this.toBuilder().buildContent();
   }
 
   /**

@@ -511,6 +511,26 @@ export class TableBuilder implements Builder<Table> {
   }
 
   /**
+   * Construct a new table giving complete number of cells (5x5)
+   * @param x Number of cells per row
+   * @param y Number of rows
+   * @param shapeConfig Initial shape configuration
+   * @param cellConfig Cell configuration to apply to all the cells
+   */
+  static withCells(x: number, y: number, shapeConfig?: TableConfig, cellConfig?: Partial<CellConfig>): TableBuilder {
+    let builder = new TableBuilder(shapeConfig);
+
+    if (x <= 0 || y <= 0) return builder;
+
+    for (let i = 0; i < y; i++)
+      builder.addRow({
+        row: RowBuilder.withCells(x, cellConfig)
+      });
+
+    return builder;
+  }
+
+  /**
    * Sets the background of a specific range of columns
    * @param color Background color
    * @param start Start index
@@ -768,7 +788,7 @@ export class TableBuilder implements Builder<Table> {
    */
   static fromTable(table: Table): TableBuilder {
     const b = new TableBuilder(table.toConfig());
-    b.setCells(table.cells());
+    b.setCells(new Matrix2D<CellConfig>(table.cells()));
 
     return b;
   }
@@ -787,7 +807,40 @@ export class TableBuilder implements Builder<Table> {
    * @param table
    */
   buildTo(table: Table): void {
-    table.cells(this.cells);
+    table.cells(this.cells.data);
+  }
+
+  /**
+   * Builds all the cells of this table to a matrix containing
+   * only their content
+   */
+  buildContent(): Matrix2D<string> {
+    return this.getMatrix().map<string>(it => it.content);
+  }
+
+  /**
+   * Populates the content of a Table
+   * @param content A matrix containing only the contents of the string
+   * @param includesHeader Should it start from the header or skip to the next row?
+   */
+  populateContent(content: Matrix2D<string>, includesHeader?: boolean): this {
+    const headered = !!includesHeader;
+    let rowIndex = headered ? 0 : 1;
+
+    content.forEachRow(row => {
+      let index = 0;
+
+      const r = this.cells.getRow(rowIndex);
+      if (r !== undefined)
+        r.forEach(it => {
+          it.content = row[index] || '';
+          index++;
+        });
+
+      rowIndex++;
+    });
+
+    return this;
   }
 
   /**
@@ -796,7 +849,7 @@ export class TableBuilder implements Builder<Table> {
   build(): Table {
     return new Table({
       ...this.options,
-      cells: this.cells
+      cells: this.cells.data
     });
   }
 }

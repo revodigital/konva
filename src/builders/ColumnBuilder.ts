@@ -74,6 +74,41 @@ export class ColumnBuilder extends CellCollectionBuilder {
   }
 
   /**
+   * Merges 2 cells, by index. The resulting cell will have the same width as the original ones
+   * but a summed height. Please note that they must be consecutive.
+   * Not yet implemented
+   * @param indexA First cell index
+   * @param indexB Second cell index
+   * @param useA Indicates if the style should be inherited from a or b
+   */
+  mergeCells(indexA: number, indexB: number, useA: boolean) {
+    // const distance = Math.abs(indexA - indexB);
+    // // The cells are not consecutive
+    // if (distance > 1) return;
+    // if (!this.hasCellAtIndex(indexA) || !this.hasCellAtIndex(indexB)) return;
+    //
+    // // Cell to remove
+    // const indexToRemove = useA ? indexB : indexA;
+    // // Cell to copy to
+    // const indexCopy = useA ? indexA : indexB;
+    //
+    // const temp = this.get(indexCopy);
+    // const tempRem = this.get(indexToRemove);
+    //
+    // this.overwrite(indexCopy, this.get(indexToRemove));
+    // this.set(indexCopy, {
+    //   height: temp.height + tempRem.height,
+    //   autoHeight: false
+    // });
+    //
+    // // Remove other cell
+    // this.removeCellAt(indexToRemove);
+    //
+    // return this
+    return this;
+  }
+
+  /**
    * Creates a new row with a given number of cells with the same configuration
    * @param num Number of cells
    * @param config Configuration to apply to all of them
