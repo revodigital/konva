@@ -121,9 +121,11 @@ export class Table extends Shape<TableConfig> {
   }
 
   /**
-   * Populates the contents of a table
-   * @param content
-   * @param includesHeader
+   * Populates the contents of a table starting from a matrix. The table is populated according to the input matrix size.
+   * If you supply a 10x10 matrix to populate a 100x100 table, only the first 10x10 cells will be populated, the other will
+   * be leaved empty. The same happens if the supplied matrix is too big, only the required part will be used
+   * @param content The matrix to use for population
+   * @param includesHeader Should this operation start from the header or not? If false it will start from the row 1
    */
   populateContent(content: Matrix2D<string>, includesHeader?: boolean): this {
     const headered = !!includesHeader;
@@ -132,10 +134,13 @@ export class Table extends Shape<TableConfig> {
     content.forEachRow(row => {
       let index = 0;
 
-      const r = this.cells[rowIndex];
+      let r = this.cells()[rowIndex];
       if (r !== undefined)
         r.forEach(it => {
-          it['content'] = row[index] || '';
+          const content = row[index];
+
+          if (content)
+            it['content'] = row[index] || '';
           index++;
         });
 
@@ -143,6 +148,27 @@ export class Table extends Shape<TableConfig> {
     });
 
     return this;
+  }
+
+  /**
+   * Returns the number of rows in this table. If it is empty
+   * it returns 0
+   */
+  getRowsCount(): number {
+    if (!this.cells()) return 0;
+
+    return this.cells().length;
+  }
+
+
+  /**
+   * Returns the number of column in this table
+   */
+  getColumnsCount(): number {
+    if (!this.cells) return 0;
+
+    if (!this.cells()[0]) return 0;
+    return this.cells()[0]?.length || 0;
   }
 
   /**
@@ -160,6 +186,13 @@ export class Table extends Shape<TableConfig> {
    */
   toBuilder(): TableBuilder {
     return TableBuilder.fromTable(this);
+  }
+
+  /**
+   * Builds the contents of this table to a matrix
+   */
+  buildContent(): Matrix2D<string> {
+    return this.toBuilder().buildContent();
   }
 
   /**

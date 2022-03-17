@@ -73,3 +73,22 @@ it('Should correctly create a 200x200 table', () => {
 
   expect(table.cells()[0][0]).toHaveProperty('content', 'hello');
 });
+
+it('Should correctly populate this existing table', () => {
+  const table = TableBuilder.withCells(100, 100, {
+    width: 100,
+    height: 100
+  }, { autoWidth: true, autoHeight: true, fill: 'white' }).build();
+
+  expect(table).toBeDefined();
+  expect(table.getRowsCount()).toEqual(100);
+  expect(table.getColumnsCount()).toEqual(100);
+
+  table.populateContent(matrixRepeat('content', 10, 10), false);
+
+  for (let i = 1; i <= 10; i++) {
+    expect(table.cells()[i]).toBeDefined();
+    for (let x = 0; x < 10; x++)
+      expect(table.cells()[i][x].content).toEqual('content');
+  }
+});
