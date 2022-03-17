@@ -71,7 +71,7 @@ it('Should correctly create a 200x200 table', () => {
 
   table.populateContent(matrixRepeat('hello', 200, 200));
 
-  expect(table.cells()[0][0]).toHaveProperty('content', 'hello');
+  expect(table.cells()[1][0].content).toEqual('hello');
 });
 
 it('Should correctly populate this existing table', () => {
