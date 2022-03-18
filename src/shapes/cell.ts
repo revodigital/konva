@@ -237,8 +237,18 @@ export class Cell implements CellConfig {
     if (this.underlined) {
       ctx._context.strokeStyle = this.textColor;
       const lineWidth = ctx.measureText(this.content).width;
-      const start = pointOf(startPoint.x, startPoint.y + padding);
-      const end = pointOf(startPoint.x + lineWidth, start.y);
+      let start = pointOf(startPoint.x, startPoint.y + padding);
+
+      if (this.textAlign === HorizontalAlignment.Center) start.x -= lineWidth / 2;
+      let end;
+
+      if (this.textAlign === HorizontalAlignment.Left)
+        end = pointOf(startPoint.x + lineWidth, start.y);
+      else if (this.textAlign === HorizontalAlignment.Right) end = pointOf(
+        startPoint.x - lineWidth,
+        start.y);
+      else end = pointOf((startPoint.x + (lineWidth / 2)),
+          start.y);
       ctx.strokeLineBetween(start, end);
     }
   }

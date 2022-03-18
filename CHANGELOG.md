@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file. This
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.12.1 (18/3/2022)
+Solves `Cell` rendering problems with underline. *Implements* very useful new methods on the `Matrix2D` collection class,
+such as:
+* `setCell` to set the value of a specific cell
+* `countColumnsWhere` to count the columns where a given predicate is true
+* `countRowsWhere`
+* `anyRow` to check if at least one row satisfies a predicate
+* `anyColumn`
+* `slice` to create a copy of this matrix
+* `hasRowAtIndex` to check if a number is a valid index
+* `removeRow` to remove a row
+* `removeColumn` to remove a column
+
+
 ## 1.11.1 (17/3/2022)
 
 Implements *TableBuilder* methods to handle directly JSON strings. Now you can:
