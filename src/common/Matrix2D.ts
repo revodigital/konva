@@ -65,7 +65,18 @@ export class Matrix2D<T> {
   public getCell(index: MatrixIndex): T | undefined {
     if (!this.hasCellAtIndex(index)) return undefined;
 
-    else return this.data[index.y][index.x];
+    return this.data[index.y][index.x];
+  }
+
+  /**
+   * Set the cell at the given index
+   * @param index Index to set
+   * @param value Value to store
+   */
+  public setCell(index: MatrixIndex, value: T): this {
+    if (!this.hasCellAtIndex(index)) return this;
+
+    this.data[index.y][index.x] = value;
   }
 
   /**
@@ -135,6 +146,41 @@ export class Matrix2D<T> {
    */
   public hasColumnAt(index: number): boolean {
     return index >= 0 && index < this.getColumnsCount() && this.getColumn(index) !== undefined;
+  }
+
+  /**
+   * Counts the rows where this predicate is true
+   * @param predicate
+   */
+  public countColumnsWhere(predicate: (it: T[]) => boolean): number {
+    let sum = 0;
+
+    for (let i = 0; i < this.getColumnsCount(); i++)
+      if (predicate(this.getColumn(i))) sum++;
+
+    return sum;
+  }
+
+  /**
+   * Check if at least one row satisfies the predicate
+   * @param predicate A function
+   */
+  public anyRow(predicate: (it: T[]) => boolean): boolean {
+    for (const a of this.data)
+      if (predicate(a)) return true;
+
+    return false;
+  }
+
+  /**
+   * Checks if at least one column satisfies the predicate
+   * @param predicate
+   */
+  public anyColumn(predicate: (it: T[]) => boolean): boolean {
+    for (let i = 0; i < this.getColumnsCount(); i++)
+      if (predicate(this.getColumn(i))) return true;
+
+    return false;
   }
 
   /**
@@ -247,6 +293,9 @@ export class Matrix2D<T> {
     return this.getRow(0);
   }
 
+  /**
+   * Returns the length of a matrix
+   */
   public length(): number {
     return this.data.length;
   }
@@ -308,13 +357,58 @@ export class Matrix2D<T> {
     this.data = a;
   }
 
+  /**
+   * Inserts a column into the matrix
+   * @param object
+   * @param startIndex
+   * @param verse
+   */
   insertColumn(object: T[], startIndex: number, verse: Verse) {
     let i = 0;
-    console.log('initial data: ', this.data);
 
     for (let c = 0; c < this.getRowsCount(); c++) {
       this.data[c] = insertToArray(this.data[c], object[i], startIndex, verse);
       i++;
     }
+  }
+
+  /**
+   * Slices this matrix
+   * @param indexA start row index
+   * @param indexB end row index
+   */
+  slice(indexA?: number, indexB?: number): Matrix2D<T> {
+    return new Matrix2D<T>(this.data.slice(indexA, indexB));
+  }
+
+  /**
+   * Checks if there is a row at the given index
+   * @param index
+   */
+  hasRowAtIndex(index: number): boolean {
+    return index >= 0 && this.data.length > index;
+  }
+
+  /**
+   * Removes the row at the given index
+   * @param index
+   */
+  removeRow(index: number): this {
+    if (this.hasRowAtIndex(index))
+      this.data.splice(index, 1);
+
+    return this;
+  }
+
+  /**
+   * Removes a column by index
+   * @param index Column index to remove
+   */
+  removeColumn(index: number): this {
+    if (this.hasColumnAt(index))
+      for (let i = 0; i < this.getRowsCount(); i++)
+        this.data[i].splice(index, 1);
+
+    return this;
   }
 }
