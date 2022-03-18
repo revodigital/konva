@@ -76,7 +76,7 @@ export abstract class CellCollectionBuilder implements Builder<CellConfig[]> {
    * @param indexB
    * @param useA
    */
-  abstract mergeCells(indexA: number, indexB: number, useA: boolean);
+  abstract mergeCells(indexA: number, indexB: number, useA: boolean): any;
 
   /**
    * Checks if all the cells have auto width
