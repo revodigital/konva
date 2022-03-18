@@ -160,7 +160,6 @@ export class Table extends Shape<TableConfig> {
     return this.cells().length;
   }
 
-
   /**
    * Returns the number of column in this table
    */

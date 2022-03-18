@@ -3,8 +3,36 @@
 All notable changes to this project will be documented in this file. This
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.11.1 (17/3/2022)
+
+Implements *TableBuilder* methods to handle directly JSON strings. Now you can:
+
+* Create a table starting from the JSON (`TableBuilder.fromJSON()`)
+* Build a table to JSON (`builder.buildJSON()`)
+
+IMPORTANT NOTE: The structure of the JSON string is the same of the `Table`
+class. Normally, you can use a similar snippet to create and store a table to
+JSON easily:
+
+```typescript
+import { TableBuilder } from './TableBuilder';
+
+const builder = TableBuilder.withCells(100,
+  100,
+  { width: 200, height: 200 }).build()
+
+const json = builder.buildJSON()
+
+// Store your json
+```
+
+Please avoid creating the json by hand, it can lead to very stupid errors. Do
+use the `TableBuilder` for that purpose.
+
 ## 1.10.1 (16/3/2022)
+
 Implements *TableBuilder* population methods:
+
 * `populateContent` to populate all the contents of a table
 * `buildContent` to get a matrix with only the contents of a table
 * `withCells` to create a xy table
@@ -12,7 +40,10 @@ Implements *TableBuilder* population methods:
 Implements `populateContent` also on the `Table` class.
 
 ## 1.9.1 (16/3/2022)
-Solves *Table* persistence issues with cells. Adds new useful methods to *Table* for:
+
+Solves *Table* persistence issues with cells. Adds new useful methods to *Table*
+for:
+
 * Count columns
 * Count rows
 * Get a `Matrix2D` helper for managing table cells

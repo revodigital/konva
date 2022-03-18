@@ -16,6 +16,7 @@ import { CellConfig }         from '../shapes/cell';
 import { RowBuilder }         from './RowBuilder';
 import { Verse }              from '../shapes/Verse';
 import { ColumnBuilder }      from './ColumnBuilder';
+import { Node }               from '../Node';
 
 export interface AddRowConfig {
   row: RowBuilder;
@@ -531,6 +532,26 @@ export class TableBuilder implements Builder<Table> {
   }
 
   /**
+   * Constructs a table starting from the JSON.
+   *
+   * @param json The json string to parse (it has to have the same structure of the Table class)
+   * @returns TableBuilder A table builder to perform operations on the loaded table
+   */
+  static fromJSON(json: string): TableBuilder {
+    let builder = new TableBuilder();
+
+    try {
+      const table = Node.create(json) as Table;
+
+      return TableBuilder.fromTable(table);
+    } catch (e) {
+
+    }
+
+    return builder;
+  }
+
+  /**
    * Sets the background of a specific range of columns
    * @param color Background color
    * @param start Start index
@@ -851,5 +872,12 @@ export class TableBuilder implements Builder<Table> {
       ...this.options,
       cells: this.cells.data
     });
+  }
+
+  /**
+   * Build directly a JSON string for this table
+   */
+  buildJSON(): string {
+    return this.build().toJSON();
   }
 }
