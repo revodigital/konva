@@ -568,22 +568,6 @@ export class TableBuilder implements Builder<Table> {
   }
 
   /**
-   * Sets the background of a specific range of columns
-   * @param color Background color
-   * @param start Start index
-   * @param end End index
-   */
-  // public setRowsBackground(color: string, start: number = 0, end: number = this.rows().length): void {
-  //   if (color === '') throw new Error('Invalid row background color');
-  //   if (start < 0 || start >= this.rows().length) throw new Error(
-  //     'Invalid start index');
-  //   if (end < 0 || end > this.rows().length) throw new Error('Invalid end index');
-  //   if (start > end) throw new Error('Invalid start / end indexes');
-  //
-  //   for (let x = start; x < end; x++) this.rows()[x].fill = color;
-  // }
-
-  /**
    * Clears the contents of an entire column
    * @param index Column index
    * @param clearHeader Indicates if this operation should affect only the
@@ -810,22 +794,12 @@ export class TableBuilder implements Builder<Table> {
   // }
 
   /**
-   * Pops a row from this table
-   * @param resize
-   */
-  // public popRow(resize?: boolean): Row {
-  //   const temp = this.rows()[this.rows().length - 1];
-  //   this.removeRow(this.rows().length - 1, resize);
-  //   return temp;
-  // }
-
-  /**
    * Creates a builder to edit a specific table
    * @param table To edit
    */
   static fromTable(table: Table): TableBuilder {
     const b = new TableBuilder(table.toConfig());
-    b.setCells(new Matrix2D<CellConfig>(table.cells()));
+    b.setCells(new Matrix2D<CellConfig>(table.cells().slice()));
 
     return b;
   }
