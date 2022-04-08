@@ -266,6 +266,22 @@ export class TableBuilder implements Builder<Table> {
   }
 
   /**
+   * Iterates every column of this table
+   * @param iterator
+   */
+  forEachColumn(iterator: (column: ColumnBuilder) => void) {
+    this.cells.forEachColumn(it => iterator(new ColumnBuilder(it)));
+  }
+
+  /**
+   * Iterates every row of this table
+   * @param iterator
+   */
+  forEachRow(iterator: (row: RowBuilder) => void) {
+    this.cells.forEachRow(it => iterator(new RowBuilder(it)));
+  }
+
+  /**
    * Returns the number of columns with auto-width
    */
   getAutoColCount(): number {
