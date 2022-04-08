@@ -134,3 +134,33 @@ it('Should correctly populate this table', () => {
   expect(table.cells()[1][1].content).toEqual('fourth');
   expect(table.cells()[1][2].content).toEqual('placeholder');
 });
+
+it('Should correctly iterate all columns', () => {
+  const table = TableBuilder.withCells(20, 20, {
+    fill: 'blue'
+  });
+
+  let i = 0;
+
+  table.forEachColumn(column => {
+    expect(column.getCellCount()).toEqual(20);
+    i++;
+  });
+
+  expect(i).toEqual(20);
+});
+
+it('Should correctly iterate all rows', () => {
+  const table = TableBuilder.withCells(20, 20, {
+    fill: 'blue'
+  });
+
+  let i = 0;
+
+  table.forEachRow(row => {
+    expect(row.getCellCount()).toEqual(20);
+    i++;
+  });
+
+  expect(i).toEqual(20);
+});
