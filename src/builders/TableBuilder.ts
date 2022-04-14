@@ -454,6 +454,7 @@ export class TableBuilder implements Builder<Table> {
    */
   setCells(cells: Matrix2D<CellConfig>): this {
     this.cells = cells;
+    this.adaptSpace();
     return this;
   }
 
