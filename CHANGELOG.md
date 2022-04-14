@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file. This
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.13.1 (14/04/2022)
+Minor fixes and several new useful functions added to `TableBuilder`. Fixes sizing problems when calling `setCells`, now the table is automatically resized.  
+Fixes also `fromTable` problems
+Implements different methods on `TableBuilder` such as:
+* `lastColumnIndex` to get the last column index
+* `lastRowIndex` the same for rows
+* `hasRowAtIndex` check if there is a row at the given index
+* `hasColumnAtIndex` the same for columns
+* `removeRow` to remove a row by index
+* `removeColumn` the same for columns
+* `pushRow` to push a new row at the bottom of the table
+* `pushColumn` the same for columns
+* New iterator `forEachColumn`
+* New iterator `forEachRow`
+
 ## 1.12.1 (18/3/2022)
 Solves `Cell` rendering problems with underline. *Implements* very useful new methods on the `Matrix2D` collection class,
 such as:
