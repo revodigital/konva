@@ -502,6 +502,20 @@ export class TableBuilder implements Builder<Table> {
   }
 
   /**
+   * The last column index
+   */
+  lastColumnIndex(): number {
+    return this.cells.lastColumnIndex();
+  }
+
+  /**
+   * The last row index
+   */
+  lastRowIndex(): number {
+    return this.cells.lastRowIndex();
+  }
+
+  /**
    * Returns the pure matrix of cells that represent this table
    */
   getMatrix(): Matrix2D<CellConfig> {
@@ -516,6 +530,22 @@ export class TableBuilder implements Builder<Table> {
     if (!this.cells) return 0;
 
     return this.cells.getRowsCount();
+  }
+
+  /**
+   * Checks if this table has a row at the specified index
+   * @param index Index to check
+   */
+  hasRowAtIndex(index: number): boolean {
+    return this.cells.hasRowAt(index);
+  }
+
+  /**
+   * Checks if this table has a column at a specific index
+   * @param index
+   */
+  hasColumnAtIndex(index: number): boolean {
+    return this.cells.hasColumnAt(index);
   }
 
   /**
@@ -568,230 +598,66 @@ export class TableBuilder implements Builder<Table> {
   }
 
   /**
-   * Clears the contents of an entire column
-   * @param index Column index
-   * @param clearHeader Indicates if this operation should affect only the
-   * rows data or also the column header (default is true)
+   * Removes a row from this table
+   * @param index Index of the row to remove
+   * @param resize Indicates if this operation should let the size of the table shrink or not
    */
-  // public clearColumn(index: number, clearHeader: boolean = true): void {
-  //   if (!this.existsColumnWithIndex(index)) throw new Error(
-  //     'Invalid column index');
-  //
-  //   // Clear header
-  //   if (clearHeader)
-  //     this.header()[index].text = '';
-  //
-  //   // Clear all row cells
-  //   for (let r of this.rows())
-  //     r.data[index] = '';
-  // }
+  removeRow(index: number, resize: boolean = true): this {
+    if (!this.hasRowAtIndex(index)) return this;
+
+    const rowHeight = this.getRow(index).getHeight();
+    const newHeight = this.getHeight() - ((rowHeight / 100) * this.getHeight());
+
+    this.cells.removeRow(index);
+
+    if (resize) this.setHeight(newHeight);
+
+    return this;
+  }
 
   /**
-   * Removes a specific row from the row list
-   * @param index Row index
-   * @param resize Should resize the table or no?
-   */
-  // public removeRow(index: number, resize?: boolean): void {
-  //   if (!this.existsRowWithIndex(index)) throw new Error('Invalid row index');
-  //
-  //   if (resize === true) {
-  //     const rowConf = new RowLayout(this.rows()[index].height);
-  //
-  //     if (rowConf.heightIsAuto()) this.downscaleHeightByPerc(RowLayoutGroup.fromRawConfiguration(
-  //       this.rows()).getAutoRowPercentage());
-  //     else this.downscaleHeightByPerc(rowConf.height as number);
-  //   }
-  //
-  //   this.rows().splice(index, 1);
-  // }
-
-  /**
-   * Removes a specific column from this table, clears all the data of the
-   * given column
+   * Removes a specific column from this table
    * @param index The column index
    * @param resize Should resize the table or no?
    */
-  // public removeColumn(index: number, resize?: boolean): void {
-  //   if (!this.existsColumnWithIndex(index)) throw new Error(
-  //     'Invalid column index');
-  //
-  //   if (resize === true) {
-  //     const colConf = new ColumnLayout(this.header()[index].width);
-  //
-  //     if (colConf.widthIsAuto()) this.downscaleWidthByPerc(ColLayoutGroup.fromRawConfiguration(
-  //       this.header()).getAutoColPercentage());
-  //     else this.downscaleWidthByPerc(colConf.width as number);
-  //   }
-  //
-  //   this.header().splice(index, 1);
-  //
-  //   for (let r of this.rows())
-  //     r.data.splice(index, 1);
-  // }
+  removeColumn(index: number, resize: boolean = true): this {
+    if (!this.hasColumnAtIndex(index)) return this;
+
+    const columnWidth = this.getColumn(index).getWidth();
+    const newWidth = this.getWidth() - ((columnWidth / 100) * this.getWidth());
+
+    this.cells.removeColumn(index);
+
+    if (resize) this.setWidth(newWidth);
+
+    return this;
+  }
 
   /**
-   * Clears a cell of the table
-   * @param pos The position of the cell
-   */
-  // public clearCell(pos: CellPosition): void {
-  //   if (!pos.existsInTable(this.header().length,
-  //     this.rows().length)) throw new Error('Invalid cell position');
-  //
-  //   // Clear cell
-  //   this.rows()[pos.rowIndex].data[pos.columnIndex] = '';
-  // }
-
-  /**
-   * Applies a specific padding to all the rows and columns of this table
-   * @param padding The padding value to apply
-   */
-  // public applyPadding(padding: number): void {
-  //   for (let col of this.header()) col.padding = padding;
-  //   for (let row of this.rows()) row.padding = padding;
-  // }
-
-  /**
-   * Applies a padding to all the rows in the specified range
-   * @param padding Padding to apply
-   * @param startIndex Index to start from
-   * @param endIndex Index to end with
-   */
-  // public applyPaddingToRows(padding: number, startIndex = 0, endIndex = this.rows().length) {
-  //   if (startIndex > endIndex) throw new Error('Invalid start index');
-  //   if (endIndex < startIndex) throw new Error('Invalid end index');
-  //
-  //   for (let x = startIndex; x < endIndex; x++) {
-  //     if (this.rows()[x] === undefined) throw new Error(`Invalid row at index ${ x }`);
-  //
-  //     this.rows()[x].padding = padding;
-  //   }
-  // }
-
-  /**
-   * Shifts a row of a specific value in a specific direction
-   * @param index The row index
-   * @param verse The verse of the shifting
-   * @param gap The gap
-   */
-  // public shiftRow(index: number, verse: Verse, gap: number): void {
-  //   if (!this.existsRowWithIndex(index)) throw new Error('Invalid row index');
-  //
-  //   const termIndex = verse === Verse.After ? index + gap : index - gap;
-  //   if (!this.existsRowWithIndex(termIndex)) throw new Error('Invalid gap value');
-  //
-  //   const temp = this.rows()[index];
-  //   this.rows()[index] = this.rows()[termIndex];
-  //   this.rows()[termIndex] = temp;
-  // }
-
-  /**
-   * Shifts 2 rows by their indexes
-   * @param startIndex The index of the first line
-   * @param endIndex The index of the second line
-   */
-  // public swapRowsByIndex(startIndex: number, endIndex: number): void {
-  //   if (!this.existsRowWithIndex(startIndex)) throw new Error(
-  //     'Invalid start index');
-  //
-  //   if (!this.existsRowWithIndex(endIndex)) throw new Error('Invalid end index');
-  //
-  //   const temp = this.rows()[startIndex];
-  //   this.rows()[startIndex] = this.rows()[endIndex];
-  //   this.rows()[endIndex] = temp;
-  // }
-
-  /**
-   * Shifts a column of a specific value in a specific direction
-   * @param index The column index
-   * @param verse The verse of the shifting
-   * @param gap The gap
-   * @param includeHeader Indicates if the header should be included or not
-   */
-  // public shiftColumn(index: number, verse: Verse, gap: number, includeHeader: boolean = true): void {
-  //   if (!this.existsColumnWithIndex(index)) throw new Error(
-  //     'Invalid column index');
-  //
-  //   const termIndex = verse === Verse.After ? index + gap : index - gap;
-  //   if (!this.existsColumnWithIndex(termIndex)) throw new Error(
-  //     'Invalid gap value');
-  //
-  //   if (includeHeader) {
-  //     // Swap columns
-  //     const temp = this.header()[index];
-  //     this.header()[index] = this.header()[termIndex];
-  //     this.header()[termIndex] = temp;
-  //   }
-  //
-  //   // Swap row contents
-  //   for (let r of this.rows())
-  //     r.swapCells(index, termIndex);
-  // }
-
-  /**
-   * Shifts 2 cells
-   * @param cell Starting cell postion
-   * @param vector The moving vector (x column span, y row span)
-   */
-  // public shiftCell(cell: CellPosition, vector: Vector): void {
-  //   if (!cell.existsInTable(this.header().length,
-  //     this.rows().length)) throw new Error('Invalid starting cell');
-  //
-  //   const endCell = new CellPosition(cell.rowIndex + vector.y,
-  //     cell.columnIndex + vector.x);
-  //   if (!endCell.existsInTable(this.header().length,
-  //     this.rows().length)) throw new Error('Invalid moving vector');
-  //
-  //   // Swap this 2 cells
-  //   const temp = this.rows()[endCell.rowIndex].data[endCell.columnIndex];
-  //   this.rows()[endCell.rowIndex].data[endCell.columnIndex] = this.rows()[cell.rowIndex].data[cell.columnIndex];
-  //   this.rows()[cell.rowIndex].data[cell.columnIndex] = temp;
-  // }
-
-  /**
-   * Initializes the background color of the rows using an alternate color
-   * @param contrastColor The background color name or hex value
-   * @param primaryColor The primary color
-   * @param startFromContrast Indicates if the coloration should start from the contrast color or from
-   * the primary
-   */
-  // public autoBackground(contrastColor: string, primaryColor: string, startFromContrast: boolean = true): void {
-  //   if (contrastColor === '') throw new Error('No background color specified');
-  //   if (primaryColor === '') throw new Error('No primary color specified');
-  //
-  //   for (let x = 0; x < this.rows().length; x++) {
-  //     if (((startFromContrast ? x + 1 : x) % 2) === 0) {
-  //       this.rows()[x].fill = primaryColor;
-  //     } else this.rows()[x].fill = contrastColor;
-  //   }
-  // }
-
-  /**
-   * Pushes a row into the list
+   * Pushes a row at the bottom of this table
    * @param row Row to add
    * @param resize Indicates if this operation should cause a resize or not
    */
-  // public pushRow(row: Row, resize?: boolean): void {
-  //   this.addRow(row, this.rows().length - 1, Verse.After, resize);
-  // }
+  public pushRow(row: RowBuilder, resize?: boolean): this {
+    this.addRow({
+      row,
+      resize
+    });
+
+    return this;
+  }
 
   /**
    * Adds a column at the end of the table
-   * @param col The column to add
+   * @param column The column to add
    * @param resize Should this operation resize or not?
    */
-  // public pushColumn(col: Column, resize?: boolean): void {
-  //   this.addColumn(col, this.header().length - 1, Verse.After, resize);
-  // }
-
-  /**
-   * Pops a column from the list
-   * @param resize
-   */
-  // public popColumn(resize?: boolean): Column {
-  //   const temp = this.header()[this.header().length - 1];
-  //   this.removeColumn(this.header().length - 1, resize);
-  //   return temp;
-  // }
+  public pushColumn(column: ColumnBuilder, resize?: boolean): this {
+    return this.addColumn({
+      column,
+      resize
+    });
+  }
 
   /**
    * Creates a builder to edit a specific table

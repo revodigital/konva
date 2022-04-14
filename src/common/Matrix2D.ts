@@ -385,7 +385,7 @@ export class Matrix2D<T> {
    * Checks if there is a row at the given index
    * @param index
    */
-  hasRowAtIndex(index: number): boolean {
+  hasRowAt(index: number): boolean {
     return index >= 0 && this.data.length > index;
   }
 
@@ -394,7 +394,7 @@ export class Matrix2D<T> {
    * @param index
    */
   removeRow(index: number): this {
-    if (this.hasRowAtIndex(index))
+    if (this.hasRowAt(index))
       this.data.splice(index, 1);
 
     return this;

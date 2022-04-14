@@ -10,10 +10,10 @@
  */
 
 import { TableBuilder }  from '../src/builders/TableBuilder';
-import { ColumnBuilder } from '../lib/builders/ColumnBuilder';
-import { RowBuilder }    from '../lib/builders/RowBuilder';
+import { ColumnBuilder } from '../src/builders/ColumnBuilder';
+import { RowBuilder }    from '../src/builders/RowBuilder';
 import { matrixRepeat }  from '../src/common/Matrix2D';
-import { Matrix2D }      from '../lib/common/Matrix2D';
+import { Matrix2D }      from '../src/common/Matrix2D';
 
 it('Should correctly populate this entire table', () => {
   const builder = new TableBuilder({
@@ -163,4 +163,19 @@ it('Should correctly iterate all rows', () => {
   });
 
   expect(i).toEqual(20);
+});
+
+it('Should correctly push this columns', () => {
+  const tBuilder = new TableBuilder({
+    width: 300,
+    height: 300
+  }).pushRow(RowBuilder.withCells(20,
+    { fill: 'blue' })).pushRow(RowBuilder.withCells(20, { fill: 'red' }));
+
+  tBuilder.pushRow(RowBuilder.withCells(20, { fill: 'orange' }));
+  tBuilder.removeRow(tBuilder.lastRowIndex(), false);
+  const table = tBuilder.build();
+
+  expect(table.height()).toEqual(300);
+  expect(table.getRowsCount()).toEqual(2);
 });
