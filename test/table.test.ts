@@ -1,8 +1,8 @@
 import { TableBuilder } from '../src/builders/TableBuilder';
-import { RowBuilder }   from '../lib/builders/RowBuilder';
-import Pamela           from '../lib';
+import { RowBuilder }   from '../src/builders/RowBuilder';
+import Pamela           from '../src';
 import { Table }                  from '../src/shapes/Table';
-import { matrixOf, matrixRepeat } from '../lib/common/Matrix2D';
+import { matrixOf, matrixRepeat } from '../src/common/Matrix2D';
 
 it('should correctly return only the content of this table', () => {
   const table = new TableBuilder();

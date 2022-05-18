@@ -9,8 +9,7 @@
  * Description:
  */
 
-import { arrayRepeat, Matrix2D, matrixRepeat } from '../src/common/Matrix2D';
-import { matrixOf }                            from '../lib/common/Matrix2D';
+import { arrayRepeat, Matrix2D, matrixRepeat, matrixOf } from '../src/common/Matrix2D';
 
 it('Should correctly map this matrix', () => {
   const matrix = new Matrix2D<number>([[5, 3], [3, 5]]);
