@@ -9,7 +9,13 @@
  * Description:
  */
 
-import { arrayRepeat, Matrix2D, matrixRepeat, matrixOf } from '../src/common/Matrix2D';
+import {
+  arrayRepeat,
+  Matrix2D,
+  matrixOf,
+  matrixRepeat
+}                from '../src/common/Matrix2D';
+import { Verse } from '../src/shapes/Verse';
 
 it('Should correctly map this matrix', () => {
   const matrix = new Matrix2D<number>([[5, 3], [3, 5]]);
@@ -131,4 +137,18 @@ it('Should find any column', () => {
 
   expect(matrix.anyColumn(it => it.includes(3))).toEqual(true);
   expect(matrix.anyColumn(it => it.includes(10))).toEqual(false);
+});
+
+it('Should correctly push this column', () => {
+  const matrix = matrixOf([['mim', 'lil'], ['lil', 'mim']]);
+  matrix.pushColumn(arrayRepeat('', 2));
+
+  expect(matrix.getColumnsCount()).toEqual(3);
+});
+
+it('Should correctly insert this row before', () => {
+  const matrix = matrixOf([['first', 'second'], ['second', 'third']]);
+  matrix.insertRow(['before', 'before'], 0, Verse.Before);
+
+  expect(matrix.getRowsCount()).toEqual(3);
 });

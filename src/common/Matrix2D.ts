@@ -329,9 +329,11 @@ export class Matrix2D<T> {
     }
 
     if (startIndex === 0 && verse === Verse.Before) {
-      const temp = a;
+      const temp = a.slice();
       a = [object];
       a.push(...temp);
+
+      this.data = a;
       return a;
     }
 
