@@ -230,13 +230,18 @@ export class Cell implements CellConfig {
         break;
     }
 
-    ctx.fillText(this.content,
-      startPoint.x,
-      startPoint.y, this.edges.getWidth());
-
     // Draw line if present
     const textWidth = ctx.measureText(this.content).width;
     const lineWidth = textWidth < cellWidth ? textWidth : cellWidth - 2;
+
+    if (textWidth < cellWidth)
+      ctx.fillText(this.content,
+        startPoint.x,
+        startPoint.y);
+    else
+      ctx.fillText(this.content,
+        startPoint.x,
+        startPoint.y, cellWidth);
 
     if (this.underlined && textWidth < cellWidth) {
       ctx._context.strokeStyle = this.textColor;
