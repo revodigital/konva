@@ -14,7 +14,6 @@ import { Pamela }                          from './Global';
 import { Canvas }                          from './Canvas';
 import { Shape }                           from './Shape';
 import { BorderRadius, BorderRadiusUtils } from './configuration/BorderOptions';
-import { LineCap as LineCap2 }             from './configuration/LineCap';
 import { Vector2d }                        from './types';
 import { Point2D }                         from './common/Point2D';
 
@@ -205,10 +204,10 @@ export class Context {
   getTranslation(): Vector2d {
     const matr = this._context.getTransform();
 
-    return  {
+    return {
       x: matr.e,
       y: matr.f,
-    }
+    };
   }
 
   getTrace(relaxed?, rounded?) {
@@ -437,7 +436,14 @@ export class Context {
    */
   clip() {
     this._context.clip();
-    this._context.clip();
+  }
+
+  /**
+   * Clip a path
+   * @param path
+   */
+  clipPath(path: Path2D) {
+    this._context.clip(path);
   }
 
   /**

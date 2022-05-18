@@ -1,6 +1,6 @@
 {
   "name": "@revodigital/pamela",
-  "version": "1.12.1",
+  "version": "1.12.5",
   "author": "Revo Digital",
   "files": [
     "README.md",
@@ -10,7 +10,7 @@
   "main": "./lib/index-node.js",
   "browser": "./lib/index.js",
   "typings": "./lib/index-types.d.ts",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "gen-diagrams": "tplant -i src/index.ts -o diagrams/diagram.puml",
     "start": "npx serve && npx cypress open",
@@ -25,6 +25,7 @@
     "none": {}
   },
   "dependencies": {
+    "@revodigital/mpes": "^2.2.2",
     "@ts-stack/markdown": "^1.4.0",
     "@types/jest": "^27.4.1",
     "canvas": "^2.8.0",

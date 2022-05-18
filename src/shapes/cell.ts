@@ -195,6 +195,7 @@ export class Cell implements CellConfig {
     // Calculate rectangle center
     const center = this.edges.getCenter();
     const textMeasure = ctx.measureText(this.content);
+    const cellWidth = this.edges.getWidth();
     let startPoint = this.edges.topLeft;
 
     const padding = this.padding || 0;
@@ -231,13 +232,16 @@ export class Cell implements CellConfig {
 
     ctx.fillText(this.content,
       startPoint.x,
-      startPoint.y);
+      startPoint.y, this.edges.getWidth());
 
     // Draw line if present
-    if (this.underlined) {
+    const textWidth = ctx.measureText(this.content).width;
+    const lineWidth = textWidth < cellWidth ? textWidth : cellWidth - 2;
+
+    if (this.underlined && textWidth < cellWidth) {
       ctx._context.strokeStyle = this.textColor;
-      const lineWidth = ctx.measureText(this.content).width;
-      let start = pointOf(startPoint.x, startPoint.y + padding);
+
+      let start = pointOf(startPoint.x, startPoint.y + padding + 2);
 
       if (this.textAlign === HorizontalAlignment.Center) start.x -= lineWidth / 2;
       let end;

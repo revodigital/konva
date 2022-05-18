@@ -131,7 +131,6 @@ export class TableBuilder implements Builder<Table> {
     }
 
     if (!options.row.hasWidth()) {
-      console.log('Adapt width');
       options.row.autoWidth();
       options.row.fitWidth();
     }

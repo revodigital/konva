@@ -80,8 +80,6 @@ export class Image extends Shape<ImageConfig> {
     this.on('imageChange.konva', () => {
       this._setImageLoad();
     });
-
-    this._setImageLoad();
   }
 
   _setImageLoad() {
