@@ -279,6 +279,10 @@ export class Text extends Shape<TextConfig> {
       this.on(ATTR_CHANGE_LIST[n] + CHANGE_KONVA, this._setTextData);
     }
 
+    this.initShape();
+  }
+
+  public initShape() {
     // Init text data and measurements
     this._setTextData();
 
@@ -401,11 +405,33 @@ export class Text extends Shape<TextConfig> {
   }
 
   /**
+   * Clones this text object
+   * @param obj
+   */
+  clone(obj?: any): any {
+    const clone = super.clone() as Text;
+    // Remove textarea pointer if there is
+    clone.dispose();
+    clone.initShape();
+
+    return clone;
+  }
+
+  /**
    * Get availabled width without padding
    * @private
    */
   private getPaddedWidth(): number {
     return this.width() - (this.padding() * 2);
+  }
+
+  /**
+   * Stop listening to events
+   */
+  public dispose() {
+    this._textArea = undefined;
+    this.removeEventListener('dblclick');
+    this.removeEventListener('transform');
   }
 
   /**
@@ -618,7 +644,7 @@ export class Text extends Shape<TextConfig> {
    */
   private _drawBackground(context: SceneContext): void {
     if (!this.backgroundColor()) return;
-    if(this.backgroundColor() === 'transparent') return;
+    if (this.backgroundColor() === 'transparent') return;
 
     context._context.fillStyle = this.backgroundColor();
     context.fillRect(0, 0, this.width(), this.height());

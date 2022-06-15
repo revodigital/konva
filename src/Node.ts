@@ -9,23 +9,49 @@
  * Description:
  */
 
-import { Util, Transform }                from './Util';
-import { Factory }                        from './Factory';
-import { SceneCanvas, HitCanvas, Canvas } from './Canvas';
-import { Pamela }                         from './Global';
-import { Container }                      from './Container';
-import { GetSet, Vector2d, IRect }        from './types';
-import { DD }                             from './DragAndDrop';
+import { Transform, Util } from './Util';
 import {
+  Factory
+}                          from './Factory';
+import {
+  Canvas,
+  HitCanvas,
+  SceneCanvas
+}                          from './Canvas';
+import {
+  Pamela
+}                          from './Global';
+import {
+  Container
+}                          from './Container';
+import {
+  GetSet,
+  IRect,
+  Vector2d
+}                          from './types';
+import {
+  DD
+}                          from './DragAndDrop';
+import {
+  getBooleanValidator,
   getNumberValidator,
   getStringValidator,
-  getBooleanValidator,
-}                                         from './Validators';
-import { Stage }                          from './Stage';
-import { Context }                        from './Context';
-import { Shape }                          from './Shape';
-import { Layer }                          from './Layer';
-import { Size2D }                         from './common/Size2D';
+}                          from './Validators';
+import {
+  Stage
+}                          from './Stage';
+import {
+  Context
+}                          from './Context';
+import {
+  Shape
+}                          from './Shape';
+import {
+  Layer
+}                          from './Layer';
+import {
+  Size2D
+}                          from './common/Size2D';
 
 export type Filter = (this: Node, imageData: ImageData) => void;
 
@@ -870,6 +896,10 @@ export abstract class Node<Config extends NodeConfig = NodeConfig> {
     return this;
   }
 
+  /**
+   * Removes all the event listeners for the specified type
+   * @param type Type string
+   */
   removeEventListener(type: string) {
     this.off(type);
     return this;
