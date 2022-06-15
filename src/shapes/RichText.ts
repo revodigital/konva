@@ -262,7 +262,6 @@ export class RichText extends Shape<RichTextConfig> {
     } else {
       const size = this.measureMultiStyleTextSize(doc,
         sizeOf(this.width(), UNLIMITED));
-      console.log(size);
       if (size.overflowsHeight(this.getSizeRect()))
         this.height(size.getHeight());
     }
