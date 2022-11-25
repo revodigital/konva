@@ -1,39 +1,35 @@
 /*
  * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: Shape.ts
- * Project: pamela 
- * Committed last: 2022/1/26 @ 97
+ * Project: pamela
+ * Committed last: 2022/11/25 @ 1633
  * ---
  * Description:
  */
 
-import { Pamela }           from './Global';
-import { Transform, Util }  from './Util';
-import { Factory }          from './Factory';
-import { Node, NodeConfig } from './Node';
+import {_registerNode, Pamela} from './Global';
+import {Transform, Util} from './Util';
+import {Factory} from './Factory';
+import {Node, NodeConfig} from './Node';
 import {
-  getNumberValidator,
-  getNumberOrAutoValidator,
-  getStringValidator,
   getBooleanValidator,
+  getNumberOrAutoValidator,
+  getNumberValidator,
   getStringOrGradientValidator,
-}                           from './Validators';
+  getStringValidator,
+} from './Validators';
 
-import { Context, SceneContext } from './Context';
-import { _registerNode }         from './Global';
-import * as PointerEvents        from './PointerEvents';
+import {Context, SceneContext} from './Context';
+import * as PointerEvents from './PointerEvents';
 
-import { GetSet, Vector2d }       from './types';
-import { HitCanvas, SceneCanvas } from './Canvas';
-import { Size2D }                 from './common/Size2D';
-import {
-  addBorderConfigToClass,
-  BorderRadius, BorderRadiusUtils,
-} from './configuration/BorderOptions';
-import { LineDashConfiguration }  from './configuration/LineDash';
-import { LineCap as LineCap2 } from './configuration/LineCap';
+import {GetSet, Vector2d} from './types';
+import {HitCanvas, SceneCanvas} from './Canvas';
+import {Size2D} from './common/Size2D';
+import {addBorderConfigToClass, BorderRadius,} from './configuration/BorderOptions';
+import {LineDashConfiguration} from './configuration/LineDash';
+import {Indexed} from "./common/Indexed";
 
 // hack from here https://stackoverflow.com/questions/52667959/what-is-the-purpose-of-bivariancehack-in-typescript-types/52668133#52668133
 export type ShapeConfigHandler<TTarget> = {
@@ -97,6 +93,12 @@ export interface ShapeConfig extends NodeConfig {
   dashOffset?: number;
   dashEnabled?: boolean;
   perfectDrawEnabled?: boolean;
+
+  /**
+   * Additional metadata to save with the shape
+   */
+  metadata?: string;
+
   /**
    * The width of the border. 1 is default
    */
@@ -234,14 +236,6 @@ export class Shape<Config extends ShapeConfig = ShapeConfig> extends Node<Config
     // nothing
   };
 
-  /**
-   * Draws borders for this shape
-   * @param context Scene context to act on
-   */
-  _drawBorders(context: Context) {
-
-  }
-
   constructor(config?: Config) {
     super(config);
     // set colorKey
@@ -361,6 +355,79 @@ export class Shape<Config extends ShapeConfig = ShapeConfig> extends Node<Config
       }
       return grd;
     }
+  }
+
+  /**
+   * Returns the metadata object wrapped into the metadata string
+   */
+  public getMetadataObj(): Indexed {
+    if(this.metadata()) {
+      try {
+        return JSON.parse(this.metadata()) as Indexed;
+      } catch (e) {
+        console.error(e);
+        return {};
+      }
+    } else return {};
+  }
+
+  /**
+   * Returns a metadata key
+   * @param key
+   */
+  public getMetadataKey<T>(key: string): T | undefined {
+    const o = this.getMetadataObj();
+
+    return o[key];
+  }
+
+  /**
+   * Sets a metadata key of the shape
+   * @param key
+   * @param value
+   */
+  public setMetadataKey<T>(key: string, value: T): boolean {
+    try {
+      if (this.metadata()) {
+        const o = this.getMetadataObj();
+        o[key] = value;
+
+        this.setMetadataObj(o);
+      } else this.metadata(JSON.stringify({[key]: value}))
+
+      return true;
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
+  }
+
+  /**
+   * Write an object to the metadata object
+   * @param obj
+   */
+  public setMetadataObj(obj: Object) {
+    this.metadata(JSON.stringify(obj));
+  }
+
+  /**
+   * Delete all the metadata
+   */
+  public deleteMetadata() {
+    this.metadata(undefined);
+  }
+
+  /**
+   * Delete a key of the metadata
+   * @param key
+   */
+  public deleteMetadataKey(key: string) {
+    const o = this.getMetadataObj();
+
+    if(o[key])
+    delete o[key];
+
+    this.setMetadataObj(o);
   }
 
   _getRadialGradient() {
@@ -870,6 +937,7 @@ export class Shape<Config extends ShapeConfig = ShapeConfig> extends Node<Config
   fillLinearGradientEndPoint: GetSet<Vector2d, this>;
   fillLinearGradientEndPointX: GetSet<number, this>;
   fillLinearGradientEndPointY: GetSet<number, this>;
+  metadata: GetSet<string, this>;
   fillLinearRadialStartPoint: GetSet<Vector2d, this>;
   fillLinearRadialStartPointX: GetSet<number, this>;
   fillLinearRadialStartPointY: GetSet<number, this>;
@@ -998,6 +1066,11 @@ Factory.addGetterSetter(
  */
 
 Factory.addGetterSetter(Shape, 'strokeWidth', 2, getNumberValidator());
+
+/**
+ * Get / set the metadata of a shape
+ */
+Factory.addGetterSetter(Shape, 'metadata');
 
 /**
  * get/set stroke width

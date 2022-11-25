@@ -1,19 +1,19 @@
 /*
- * Copyright (c) 2022. Revo Digital
+ * Copyright (c) 2022-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: tablebuilder.test.ts
- * Project: complex-shapes-dev
- * Committed last: 2022/3/16 @ 1852
+ * Project: pamela 
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { TableBuilder }  from '../src/builders/TableBuilder';
-import { ColumnBuilder } from '../lib/builders/ColumnBuilder';
-import { RowBuilder }    from '../lib/builders/RowBuilder';
-import { matrixRepeat }  from '../src/common/Matrix2D';
-import { Matrix2D }      from '../lib/common/Matrix2D';
+import {TableBuilder} from '../src/builders/TableBuilder';
+import {ColumnBuilder} from '../lib/builders/ColumnBuilder';
+import {RowBuilder} from '../lib/builders/RowBuilder';
+import {matrixRepeat} from '../src/common/Matrix2D';
+import {Matrix2D} from '../lib/common/Matrix2D';
 
 it('Should correctly populate this entire table', () => {
   const builder = new TableBuilder({

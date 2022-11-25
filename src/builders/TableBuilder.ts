@@ -1,22 +1,22 @@
 /*
  * Copyright (c) 2022-2022. Revo Digital
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: TableBuilder.ts
- * Project: complex-shapes-dev
- * Committed last: 2022/2/23 @ 1637
+ * Project: pamela
+ * Committed last: 2022/11/25 @ 1639
  * ---
  * Description:
  */
 
-import { Table, TableConfig } from '../shapes/Table';
-import { Builder }            from './Builder';
-import { Matrix2D }           from '../common/Matrix2D';
-import { CellConfig }         from '../shapes/cell';
-import { RowBuilder }         from './RowBuilder';
-import { Verse }              from '../shapes/Verse';
-import { ColumnBuilder }      from './ColumnBuilder';
-import { Node }               from '../Node';
+import {Table, TableConfig} from '../shapes/Table';
+import {Builder} from './Builder';
+import {Matrix2D} from '../common/Matrix2D';
+import {CellConfig} from '../shapes/cell';
+import {RowBuilder} from './RowBuilder';
+import {Verse} from '../shapes/Verse';
+import {ColumnBuilder} from './ColumnBuilder';
+import {Node} from '../Node';
 
 export interface AddRowConfig {
   row: RowBuilder;
@@ -131,7 +131,6 @@ export class TableBuilder implements Builder<Table> {
     }
 
     if (!options.row.hasWidth()) {
-      console.log('Adapt width');
       options.row.autoWidth();
       options.row.fitWidth();
     }

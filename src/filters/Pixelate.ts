@@ -1,19 +1,19 @@
 /*
  * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: Pixelate.ts
- * Project: pamela 
- * Committed last: 2022/1/26 @ 97
+ * Project: pamela
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
 /*eslint-disable max-depth */
-import { Factory } from '../Factory';
-import { Util } from '../Util';
-import { Node, Filter } from '../Node';
-import { getNumberValidator } from '../Validators';
+import {Factory} from '../Factory';
+import {Util} from '../Util';
+import {Filter, Node} from '../Node';
+import {getNumberValidator} from '../Validators';
 
 /**
  * Pixelate Filter. Averages groups of pixels and redraws

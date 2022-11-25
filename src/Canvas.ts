@@ -1,19 +1,19 @@
 /*
  * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: Canvas.ts
  * Project: pamela 
- * Committed last: 2022/1/26 @ 97
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Util } from './Util';
-import { SceneContext, HitContext, Context } from './Context';
-import { Pamela }                            from './Global';
-import { Factory }                           from './Factory';
-import { getNumberValidator } from './Validators';
+import {Util} from './Util';
+import {Context, HitContext, SceneContext} from './Context';
+import {Pamela} from './Global';
+import {Factory} from './Factory';
+import {getNumberValidator} from './Validators';
 
 // calculate pixel ratio
 var _pixelRatio: number;

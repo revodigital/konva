@@ -1,24 +1,24 @@
 /*
- * Copyright (c) 2021-2022. Revo Digital
+ * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: Table.ts
- * Project: pamela
- * Committed last: 2022/1/26 @ 97
+ * Project: pamela 
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Shape, ShapeConfig } from '../Shape';
-import { _registerNode }      from '../Global';
-import { SceneContext }       from '../Context';
-import { GetSet }             from '../types';
-import { Factory }            from '../Factory';
-import { Cell, CellConfig }   from './cell';
-import { pointOf }            from '../common/Point2D';
-import { Matrix2D }           from '../common/Matrix2D';
-import { PointRectangle2D }   from '../common/PointRectangle2D';
-import { TableBuilder }       from '../builders/TableBuilder';
+import {Shape, ShapeConfig} from '../Shape';
+import {_registerNode} from '../Global';
+import {SceneContext} from '../Context';
+import {GetSet} from '../types';
+import {Factory} from '../Factory';
+import {Cell, CellConfig} from './cell';
+import {pointOf} from '../common/Point2D';
+import {Matrix2D} from '../common/Matrix2D';
+import {PointRectangle2D} from '../common/PointRectangle2D';
+import {TableBuilder} from '../builders/TableBuilder';
 
 export interface TableConfig extends ShapeConfig {
   cells?: CellConfig[][];

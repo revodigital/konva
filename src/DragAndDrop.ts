@@ -1,18 +1,18 @@
 /*
- * Copyright (c) 2021-2022. Revo Digital
+ * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: DragAndDrop.ts
- * Project: pamela
- * Committed last: 2022/1/26 @ 98
+ * Project: pamela 
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Pamela } from './Global';
-import { Node }   from './Node';
-import { Vector2d } from './types';
-import { Util } from './Util';
+import {Pamela} from './Global';
+import {Node} from './Node';
+import {Vector2d} from './types';
+import {Util} from './Util';
 
 export const DD = {
   isDragging() {

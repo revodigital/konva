@@ -1,22 +1,22 @@
 /*
- * Copyright (c) 2021-2022. Revo Digital
+ * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: table.ts
- * Project: pamela
- * Committed last: 2022/1/26 @ 98
+ * Project: pamela 
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Table }               from '../../src/shapes/Table';
-import { Stage }               from '../../src/Stage';
-import { Layer }               from '../../src/Layer';
-import { TEST_ELEMENT_ID }     from '../global/global-defs';
-import { HorizontalAlignment } from '../../src/configuration/Alignment';
-import { Row }                 from '../../src/shapes/Row';
-import { Verse }               from '../../src/shapes/Verse';
-import { LineDash }            from '../../src/configuration/LineDash';
+import {Table} from '../../src/shapes/Table';
+import {Stage} from '../../src/Stage';
+import {Layer} from '../../src/Layer';
+import {TEST_ELEMENT_ID} from '../global/global-defs';
+import {HorizontalAlignment} from '../../src/configuration/Alignment';
+import {Row} from '../../src/shapes/Row';
+import {Verse} from '../../src/shapes/Verse';
+import {LineDash} from '../../src/configuration/LineDash';
 
 before(() => {
   const el = document.createElement('div');

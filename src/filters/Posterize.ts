@@ -1,17 +1,18 @@
 /*
  * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: Posterize.ts
- * Project: pamela 
- * Committed last: 2022/1/26 @ 97
+ * Project: pamela
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Factory } from '../Factory';
-import { Node, Filter } from '../Node';
-import { getNumberValidator } from '../Validators';
+import {Factory} from '../Factory';
+import {Filter, Node} from '../Node';
+import {getNumberValidator} from '../Validators';
+
 /**
  * Posterize Filter. Adjusts the channels so that there are no more
  *  than n different values for that channel. This is also applied

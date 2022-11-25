@@ -1,21 +1,18 @@
 /*
- * Copyright (c) 2022. Revo Digital
+ * Copyright (c) 2022-2022. Revo Digital
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: CellCollectionBuilder.ts
- * Project: complex-shapes-dev
- * Committed last: 2022/2/25 @ 1941
+ * Project: pamela
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
 
-import { CellConfig } from '../shapes/cell';
-import { Builder }    from './Builder';
-import {
-  HorizontalAlignment,
-  VerticalAlignment
-}                     from '../configuration/Alignment';
+import {CellConfig} from '../shapes/cell';
+import {Builder} from './Builder';
+import {HorizontalAlignment, VerticalAlignment} from '../configuration/Alignment';
 
 export abstract class CellCollectionBuilder implements Builder<CellConfig[]> {
 

@@ -1,15 +1,15 @@
 /*
- * Copyright (c) 2021-2022. Revo Digital
+ * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: factory.ts
- * Project: pamela
- * Committed last: 2022/1/26 @ 98
+ * Project: pamela 
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Factory } from '../../src/Factory';
+import {Factory} from '../../src/Factory';
 
 describe('Factory methods testings', () => {
 

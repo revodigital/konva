@@ -1,17 +1,17 @@
 /*
  * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: Noise.ts
  * Project: pamela 
- * Committed last: 2022/1/26 @ 97
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Factory } from '../Factory';
-import { Node, Filter } from '../Node';
-import { getNumberValidator } from '../Validators';
+import {Factory} from '../Factory';
+import {Filter, Node} from '../Node';
+import {getNumberValidator} from '../Validators';
 
 /**
  * Noise Filter. Randomly adds or substracts to the color channels

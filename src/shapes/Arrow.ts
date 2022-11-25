@@ -1,20 +1,20 @@
 /*
  * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: Arrow.ts
- * Project: pamela 
- * Committed last: 2022/1/26 @ 97
+ * Project: pamela
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Factory } from '../Factory';
-import { Line, LineConfig } from './Line';
-import { GetSet } from '../types';
-import { getNumberValidator } from '../Validators';
-import { _registerNode } from '../Global';
-import { Path } from './Path';
+import {Factory} from '../Factory';
+import {Line, LineConfig} from './Line';
+import {GetSet} from '../types';
+import {getNumberValidator} from '../Validators';
+import {_registerNode} from '../Global';
+import {Path} from './Path';
 
 export interface ArrowConfig extends LineConfig {
   points: number[];

@@ -1,24 +1,23 @@
 /*
  * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: Stage.ts
  * Project: pamela 
- * Committed last: 2022/1/26 @ 97
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Util } from './Util';
-import { Factory } from './Factory';
-import { Container, ContainerConfig } from './Container';
-import { Pamela }                     from './Global';
-import { SceneCanvas, HitCanvas }     from './Canvas';
-import { GetSet, Vector2d } from './types';
-import { Shape } from './Shape';
-import { Layer } from './Layer';
-import { DD } from './DragAndDrop';
-import { _registerNode } from './Global';
+import {Util} from './Util';
+import {Factory} from './Factory';
+import {Container, ContainerConfig} from './Container';
+import {_registerNode, Pamela} from './Global';
+import {HitCanvas, SceneCanvas} from './Canvas';
+import {GetSet, Vector2d} from './types';
+import {Shape} from './Shape';
+import {Layer} from './Layer';
+import {DD} from './DragAndDrop';
 import * as PointerEvents from './PointerEvents';
 
 export interface StageConfig extends ContainerConfig {

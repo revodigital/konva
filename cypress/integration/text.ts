@@ -1,21 +1,21 @@
 /*
- * Copyright (c) 2021-2022. Revo Digital
+ * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: text.ts
- * Project: pamela
- * Committed last: 2022/1/26 @ 98
+ * Project: pamela 
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { TEST_ELEMENT_ID }   from '../global/global-defs';
-import { Stage }             from '../../src/Stage';
-import { Layer }             from '../../src/Layer';
-import { GrowPolicy, Text }  from '../../src/shapes/Text';
-import { Transformer }       from '../../src/shapes/Transformer';
-import { LineDash }          from '../../src/configuration/LineDash';
-import { BorderRadiusUtils } from '../../lib/configuration/BorderOptions';
+import {TEST_ELEMENT_ID} from '../global/global-defs';
+import {Stage} from '../../src/Stage';
+import {Layer} from '../../src/Layer';
+import {GrowPolicy, Text} from '../../src/shapes/Text';
+import {Transformer} from '../../src/shapes/Transformer';
+import {LineDash} from '../../src/configuration/LineDash';
+import {BorderRadiusUtils} from '../../lib/configuration/BorderOptions';
 
 before(() => {
   const el = document.createElement('div');

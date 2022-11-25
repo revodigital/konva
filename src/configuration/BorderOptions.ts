@@ -1,18 +1,18 @@
 /*
- * Copyright (c) 2021-2022. Revo Digital
+ * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: BorderOptions.ts
- * Project: pamela
- * Committed last: 2022/1/26 @ 97
+ * Project: pamela 
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { LineDashConfiguration } from './LineDash';
-import { Factory }               from '../Factory';
-import { LineCap }               from './LineCap';
-import { Context }               from '../Context';
+import {LineDashConfiguration} from './LineDash';
+import {Factory} from '../Factory';
+import {LineCap} from './LineCap';
+import {Context} from '../Context';
 
 /**
  * Represents the options of a border

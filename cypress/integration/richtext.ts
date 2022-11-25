@@ -1,21 +1,20 @@
 /*
  * Copyright (c) 2022-2022. Revo Digital
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: richtext.ts
  * Project: pamela
- * Committed last: 2022/1/26 @ 98
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { TEST_ELEMENT_ID } from '../global/global-defs';
-import { Stage }           from '../../src/Stage';
-import { Layer }           from '../../src/Layer';
-import { Transformer }     from '../../src/shapes/Transformer';
-import { RichText }        from '../../src/shapes/RichText';
-import { Text}             from '../../src/shapes/Text';
-import { Rect }            from '../../src/shapes/Rect';
+import {TEST_ELEMENT_ID} from '../global/global-defs';
+import {Stage} from '../../src/Stage';
+import {Layer} from '../../src/Layer';
+import {Transformer} from '../../src/shapes/Transformer';
+import {RichText} from '../../src/shapes/RichText';
+import {Rect} from '../../src/shapes/Rect';
 
 before(() => {
   const el = document.createElement('div');

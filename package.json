@@ -1,6 +1,6 @@
 {
   "name": "@revodigital/pamela",
-  "version": "1.12.1",
+  "version": "1.14.1",
   "author": "Revo Digital",
   "files": [
     "README.md",
@@ -16,7 +16,8 @@
     "start": "npx serve && npx cypress open",
     "doc": "npx typedoc",
     "doc-watch": "npx typedoc --watch",
-    "build": "npm run test && npm run clean && tsc && cp ./src/index-types.d.ts ./lib/",
+    "build": "npm run test && npm run clean && tsc && cp ./src/index-types.d.ts ./lib/ && echo 'Build completed'",
+    "build-skip-test": "npm run clean && tsc && cp ./src/index-types.d.ts ./lib/",
     "clean": "rm -rf ./lib ./types ./test-build",
     "serve": "npx serve -l 12345",
     "test": "jest"
@@ -29,6 +30,7 @@
     "@types/jest": "^27.4.1",
     "canvas": "^2.8.0",
     "chai": "4.3.4",
+    "cypress": "^11.2.0",
     "filehound": "^1.17.5",
     "gulp": "^4.0.2",
     "gulp-concat": "^2.6.1",

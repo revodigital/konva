@@ -1,17 +1,17 @@
 /*
- * Copyright (c) 2021-2022. Revo Digital
+ * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: FastLayer.ts
- * Project: pamela
- * Committed last: 2022/1/26 @ 97
+ * Project: pamela 
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Util } from './Util';
-import { Layer } from './Layer';
-import { _registerNode } from './Global';
+import {Util} from './Util';
+import {Layer} from './Layer';
+import {_registerNode} from './Global';
 
 /**
  * FastLayer constructor. **DEPRECATED!** Please use `Konva.Layer({ listening: false})` instead. Layers are tied to their own canvas element and are used

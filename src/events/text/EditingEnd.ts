@@ -1,15 +1,15 @@
 /*
  * Copyright (c) 2022-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: EditingEnd.ts
  * Project: pamela 
- * Committed last: 2022/1/26 @ 97
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Text } from '../../shapes/Text';
+import {Text} from '../../shapes/Text';
 
 /**
  * Event type triggered when editing finishes

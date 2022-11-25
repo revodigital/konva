@@ -1,22 +1,21 @@
 /*
  * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: Line.ts
- * Project: pamela 
- * Committed last: 2022/1/26 @ 97
+ * Project: pamela
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Util } from '../Util';
-import { Factory } from '../Factory';
-import { Shape, ShapeConfig } from '../Shape';
-import { getNumberValidator, getNumberArrayValidator } from '../Validators';
-import { _registerNode } from '../Global';
+import {Factory} from '../Factory';
+import {Shape, ShapeConfig} from '../Shape';
+import {getNumberArrayValidator, getNumberValidator} from '../Validators';
+import {_registerNode} from '../Global';
 
-import { GetSet } from '../types';
-import { Context } from '../Context';
+import {GetSet} from '../types';
+import {Context} from '../Context';
 
 function getControlPoints(x0, y0, x1, y1, x2, y2, t) {
   var d01 = Math.sqrt(Math.pow(x1 - x0, 2) + Math.pow(y1 - y0, 2)),

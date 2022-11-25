@@ -1,18 +1,18 @@
 /*
- * Copyright (c) 2021-2022. Revo Digital
+ * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: Animation.ts
- * Project: pamela
- * Committed last: 2022/1/26 @ 97
+ * Project: pamela 
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { glob } from './Global';
-import { Layer } from './Layer';
-import { IFrame, AnimationFn } from './types';
-import { Util } from './Util';
+import {glob} from './Global';
+import {Layer} from './Layer';
+import {AnimationFn, IFrame} from './types';
+import {Util} from './Util';
 
 var now = (function (): () => number {
   if (glob.performance && glob.performance.now) {

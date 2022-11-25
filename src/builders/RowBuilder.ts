@@ -1,17 +1,17 @@
 /*
- * Copyright (c) 2022. Revo Digital
+ * Copyright (c) 2022-2022. Revo Digital 
  * ---
- * Author: gabriele
- * File: Row.ts
- * Project: complex-shapes-dev
- * Committed last: 2022/2/23 @ 2224
+ * Author: gabrielecavallo
+ * File: RowBuilder.ts
+ * Project: pamela 
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { CellConfig, CellSize }  from '../shapes/cell';
-import { CellCollectionBuilder } from './CellCollectionBuilder';
-import { cloneArray }            from '../shapes/utils';
+import {CellConfig, CellSize} from '../shapes/cell';
+import {CellCollectionBuilder} from './CellCollectionBuilder';
+import {cloneArray} from '../shapes/utils';
 
 /**
  * Represents a row when building a table

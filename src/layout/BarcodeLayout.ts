@@ -1,18 +1,18 @@
 /*
  * Copyright (c) 2021-2022. Revo Digital
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: BarcodeLayout.ts
  * Project: pamela
- * Committed last: 2022/1/26 @ 97
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
 
-import { PointRectangle2D } from '../common/PointRectangle2D';
-import { Point2D }          from '../common/Point2D';
-import { negate }           from '../Util';
+import {PointRectangle2D} from '../common/PointRectangle2D';
+import {Point2D} from '../common/Point2D';
+import {negate} from '../Util';
 
 export interface IBarcodeLayout {
   width: number;

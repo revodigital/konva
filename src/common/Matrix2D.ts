@@ -1,17 +1,17 @@
 /*
- * Copyright (c) 2022. Revo Digital
+ * Copyright (c) 2022-2022. Revo Digital
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: Matrix2D.ts
- * Project: complex-shapes-dev
- * Committed last: 2022/2/23 @ 1643
+ * Project: pamela
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Point2D }       from './Point2D';
-import { Verse }         from '../shapes/Verse';
-import { insertToArray } from '../shapes/utils';
+import {Point2D} from './Point2D';
+import {Verse} from '../shapes/Verse';
+import {insertToArray} from '../shapes/utils';
 
 export class MatrixIndex extends Point2D {}
 

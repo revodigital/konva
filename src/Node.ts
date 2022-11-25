@@ -1,31 +1,27 @@
 /*
- * Copyright (c) 2021-2022. Revo Digital
+ * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: Node.ts
- * Project: pamela
- * Committed last: 2022/1/26 @ 97
+ * Project: pamela 
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Util, Transform }                from './Util';
-import { Factory }                        from './Factory';
-import { SceneCanvas, HitCanvas, Canvas } from './Canvas';
-import { Pamela }                         from './Global';
-import { Container }                      from './Container';
-import { GetSet, Vector2d, IRect }        from './types';
-import { DD }                             from './DragAndDrop';
-import {
-  getNumberValidator,
-  getStringValidator,
-  getBooleanValidator,
-}                                         from './Validators';
-import { Stage }                          from './Stage';
-import { Context }                        from './Context';
-import { Shape }                          from './Shape';
-import { Layer }                          from './Layer';
-import { Size2D }                         from './common/Size2D';
+import {Transform, Util} from './Util';
+import {Factory} from './Factory';
+import {Canvas, HitCanvas, SceneCanvas} from './Canvas';
+import {Pamela} from './Global';
+import {Container} from './Container';
+import {GetSet, IRect, Vector2d} from './types';
+import {DD} from './DragAndDrop';
+import {getBooleanValidator, getNumberValidator, getStringValidator,} from './Validators';
+import {Stage} from './Stage';
+import {Context} from './Context';
+import {Shape} from './Shape';
+import {Layer} from './Layer';
+import {Size2D} from './common/Size2D';
 
 export type Filter = (this: Node, imageData: ImageData) => void;
 

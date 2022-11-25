@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2022-2022. Revo Digital
+ * Copyright (c) 2022-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: matrix.test.ts
- * Project: complex-shapes-dev
- * Committed last: 2022/3/16 @ 1742
+ * Project: pamela 
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { arrayRepeat, Matrix2D, matrixRepeat } from '../src/common/Matrix2D';
-import { matrixOf }                            from '../lib/common/Matrix2D';
+import {arrayRepeat, Matrix2D, matrixRepeat} from '../src/common/Matrix2D';
+import {matrixOf} from '../lib/common/Matrix2D';
 
 it('Should correctly map this matrix', () => {
   const matrix = new Matrix2D<number>([[5, 3], [3, 5]]);

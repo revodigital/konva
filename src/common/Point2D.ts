@@ -1,15 +1,15 @@
 /*
  * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: Point2D.ts
- * Project: pamela 
- * Committed last: 2022/1/26 @ 97
+ * Project: pamela
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Vector2d } from '../types';
+import {Vector2d} from '../types';
 
 export interface IPoint2D {
   x: number;

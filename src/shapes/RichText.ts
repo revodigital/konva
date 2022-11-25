@@ -1,26 +1,26 @@
 /*
  * Copyright (c) 2022-2022. Revo Digital
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: RichText.ts
  * Project: pamela
- * Committed last: 2022/1/26 @ 97
+ * Committed last: 2022/11/25 @ 1639
  * ---
  * Description:
  */
 
-import { Shape, ShapeConfig }  from '../Shape';
-import { GetSet }              from '../types';
-import { Factory }             from '../Factory';
-import { _registerNode }       from '../Global';
-import { SceneContext }        from '../Context';
-import { Marked }              from '@ts-stack/markdown';
-import { drawHTML, Options }   from 'next-rasterizehtml';
-import { Size2D, sizeOf }      from '../common/Size2D';
-import { HorizontalAlignment } from '../configuration/Alignment';
-import { GrowPolicy }          from './Text';
-import { RichTextMetrics }     from '../TextMeasurement';
-import { PointRectangle2D }    from '../common/PointRectangle2D';
+import {Shape, ShapeConfig} from '../Shape';
+import {GetSet} from '../types';
+import {Factory} from '../Factory';
+import {_registerNode} from '../Global';
+import {SceneContext} from '../Context';
+import {Marked} from '@ts-stack/markdown';
+import {drawHTML, Options} from 'next-rasterizehtml';
+import {Size2D, sizeOf} from '../common/Size2D';
+import {HorizontalAlignment} from '../configuration/Alignment';
+import {GrowPolicy} from './Text';
+import {RichTextMetrics} from '../TextMeasurement';
+import {PointRectangle2D} from '../common/PointRectangle2D';
 
 export const UNLIMITED = 300000;
 
@@ -105,6 +105,11 @@ export interface RichTextConfig extends ShapeConfig {
    * Specifies additional css to style the generated html document
    */
   style?: string;
+
+  /**
+   * Specificates if this text should be modified or not (NOTE: It is only a flag, it does not affect any working internal)
+   */
+  readonly?: boolean;
 }
 
 /**
@@ -125,6 +130,7 @@ export class RichText extends Shape<RichTextConfig> {
   horizontalAlignment: GetSet<HorizontalAlignment, this>;
   backgroundColor: GetSet<string, this>;
   style: GetSet<string, this>;
+  readonly: GetSet<boolean, this>;
 
   private _lastContent = '';
   private _lastSize: Size2D;
@@ -262,7 +268,6 @@ export class RichText extends Shape<RichTextConfig> {
     } else {
       const size = this.measureMultiStyleTextSize(doc,
         sizeOf(this.width(), UNLIMITED));
-      console.log(size);
       if (size.overflowsHeight(this.getSizeRect()))
         this.height(size.getHeight());
     }
@@ -469,6 +474,11 @@ Factory.addGetterSetter(RichText, 'backgroundColor');
  * Get / set document css style
  */
 Factory.addGetterSetter(RichText, 'style');
+
+/**
+ * Get / set readonly property
+ */
+Factory.addGetterSetter(RichText, 'readonly');
 
 RichText.prototype.className = 'RichText';
 _registerNode(RichText);

@@ -1,22 +1,22 @@
 /*
- * Copyright (c) 2021-2022. Revo Digital
+ * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: Container.ts
- * Project: pamela
- * Committed last: 2022/1/26 @ 97
+ * Project: pamela 
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Factory }            from './Factory';
-import { Node, NodeConfig }   from './Node';
-import { getNumberValidator } from './Validators';
+import {Factory} from './Factory';
+import {Node, NodeConfig} from './Node';
+import {getNumberValidator} from './Validators';
 
-import { GetSet, IRect }          from './types';
-import { Shape }                  from './Shape';
-import { HitCanvas, SceneCanvas } from './Canvas';
-import { SceneContext }           from './Context';
+import {GetSet, IRect} from './types';
+import {Shape} from './Shape';
+import {HitCanvas, SceneCanvas} from './Canvas';
+import {SceneContext} from './Context';
 
 export interface ContainerConfig extends NodeConfig {
   clearBeforeDraw?: boolean;

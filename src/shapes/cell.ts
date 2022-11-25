@@ -1,28 +1,20 @@
 /*
  * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: cell.ts
  * Project: pamela 
- * Committed last: 2022/1/26 @ 97
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { PointRectangle2D } from '../common/PointRectangle2D';
-import {
-  HorizontalAlignment,
-  VerticalAlignment
-}                           from '../configuration/Alignment';
-import {
-  ITextConfiguration
-}                           from '../configuration/TextConfiguration';
-import {
-  applyBorderConfig,
-  BorderConfig
-}                           from '../configuration/BorderOptions';
-import { SceneContext }     from '../Context';
-import { pointOf }          from '../common/Point2D';
+import {PointRectangle2D} from '../common/PointRectangle2D';
+import {HorizontalAlignment, VerticalAlignment} from '../configuration/Alignment';
+import {ITextConfiguration} from '../configuration/TextConfiguration';
+import {applyBorderConfig, BorderConfig} from '../configuration/BorderOptions';
+import {SceneContext} from '../Context';
+import {pointOf} from '../common/Point2D';
 
 export interface CellConfig extends ITextConfiguration {
   /**

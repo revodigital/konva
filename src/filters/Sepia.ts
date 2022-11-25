@@ -1,15 +1,15 @@
 /*
  * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: Sepia.ts
  * Project: pamela 
- * Committed last: 2022/1/26 @ 97
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Filter } from '../Node';
+import {Filter} from '../Node';
 
 // based on https://stackoverflow.com/questions/1061093/how-is-a-sepia-tone-created
 

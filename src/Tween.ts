@@ -1,19 +1,19 @@
 /*
  * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: Tween.ts
  * Project: pamela 
- * Committed last: 2022/1/26 @ 97
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Util } from './Util';
-import { Animation } from './Animation';
-import { Node, NodeConfig } from './Node';
-import { Pamela }           from './Global';
-import { Line }             from './shapes/Line';
+import {Util} from './Util';
+import {Animation} from './Animation';
+import {Node, NodeConfig} from './Node';
+import {Pamela} from './Global';
+import {Line} from './shapes/Line';
 
 var blacklist = {
     node: 1,

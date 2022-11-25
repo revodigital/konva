@@ -1,25 +1,23 @@
 /*
  * Copyright (c) 2021-2022. Revo Digital
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: Barcode.ts
  * Project: pamela
- * Committed last: 2022/1/26 @ 97
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Shape, ShapeConfig }    from '../Shape';
-import { GetSet }                from '../types';
-import { Factory }               from '../Factory';
-import { Context, SceneContext } from '../Context';
-import { Image }                 from './Image';
-import * as JsBarcode            from 'jsbarcode';
-import { _registerNode }         from '../Global';
-import {
-  INVALID_CDECS
-}                                from '../events/barcode/InvalidCodeOrSpecification';
-import { PointRectangle2D }      from '../common/PointRectangle2D';
+import {Shape, ShapeConfig} from '../Shape';
+import {GetSet} from '../types';
+import {Factory} from '../Factory';
+import {SceneContext} from '../Context';
+import {Image} from './Image';
+import * as JsBarcode from 'jsbarcode';
+import {_registerNode} from '../Global';
+import {INVALID_CDECS} from '../events/barcode/InvalidCodeOrSpecification';
+import {PointRectangle2D} from '../common/PointRectangle2D';
 
 export interface BarcodeConfig extends ShapeConfig {
   /**

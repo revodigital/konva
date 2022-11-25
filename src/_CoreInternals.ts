@@ -1,37 +1,37 @@
 /*
- * Copyright (c) 2021-2022. Revo Digital
+ * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: _CoreInternals.ts
- * Project: pamela
- * Committed last: 2022/1/26 @ 98
+ * Project: pamela 
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
 // what is core parts of Konva?
-import { Pamela as Global } from './Global';
+import {Pamela as Global} from './Global';
 
-import { Util, Transform } from './Util';
-import { Node } from './Node';
-import { Container } from './Container';
+import {Transform, Util} from './Util';
+import {Node} from './Node';
+import {Container} from './Container';
 
-import { Stage, stages } from './Stage';
+import {Stage, stages} from './Stage';
 
-import { Layer } from './Layer';
-import { FastLayer } from './FastLayer';
+import {Layer} from './Layer';
+import {FastLayer} from './FastLayer';
 
-import { Group } from './Group';
+import {Group} from './Group';
 
-import { DD } from './DragAndDrop';
+import {DD} from './DragAndDrop';
 
-import { Shape, shapes } from './Shape';
+import {Shape, shapes} from './Shape';
 
-import { Animation } from './Animation';
-import { Tween, Easings } from './Tween';
+import {Animation} from './Animation';
+import {Easings, Tween} from './Tween';
 
-import { Context } from './Context';
-import { Canvas } from './Canvas';
+import {Context} from './Context';
+import {Canvas} from './Canvas';
 
 export const Pamela = Util._assign(Global, {
   Util,

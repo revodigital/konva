@@ -1,16 +1,16 @@
 /*
  * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: Util.ts
- * Project: pamela 
- * Committed last: 2022/1/26 @ 97
+ * Project: pamela
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Pamela }                     from './Global';
-import { IRect, RGB, RGBA, Vector2d } from './types';
+import {Pamela} from './Global';
+import {IRect, RGB, RGBA, Vector2d} from './types';
 
 /*
  * Last updated November 2011

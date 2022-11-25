@@ -1,22 +1,21 @@
 /*
  * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: Context.ts
  * Project: pamela 
- * Committed last: 2022/1/26 @ 97
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Util }                            from './Util';
-import { Pamela }                          from './Global';
-import { Canvas }                          from './Canvas';
-import { Shape }                           from './Shape';
-import { BorderRadius, BorderRadiusUtils } from './configuration/BorderOptions';
-import { LineCap as LineCap2 }             from './configuration/LineCap';
-import { Vector2d }                        from './types';
-import { Point2D }                         from './common/Point2D';
+import {Util} from './Util';
+import {Pamela} from './Global';
+import {Canvas} from './Canvas';
+import {Shape} from './Shape';
+import {BorderRadius, BorderRadiusUtils} from './configuration/BorderOptions';
+import {Vector2d} from './types';
+import {Point2D} from './common/Point2D';
 
 function simplifyArray(arr: Array<any>) {
   var retArr = [],

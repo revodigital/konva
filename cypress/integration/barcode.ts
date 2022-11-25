@@ -1,18 +1,18 @@
 /*
- * Copyright (c) 2021-2022. Revo Digital
+ * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: barcode.ts
- * Project: pamela
- * Committed last: 2022/1/26 @ 98
+ * Project: pamela 
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { TEST_ELEMENT_ID } from '../global/global-defs';
-import { Stage }           from '../../src/Stage';
-import { Layer }           from '../../src/Layer';
-import { Barcode }         from '../../src/shapes/Barcode';
+import {TEST_ELEMENT_ID} from '../global/global-defs';
+import {Stage} from '../../src/Stage';
+import {Layer} from '../../src/Layer';
+import {Barcode} from '../../src/shapes/Barcode';
 
 before(() => {
   const el = document.createElement('div');

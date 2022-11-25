@@ -1,19 +1,19 @@
 /*
  * Copyright (c) 2021-2022. Revo Digital
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: Group.ts
  * Project: pamela
- * Committed last: 2022/1/26 @ 97
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Util } from './Util';
-import { Container } from './Container';
-import { _registerNode } from './Global';
-import { Node } from './Node';
-import { Shape } from './Shape';
+import {Util} from './Util';
+import {Container} from './Container';
+import {_registerNode} from './Global';
+import {Node} from './Node';
+import {Shape} from './Shape';
 
 /**
  * Group constructor.  Groups are used to contain shapes or other groups.

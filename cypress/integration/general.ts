@@ -1,18 +1,18 @@
 /*
- * Copyright (c) 2021-2022. Revo Digital
+ * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: general.ts
- * Project: pamela
- * Committed last: 2022/1/26 @ 98
+ * Project: pamela 
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Stage }           from '../../src/Stage';
-import { TEST_ELEMENT_ID } from '../global/global-defs';
-import { Layer }           from '../../src/Layer';
-import { Rect }            from '../../src/shapes/Rect';
+import {Stage} from '../../src/Stage';
+import {TEST_ELEMENT_ID} from '../global/global-defs';
+import {Layer} from '../../src/Layer';
+import {Rect} from '../../src/shapes/Rect';
 
 before(() => {
   const el = document.createElement('div');

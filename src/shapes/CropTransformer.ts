@@ -1,22 +1,22 @@
 /*
- * Copyright (c) 2022. Revo Digital
+ * Copyright (c) 2022-2022. Revo Digital
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: CropTransformer.ts
- * Project: complex-shapes-dev
- * Committed last: 2022/2/13 @ 1125
+ * Project: pamela
+ * Committed last: 2022/11/25 @ 1639
  * ---
  * Description:
  */
 
-import { Box, Transformer, TransformerConfig } from './Transformer';
-import { _registerNode }                       from '../Global';
-import { GetSet }                              from '../types';
-import { Size2D }                              from '../common/Size2D';
-import { Factory }                             from '../Factory';
-import { LineDash }                            from '../configuration/LineDash';
-import { KonvaEventObject }                    from '../Node';
-import { Image }                               from './Image';
+import {Box, Transformer, TransformerConfig} from './Transformer';
+import {_registerNode} from '../Global';
+import {GetSet} from '../types';
+import {Size2D} from '../common/Size2D';
+import {Factory} from '../Factory';
+import {LineDash} from '../configuration/LineDash';
+import {KonvaEventObject} from '../Node';
+import {Image} from './Image';
 
 export interface CropTransformerConfig extends TransformerConfig {
   initialSize: Size2D;
@@ -54,8 +54,6 @@ export class CropTransformer extends Transformer {
   }
 
   onTransform(e: KonvaEventObject<MouseEvent>) {
-    console.log(e);
-
     if (!(e.target instanceof Image)) throw new Error(
       'Invalid target for image crop transformer');
 

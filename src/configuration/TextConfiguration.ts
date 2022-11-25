@@ -1,15 +1,15 @@
 /*
- * Copyright (c) 2021-2022. Revo Digital
+ * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: TextConfiguration.ts
- * Project: pamela
- * Committed last: 2022/1/26 @ 97
+ * Project: pamela 
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { HorizontalAlignment, VerticalAlignment } from './Alignment';
+import {HorizontalAlignment, VerticalAlignment} from './Alignment';
 
 /**
  * Represents all the configurations that a cell text should have

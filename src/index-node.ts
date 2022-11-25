@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2021-2022. Revo Digital
+ * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: index-node.ts
- * Project: pamela
- * Committed last: 2022/1/26 @ 97
+ * Project: pamela 
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
 // main entry for umd build for rollup
-import { Pamela }  from './_FullInternals';
+import {Pamela} from './_FullInternals';
 import * as Canvas from 'canvas';
 
 const canvas = Canvas['default'] || Canvas;

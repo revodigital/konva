@@ -1,18 +1,18 @@
 /*
  * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: Kaleidoscope.ts
  * Project: pamela 
- * Committed last: 2022/1/26 @ 97
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Factory } from '../Factory';
-import { Node, Filter } from '../Node';
-import { Util } from '../Util';
-import { getNumberValidator } from '../Validators';
+import {Factory} from '../Factory';
+import {Filter, Node} from '../Node';
+import {Util} from '../Util';
+import {getNumberValidator} from '../Validators';
 
 /*
  * ToPolar Filter. Converts image data to polar coordinates. Performs

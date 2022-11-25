@@ -1,26 +1,17 @@
 /*
  * Copyright (c) 2021-2022. Revo Digital
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: TextMeasurement.ts
  * Project: pamela
- * Committed last: 2022/1/26 @ 98
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Size2D }              from './common/Size2D';
-import { normalizeFontFamily } from './TextUtils';
-import { Context }                                   from './Context';
-import {
-  AUTO,
-  CHAR,
-  DASH,
-  ELLIPSIS,
-  JUSTIFY,
-  NONE,
-  TextConfig
-} from './shapes/Text';
+import {Size2D} from './common/Size2D';
+import {normalizeFontFamily} from './TextUtils';
+import {AUTO, CHAR, DASH, ELLIPSIS, JUSTIFY, NONE, TextConfig} from './shapes/Text';
 
 const
   PX_SPACE = 'px ',

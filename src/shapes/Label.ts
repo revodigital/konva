@@ -1,26 +1,23 @@
 /*
  * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: Label.ts
- * Project: pamela 
- * Committed last: 2022/1/26 @ 97
+ * Project: pamela
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Factory } from '../Factory';
-import { Shape, ShapeConfig } from '../Shape';
-import { Group } from '../Group';
-import { ContainerConfig } from '../Container';
-import {
-  getNumberOrArrayOfNumbersValidator,
-  getNumberValidator,
-} from '../Validators';
-import { _registerNode } from '../Global';
+import {Factory} from '../Factory';
+import {Shape, ShapeConfig} from '../Shape';
+import {Group} from '../Group';
+import {ContainerConfig} from '../Container';
+import {getNumberOrArrayOfNumbersValidator, getNumberValidator,} from '../Validators';
+import {_registerNode} from '../Global';
 
-import { GetSet } from '../types';
-import { Text } from './Text';
+import {GetSet} from '../types';
+import {Text} from './Text';
 
 export interface LabelConfig extends ContainerConfig {}
 

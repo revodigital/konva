@@ -1,21 +1,19 @@
 /*
  * Copyright (c) 2021-2022. Revo Digital
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: Arc.ts
  * Project: pamela
- * Committed last: 2022/1/26 @ 97
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Factory } from '../Factory';
-import { Shape, ShapeConfig } from '../Shape';
-import { Pamela }             from '../Global';
-import { GetSet }             from '../types';
-import { getNumberValidator, getBooleanValidator } from '../Validators';
-import { _registerNode } from '../Global';
-import { Transform, Util } from '../Util';
+import {Factory} from '../Factory';
+import {Shape, ShapeConfig} from '../Shape';
+import {_registerNode, Pamela} from '../Global';
+import {GetSet} from '../types';
+import {getBooleanValidator, getNumberValidator} from '../Validators';
 
 export interface ArcConfig extends ShapeConfig {
   angle: number;

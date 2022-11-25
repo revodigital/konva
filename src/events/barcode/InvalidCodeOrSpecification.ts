@@ -1,15 +1,15 @@
 /*
  * Copyright (c) 2022-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: InvalidCodeOrSpecification.ts
  * Project: pamela 
- * Committed last: 2022/1/26 @ 97
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Barcode } from '../../shapes/Barcode';
+import {Barcode} from '../../shapes/Barcode';
 
 /**
  * Data passed when this event is triggered

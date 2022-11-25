@@ -1,17 +1,17 @@
 /*
- * Copyright (c) 2022. Revo Digital
+ * Copyright (c) 2022-2022. Revo Digital
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: ColumnBuilder.ts
- * Project: complex-shapes-dev
- * Committed last: 2022/2/25 @ 2031
+ * Project: pamela
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { CellCollectionBuilder } from './CellCollectionBuilder';
-import { CellConfig, CellSize }  from '../shapes/cell';
-import { cloneArray }            from '../shapes/utils';
+import {CellCollectionBuilder} from './CellCollectionBuilder';
+import {CellConfig, CellSize} from '../shapes/cell';
+import {cloneArray} from '../shapes/utils';
 
 export class ColumnBuilder extends CellCollectionBuilder {
   constructor(cells: CellConfig[]) {

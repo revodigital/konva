@@ -1,26 +1,26 @@
 /*
  * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: Layer.ts
- * Project: pamela 
- * Committed last: 2022/1/26 @ 97
+ * Project: pamela
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Util } from './Util';
-import { Container, ContainerConfig } from './Container';
-import { Node } from './Node';
-import { Factory } from './Factory';
-import { SceneCanvas, HitCanvas } from './Canvas';
-import { Stage } from './Stage';
-import { getBooleanValidator } from './Validators';
+import {Util} from './Util';
+import {Container, ContainerConfig} from './Container';
+import {Node} from './Node';
+import {Factory} from './Factory';
+import {HitCanvas, SceneCanvas} from './Canvas';
+import {Stage} from './Stage';
+import {getBooleanValidator} from './Validators';
 
-import { GetSet, Vector2d } from './types';
-import { Group } from './Group';
-import { Shape, shapes } from './Shape';
-import { _registerNode } from './Global';
+import {GetSet, Vector2d} from './types';
+import {Group} from './Group';
+import {Shape, shapes} from './Shape';
+import {_registerNode} from './Global';
 
 export interface LayerConfig extends ContainerConfig {
   clearBeforeDraw?: boolean;

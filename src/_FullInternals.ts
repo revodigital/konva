@@ -1,65 +1,65 @@
 /*
- * Copyright (c) 2021-2022. Revo Digital
+ * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: _FullInternals.ts
- * Project: pamela
- * Committed last: 2022/1/26 @ 98
+ * Project: pamela 
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
 // we need to import core of the Konva and then extend it with all additional objects
 
-import { Pamela as Core } from './_CoreInternals';
+import {Pamela as Core} from './_CoreInternals';
 
 // shapes
-import { Arc }              from './shapes/Arc';
-import { Arrow }            from './shapes/Arrow';
-import { Circle }           from './shapes/Circle';
-import { Ellipse }          from './shapes/Ellipse';
-import { Image }            from './shapes/Image';
-import { Label, Tag }       from './shapes/Label';
-import { Line }             from './shapes/Line';
-import { Path }             from './shapes/Path';
-import { Rect }             from './shapes/Rect';
-import { RegularPolygon }   from './shapes/RegularPolygon';
-import { Ring }             from './shapes/Ring';
-import { Sprite }           from './shapes/Sprite';
-import { Star }             from './shapes/Star';
-import { GrowPolicy, Text } from './shapes/Text';
-import { TextPath }         from './shapes/TextPath';
-import { Transformer }      from './shapes/Transformer';
-import { Wedge }            from './shapes/Wedge';
+import {Arc} from './shapes/Arc';
+import {Arrow} from './shapes/Arrow';
+import {Circle} from './shapes/Circle';
+import {Ellipse} from './shapes/Ellipse';
+import {Image} from './shapes/Image';
+import {Label, Tag} from './shapes/Label';
+import {Line} from './shapes/Line';
+import {Path} from './shapes/Path';
+import {Rect} from './shapes/Rect';
+import {RegularPolygon} from './shapes/RegularPolygon';
+import {Ring} from './shapes/Ring';
+import {Sprite} from './shapes/Sprite';
+import {Star} from './shapes/Star';
+import {GrowPolicy, Text} from './shapes/Text';
+import {TextPath} from './shapes/TextPath';
+import {Transformer} from './shapes/Transformer';
+import {Wedge} from './shapes/Wedge';
 
 // filters
-import { Blur }                     from './filters/Blur';
-import { Brighten }                 from './filters/Brighten';
-import { Contrast }                 from './filters/Contrast';
-import { Emboss }                   from './filters/Emboss';
-import { Enhance }                  from './filters/Enhance';
-import { Grayscale }                from './filters/Grayscale';
-import { HSL }                      from './filters/HSL';
-import { HSV }                      from './filters/HSV';
-import { Invert }                   from './filters/Invert';
-import { Kaleidoscope }             from './filters/Kaleidoscope';
-import { Mask }                     from './filters/Mask';
-import { Noise }                    from './filters/Noise';
-import { Pixelate }                 from './filters/Pixelate';
-import { Posterize }                from './filters/Posterize';
-import { RGB }                      from './filters/RGB';
-import { RGBA }                     from './filters/RGBA';
-import { Sepia }                    from './filters/Sepia';
-import { Solarize }                 from './filters/Solarize';
-import { Threshold }                from './filters/Threshold';
-import { Table }                    from './shapes/Table';
-import { Barcode }                  from './shapes/Barcode';
-import { RichText, RichTextSource } from './shapes/RichText';
-import { Point2D }                  from './common/Point2D';
-import { ExportVariable }           from './shapes/ExportVariable';
-import { CropTransformer }          from './shapes/CropTransformer';
-import { TableBuilder }             from './builders/TableBuilder';
-import { RowBuilder }               from './builders/RowBuilder';
+import {Blur} from './filters/Blur';
+import {Brighten} from './filters/Brighten';
+import {Contrast} from './filters/Contrast';
+import {Emboss} from './filters/Emboss';
+import {Enhance} from './filters/Enhance';
+import {Grayscale} from './filters/Grayscale';
+import {HSL} from './filters/HSL';
+import {HSV} from './filters/HSV';
+import {Invert} from './filters/Invert';
+import {Kaleidoscope} from './filters/Kaleidoscope';
+import {Mask} from './filters/Mask';
+import {Noise} from './filters/Noise';
+import {Pixelate} from './filters/Pixelate';
+import {Posterize} from './filters/Posterize';
+import {RGB} from './filters/RGB';
+import {RGBA} from './filters/RGBA';
+import {Sepia} from './filters/Sepia';
+import {Solarize} from './filters/Solarize';
+import {Threshold} from './filters/Threshold';
+import {Table} from './shapes/Table';
+import {Barcode} from './shapes/Barcode';
+import {RichText, RichTextSource} from './shapes/RichText';
+import {Point2D} from './common/Point2D';
+import {ExportVariable} from './shapes/ExportVariable';
+import {CropTransformer} from './shapes/CropTransformer';
+import {TableBuilder} from './builders/TableBuilder';
+import {RowBuilder} from './builders/RowBuilder';
 
 export const Pamela = Core.Util._assign(Core, {
   Arc,

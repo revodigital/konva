@@ -1,7 +1,18 @@
-import { TableBuilder } from '../src/builders/TableBuilder';
-import { RowBuilder }   from '../lib/builders/RowBuilder';
-import Pamela           from '../lib';
-import { Table }        from '../src/shapes/Table';
+/*
+ * Copyright (c) 2022. Revo Digital
+ * ---
+ * Author: gabrielecavallo
+ * File: table.test.ts
+ * Project: pamela
+ * Committed last: 2022/11/25 @ 1256
+ * ---
+ * Description:
+ */
+
+import {TableBuilder} from '../src/builders/TableBuilder';
+import {RowBuilder} from '../lib/builders/RowBuilder';
+import Pamela from '../lib';
+import {Table} from '../src/shapes/Table';
 
 it('should correctly return only the content of this table', () => {
   const table = new TableBuilder();

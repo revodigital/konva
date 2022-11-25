@@ -1,48 +1,30 @@
 /*
  * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: Text.ts
- * Project: pamela 
- * Committed last: 2022/1/26 @ 97
+ * Project: pamela
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Util }                  from '../Util';
-import { Factory }               from '../Factory';
-import { Shape, ShapeConfig }    from '../Shape';
-import { _registerNode, Pamela } from '../Global';
-import {
-  getBooleanValidator,
-  getNumberOrAutoValidator,
-  getNumberValidator,
-  getStringValidator,
-}                                from '../Validators';
+import {Util} from '../Util';
+import {Factory} from '../Factory';
+import {Shape, ShapeConfig} from '../Shape';
+import {_registerNode, Pamela} from '../Global';
+import {getBooleanValidator, getNumberOrAutoValidator, getNumberValidator, getStringValidator,} from '../Validators';
 
-import { GetSet }                                   from '../types';
-import { KonvaEventObject }                         from '../Node';
-import { Size2D, sizeOf }                           from '../common/Size2D';
-import {
-  eventAddsText,
-  eventIsExit,
-  eventIsNewLine,
-  eventRemovesText,
-  pixel,
-  rangeOf
-}                                                   from './utils';
-import { normalizeFontFamily }                      from '../TextUtils';
-import { TextMeasurementHelper, TextMetricsHelper } from '../TextMeasurement';
-import { SceneContext }                             from '../Context';
-import {
-  EDITING_START
-}                                                   from '../events/text/EditingStart';
-import {
-  CHANGED
-}                                                   from '../events/text/Changed';
-import {
-  HorizontalAlignment
-}                                                   from '../configuration/Alignment';
+import {GetSet} from '../types';
+import {KonvaEventObject} from '../Node';
+import {Size2D, sizeOf} from '../common/Size2D';
+import {eventAddsText, eventIsExit, eventIsNewLine, eventRemovesText, pixel, rangeOf} from './utils';
+import {normalizeFontFamily} from '../TextUtils';
+import {TextMeasurementHelper, TextMetricsHelper} from '../TextMeasurement';
+import {SceneContext} from '../Context';
+import {EDITING_START} from '../events/text/EditingStart';
+import {CHANGED} from '../events/text/Changed';
+import {HorizontalAlignment} from '../configuration/Alignment';
 
 /**
  * Minimum font size

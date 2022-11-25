@@ -1,16 +1,16 @@
 /*
  * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: PointRectangle2D.ts
- * Project: pamela 
- * Committed last: 2022/1/26 @ 97
+ * Project: pamela
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { negate }  from '../shapes/utils';
-import { Point2D } from './Point2D';
+import {negate} from '../shapes/utils';
+import {Point2D} from './Point2D';
 
 export interface IPointrectangle {
   topLeft: Point2D;

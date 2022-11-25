@@ -1,14 +1,14 @@
 /*
  * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: Global.ts
  * Project: pamela 
- * Committed last: 2022/1/26 @ 97
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
-import { DragButton } from './Node';
+import {DragButton} from './Node';
 
 var PI_OVER_180 = Math.PI / 180;
 

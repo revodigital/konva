@@ -1,15 +1,16 @@
 /*
  * Copyright (c) 2021-2022. Revo Digital 
  * ---
- * Author: gabriele
+ * Author: gabrielecavallo
  * File: Solarize.ts
- * Project: pamela 
- * Committed last: 2022/1/26 @ 97
+ * Project: pamela
+ * Committed last: 2022/11/25 @ 1256
  * ---
  * Description:
  */
 
-import { Filter } from '../Node';
+import {Filter} from '../Node';
+
 /**
  * Solarize Filter
  * Pixastic Lib - Solarize filter - v0.1.0
