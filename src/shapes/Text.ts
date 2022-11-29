@@ -25,6 +25,7 @@ import {SceneContext} from '../Context';
 import {EDITING_START} from '../events/text/EditingStart';
 import {CHANGED} from '../events/text/Changed';
 import {HorizontalAlignment} from '../configuration/Alignment';
+import {EDITING_END} from "../events/text/EditingEnd";
 
 /**
  * Minimum font size
@@ -513,7 +514,8 @@ export class Text extends Shape<TextConfig> {
     this._textArea.parentNode.removeChild(this._textArea);
     this._textArea = undefined;
 
-    this._fireChangedEvent();
+    // Fire text editing end
+    this.getStage().fire(EDITING_END, {node: this});
   }
 
   getSelfRect(): { x: number; width: number; y: number; height: number } {
